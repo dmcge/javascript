@@ -97,6 +97,8 @@ class Tokenizer
             else
               raise "Parse error!"
             end
+          when scanner.scan("_")
+            raise "Parse error!" unless scanner.peek(1).match?(/[[:digit:]]/)
           else
             break
           end

@@ -15,6 +15,15 @@ class NumberTest < Minitest::Test
     assert_raises { evaluate(".1.415") }
   end
 
+  def test_number_separators
+    assert_equal 315_242_242_000, evaluate("315_242_242_000")
+    assert_equal 420, evaluate("4_20")
+    assert_equal 4.2000000, evaluate("4.2_000_000")
+    assert_raises { evaluate("345_") }
+    assert_raises { evaluate("345_.232") }
+    assert_raises { evaluate("345.232_") }
+  end
+
   def test_signing
     assert_equal 78247, evaluate("+78247")
     assert_equal 782.2424, evaluate("+782.2424")
