@@ -1,5 +1,19 @@
 require "strscan"
 
+class Number
+  attr_accessor :type
+  attr_reader :digits
+
+  def initialize
+    @type = :integer
+    @digits = ""
+  end
+
+  def value
+    BigDecimal(digits)
+  end
+end
+
 class Tokenizer
   def initialize(javascript)
     @scanner = StringScanner.new(javascript)
@@ -51,7 +65,7 @@ class Tokenizer
       skip_whitespace
 
       case
-      when scanner.scan(/[0-9]+/) then tokenize_integer
+      when scanner.scan(/[0-9]/)  then tokenize_number
       when scanner.scan("+")      then tokenize_plus
       when scanner.scan("-")      then tokenize_minus
       when scanner.scan("*")      then tokenize_multiplication
@@ -63,8 +77,26 @@ class Tokenizer
       scanner.skip /\s+/
     end
 
-    def tokenize_integer
-      scanner.matched.to_i
+    def tokenize_number
+    scanner.unscan
+
+      Number.new.tap do |number|
+        loop do
+          case
+          when scanner.scan(/[[:digit:]]+/)
+            number.digits << scanner.matched
+          when scanner.scan(/\.[[:digit:]]/)
+            if number.type == :integer
+              number.type = :decimal
+              number.digits << scanner.matched
+            else
+              raise "Parse error!"
+            end
+          else
+            break
+          end
+        end
+      end
     end
 
     def tokenize_plus

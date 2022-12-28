@@ -40,7 +40,7 @@ class Parser
 
     def parse_expression
       case
-      when tokenizer.consume(Integer) then parse_integer
+      when tokenizer.consume(Number)  then parse_number
       when tokenizer.consume("+")     then parse_arithemetic_operation
       when tokenizer.consume("-")     then parse_arithemetic_operation
       when tokenizer.consume("*")     then parse_arithemetic_operation
@@ -48,7 +48,7 @@ class Parser
       end
     end
 
-    def parse_integer
+    def parse_number
       tokenizer.current_token
     end
 

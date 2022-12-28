@@ -1,20 +1,28 @@
 require "minitest/autorun"
 require "evaluator"
 
-class IntegerTest < Minitest::Test
+class NumberTest < Minitest::Test
   def test_integer_literals
     assert_equal 69, evaluate("69")
     assert_equal 420, evaluate("420")
   end
 
+  def test_decimal_literals
+    assert_equal 3.1415, evaluate("3.1415")
+    assert_equal 0.2748927492, evaluate("0.2748927492")
+    assert_raises { evaluate("3.1.415") }
+  end
+
   def test_addition
     assert_equal 4, evaluate("1 + 1 + 2")
     assert_equal 4294967297, evaluate("2274827419 + 2020139878")
+    assert_equal 4.5, evaluate("1.1 + 3.4")
   end
 
   def test_subtraction
     assert_equal 0, evaluate("2 - 1 - 1")
     assert_equal 2274827419, evaluate("4294967297 - 2020139878")
+    assert_equal 0.333, evaluate("0.666 - 0.333")
   end
 
   def test_multiplication
@@ -30,6 +38,7 @@ class IntegerTest < Minitest::Test
     assert_equal 0.75, evaluate("3 / 4")
     assert_equal 2028, evaluate("8710193678316 / 4294967297")
     assert_equal BigDecimal("0.333333333333333333333333333333333333"), evaluate("1/3")
+    assert_equal BigDecimal("0.1666666666666666666666666666666666665"), evaluate("1/3/2")
     assert_equal Float::INFINITY, evaluate("24 / 0")
   end
 

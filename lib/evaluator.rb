@@ -14,13 +14,13 @@ class Evaluator
   private
     def evaluate_expression(expression)
       case expression
-      when Integer             then evaluate_literal(expression)
+      when Number              then evaluate_number(expression)
       when ArithmeticOperation then evaluate_arithmetic_operation(expression)
       end
     end
 
-    def evaluate_literal(literal)
-      literal
+    def evaluate_number(number)
+      number.value
     end
 
     def evaluate_arithmetic_operation(operation)
