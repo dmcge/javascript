@@ -35,6 +35,13 @@ class NumberTest < Minitest::Test
     assert_equal 0, evaluate("1 + -1")
   end
 
+  def test_exponentials
+    assert_equal 3_000_000_000_000_000_000, evaluate("3e18")
+    assert_equal 1_430_000_000_000_000_000, evaluate("1.43E18")
+    assert_raises { evaluate("3e18e1") }
+    assert_raises { evaluate("3e18E1") }
+  end
+
   def test_addition
     assert_equal 4, evaluate("1 + 1 + 2")
     assert_equal 4294967297, evaluate("2274827419 + 2020139878")

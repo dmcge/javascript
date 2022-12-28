@@ -99,6 +99,12 @@ class Tokenizer
             end
           when scanner.scan("_")
             raise "Parse error!" unless scanner.peek(1).match?(/[[:digit:]]/)
+          when scanner.scan(/e/i)
+            if number.type == :exponential
+              raise "Parse error!"
+            else
+              number.digits << scanner.matched
+            end
           else
             break
           end
