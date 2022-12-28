@@ -58,7 +58,7 @@ class Tokenizer
     end
 
     def skip_whitespace
-      scanner.skip /\s+/
+      scanner.skip(/\s+/)
     end
 
     def tokenize_number
