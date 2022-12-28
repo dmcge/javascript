@@ -55,6 +55,10 @@ class Tokenizer
       when scanner.scan("**")     then tokenize_double_star
       when scanner.scan("*")      then tokenize_multiplication
       when scanner.scan("/")      then tokenize_division
+      when scanner.scan(">=")     then tokenize_greater_than_or_equal
+      when scanner.scan(">")      then tokenize_greater_than
+      when scanner.scan("<=")     then tokenize_less_than_or_equal
+      when scanner.scan("<")      then tokenize_less_than
       end
     end
 
@@ -130,6 +134,22 @@ class Tokenizer
 
     def tokenize_division
       "/"
+    end
+
+    def tokenize_greater_than
+      ">"
+    end
+
+    def tokenize_greater_than_or_equal
+      ">="
+    end
+
+    def tokenize_less_than
+      "<"
+    end
+
+    def tokenize_less_than_or_equal
+      "<="
     end
 
 

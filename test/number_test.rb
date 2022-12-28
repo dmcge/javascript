@@ -88,6 +88,32 @@ class NumberTest < Minitest::Test
     # assert_equal 20, evaluate("(2 + 3) * 4")
   end
 
+  def test_less_than
+    assert evaluate("2 < 4")
+    assert evaluate("2 ** 2 < 2 + 1 * 3")
+    refute evaluate("1_000 < 999")
+    refute evaluate("2 * 2 < 3 + 1")
+  end
+
+  def test_less_than_or_equal
+    assert evaluate("2 <= 4")
+    assert evaluate("2 * 2 <= 3 + 1")
+    refute evaluate("1_000 < 999")
+  end
+
+  def test_greater_than
+    assert evaluate("1_000 > 999")
+    assert evaluate("3 + 2 ** 2 > 2 * 2")
+    refute evaluate("2 > 4")
+    refute evaluate("2 * 2 > 3 + 1")
+  end
+
+  def test_greater_than_or_equal
+    assert evaluate("1_000 >= 999")
+    assert evaluate("2 * 2 >= 3 + 1")
+    refute evaluate("2 > 4")
+  end
+
   private
     def evaluate(script)
       Evaluator.new(script).evaluate

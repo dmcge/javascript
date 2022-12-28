@@ -1,6 +1,6 @@
 require "bigdecimal"
 require_relative "tokenizer"
-require_relative "arithmetic_operation"
+require_relative "operation"
 
 class Parser
   def initialize(javascript)
@@ -18,12 +18,16 @@ class Parser
 
     def parse_expression
       case
-      when tokenizer.consume(Number)  then parse_number
-      when tokenizer.consume("+")     then parse_arithemetic_operation
-      when tokenizer.consume("-")     then parse_arithemetic_operation
-      when tokenizer.consume("*")     then parse_arithemetic_operation
-      when tokenizer.consume("**")    then parse_arithemetic_operation
-      when tokenizer.consume("/")     then parse_arithemetic_operation
+      when tokenizer.consume(Number) then parse_number
+      when tokenizer.consume("+")    then parse_operation
+      when tokenizer.consume("-")    then parse_operation
+      when tokenizer.consume("*")    then parse_operation
+      when tokenizer.consume("**")   then parse_operation
+      when tokenizer.consume("/")    then parse_operation
+      when tokenizer.consume(">")    then parse_operation
+      when tokenizer.consume(">=")   then parse_operation
+      when tokenizer.consume("<")    then parse_operation
+      when tokenizer.consume("<=")   then parse_operation
       end
     end
 
@@ -31,11 +35,11 @@ class Parser
       tokenizer.current_token
     end
 
-    def parse_arithemetic_operation
+    def parse_operation
       operator        = tokenizer.current_token
       left_hand_side  = @expressions.pop
       right_hand_side = parse_expression
 
-      ArithmeticOperation.new(operator, left_hand_side, right_hand_side)
+      Operation.new(operator, left_hand_side, right_hand_side)
     end
 end

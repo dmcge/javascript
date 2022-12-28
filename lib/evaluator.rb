@@ -14,8 +14,8 @@ class Evaluator
   private
     def evaluate_expression(expression)
       case expression
-      when Number              then evaluate_number(expression)
-      when ArithmeticOperation then evaluate_arithmetic_operation(expression)
+      when Number    then evaluate_number(expression)
+      when Operation then evaluate_operation(expression)
       end
     end
 
@@ -23,7 +23,7 @@ class Evaluator
       number.value
     end
 
-    def evaluate_arithmetic_operation(operation)
+    def evaluate_operation(operation)
       left_hand_side  = BigDecimal(evaluate_expression(operation.left_hand_side))
       right_hand_side = BigDecimal(evaluate_expression(operation.right_hand_side))
 
@@ -33,6 +33,10 @@ class Evaluator
       when "*"  then left_hand_side * right_hand_side
       when "+"  then left_hand_side + right_hand_side
       when "-"  then left_hand_side - right_hand_side
+      when ">"  then left_hand_side > right_hand_side
+      when ">=" then left_hand_side >= right_hand_side
+      when "<"  then left_hand_side < right_hand_side
+      when "<=" then left_hand_side <= right_hand_side
       end
     end
 end
