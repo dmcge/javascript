@@ -10,7 +10,9 @@ class NumberTest < Minitest::Test
   def test_decimal_literals
     assert_equal 3.1415, evaluate("3.1415")
     assert_equal 0.2748927492, evaluate("0.2748927492")
+    assert_equal 0.728472, evaluate(".728472")
     assert_raises { evaluate("3.1.415") }
+    assert_raises { evaluate(".1.415") }
   end
 
   def test_signing

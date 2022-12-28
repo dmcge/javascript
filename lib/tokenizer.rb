@@ -66,6 +66,7 @@ class Tokenizer
 
       case
       when scanner.scan(/[0-9]/)  then tokenize_number
+      when scanner.scan(".")      then tokenize_dot
       when scanner.scan("+")      then tokenize_plus
       when scanner.scan("-")      then tokenize_minus
       when scanner.scan("*")      then tokenize_multiplication
@@ -100,6 +101,14 @@ class Tokenizer
             break
           end
         end
+      end
+    end
+
+    def tokenize_dot
+      if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
+        tokenize_number
+      else
+        "."
       end
     end
 
