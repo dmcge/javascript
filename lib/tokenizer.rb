@@ -40,10 +40,6 @@ class Tokenizer
     end
   end
 
-  # def consume!(type)
-  #   consume(type) or raise
-  # end
-
   def rewind
     scanner.pos = tokens.pop.starting_position
   end
