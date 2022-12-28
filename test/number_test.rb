@@ -74,7 +74,14 @@ class NumberTest < Minitest::Test
     assert_equal Float::INFINITY, evaluate("24 / 0")
   end
 
+  def test_exponentiation
+    assert_equal 100, evaluate("10 ** 2")
+    assert_equal 10, evaluate("100 ** 0.5")
+    assert_equal 0.01, evaluate("100 ** -1")
+  end
+
   def test_bodmas
+    assert_equal 50, evaluate("100 ** 1/2")
     assert_equal 14, evaluate("2 + 3 * 4")
     assert_equal 84, evaluate("7 * 4 * 6 / 2")
     assert_equal 31, evaluate("7 * 4 + 6 / 2")

@@ -28,10 +28,11 @@ class Evaluator
       right_hand_side = BigDecimal(evaluate_expression(operation.right_hand_side))
 
       case operation.operator
-      when "/" then left_hand_side / right_hand_side
-      when "*" then left_hand_side * right_hand_side
-      when "+" then left_hand_side + right_hand_side
-      when "-" then left_hand_side - right_hand_side
+      when "**" then left_hand_side ** right_hand_side
+      when "/"  then left_hand_side / right_hand_side
+      when "*"  then left_hand_side * right_hand_side
+      when "+"  then left_hand_side + right_hand_side
+      when "-"  then left_hand_side - right_hand_side
       end
     end
 end

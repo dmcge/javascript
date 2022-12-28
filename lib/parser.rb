@@ -22,6 +22,7 @@ class Parser
       when tokenizer.consume("+")     then parse_arithemetic_operation
       when tokenizer.consume("-")     then parse_arithemetic_operation
       when tokenizer.consume("*")     then parse_arithemetic_operation
+      when tokenizer.consume("**")    then parse_arithemetic_operation
       when tokenizer.consume("/")     then parse_arithemetic_operation
       end
     end

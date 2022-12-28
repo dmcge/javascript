@@ -52,6 +52,7 @@ class Tokenizer
       when scanner.scan(".")      then tokenize_dot
       when scanner.scan("+")      then tokenize_plus
       when scanner.scan("-")      then tokenize_minus
+      when scanner.scan("**")     then tokenize_double_star
       when scanner.scan("*")      then tokenize_multiplication
       when scanner.scan("/")      then tokenize_division
       end
@@ -117,6 +118,10 @@ class Tokenizer
       else
         "-"
       end
+    end
+
+    def tokenize_double_star
+      "**"
     end
 
     def tokenize_multiplication
