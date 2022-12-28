@@ -33,6 +33,9 @@ class NumberTest < Minitest::Test
     assert_equal 0, evaluate("-1+1")
     assert_equal 0, evaluate("+1-1")
     assert_equal 0, evaluate("1 + -1")
+
+    assert_equal 1, evaluate("2 +\n-1")
+    assert_equal 1, evaluate("2 +\n -1")
   end
 
   def test_exponentials
