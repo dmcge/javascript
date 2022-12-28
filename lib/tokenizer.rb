@@ -75,7 +75,7 @@ class Tokenizer
     end
 
     def tokenize_number
-    scanner.unscan
+      scanner.unscan
 
       Number.new.tap do |number|
         if scanner.scan(/\-|\+/)
