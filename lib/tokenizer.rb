@@ -45,7 +45,7 @@ class Tokenizer
   # end
 
   def rewind
-    scanner.pos = @tokens.pop.starting_position
+    scanner.pos = tokens.pop.starting_position
   end
 
   def finished?
@@ -55,10 +55,10 @@ class Tokenizer
   private
     Token = Struct.new(:type, :starting_position, :ending_position, keyword_init: true)
 
-    attr_reader :scanner
+    attr_reader :scanner, :tokens
 
     def advance
-      @tokens << Token.new(starting_position: scanner.pos, type: advance_to_next_token, ending_position: scanner.pos)
+      tokens << Token.new(starting_position: scanner.pos, type: advance_to_next_token, ending_position: scanner.pos)
     end
 
     def advance_to_next_token
@@ -81,6 +81,10 @@ class Tokenizer
     scanner.unscan
 
       Number.new.tap do |number|
+        if scanner.scan(/\-|\+/)
+          number.digits << scanner.matched
+        end
+
         loop do
           case
           when scanner.scan(/[[:digit:]]+/)
@@ -100,11 +104,19 @@ class Tokenizer
     end
 
     def tokenize_plus
-      "+"
+      if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
+        tokenize_number
+      else
+        "+"
+      end
     end
 
     def tokenize_minus
-      "-"
+      if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
+        tokenize_number
+      else
+        "-"
+      end
     end
 
     def tokenize_multiplication
@@ -113,5 +125,10 @@ class Tokenizer
 
     def tokenize_division
       "/"
+    end
+
+
+    def follows_word_boundary?
+      tokens.last&.ending_position != scanner.pos - 1
     end
 end

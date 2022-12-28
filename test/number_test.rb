@@ -13,6 +13,17 @@ class NumberTest < Minitest::Test
     assert_raises { evaluate("3.1.415") }
   end
 
+  def test_signing
+    assert_equal 78247, evaluate("+78247")
+    assert_equal 782.2424, evaluate("+782.2424")
+    assert_equal -2424, evaluate("-2424")
+    assert_equal -2.8092, evaluate("-2.8092")
+
+    assert_equal 0, evaluate("-1+1")
+    assert_equal 0, evaluate("+1-1")
+    assert_equal 0, evaluate("1 + -1")
+  end
+
   def test_addition
     assert_equal 4, evaluate("1 + 1 + 2")
     assert_equal 4294967297, evaluate("2274827419 + 2020139878")
