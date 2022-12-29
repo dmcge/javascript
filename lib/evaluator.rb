@@ -38,6 +38,11 @@ class Evaluator
       when ">=" then left_hand_side >= right_hand_side
       when "<"  then left_hand_side < right_hand_side
       when "<=" then left_hand_side <= right_hand_side
+      when "<<" then left_hand_side.to_i << (right_hand_side.to_i % 32)
+      when ">>" then left_hand_side.to_i >> (right_hand_side.to_i % 32)
+      when ">>>"
+        unsigned_value = ("%.32b" % left_hand_side.to_i).sub(/^\.\./, "11").to_i(2)
+        unsigned_value >> right_hand_side.to_i % 32
       end
     end
 end

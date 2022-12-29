@@ -8,10 +8,11 @@ class Operation
 
     def precedence
       case value
-      when "**"                 then 4
-      when "/", "*", "%"        then 3
-      when "+", "-"             then 2
-      when "<", "<=", ">", ">=" then 1
+      when "**"                 then 5
+      when "/", "*", "%"        then 4
+      when "+", "-"             then 3
+      when "<", "<=", ">", ">=" then 2
+      when "<<", ">>", ">>>"    then 1
       end
     end
   end

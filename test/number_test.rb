@@ -82,6 +82,28 @@ class NumberTest < Javascript::Test
     assert_equal 7, evaluate("10 * 2 % 3 * 4 - 1")
   end
 
+  def test_shifting_left
+    assert_equal 0b100100, evaluate("0b1001 << 2")
+    assert_equal -0b11101000, evaluate("-0b11101 << 3")
+    assert_equal 0b101010, evaluate("0b10101 << 33")
+    assert_equal evaluate("3 << 1"), evaluate("3.9999 << 1")
+  end
+
+  def test_shifting_right
+    assert_equal 0b11, evaluate("0b1101 >> 2")
+    assert_equal -0b101, evaluate("-0b100101 >> 3")
+    assert_equal 0b1010, evaluate("0b10101 >> 33")
+    assert_equal evaluate("3 >> 1"), evaluate("3.9999 >> 1")
+  end
+
+  def test_shifting_right_unsigned
+    assert_equal 0b11, evaluate("0b1101 >>> 2")
+    assert_equal 0b11111111111111111111111111011, evaluate("-0b100101 >>> 3")
+    assert_equal 0b1010, evaluate("0b10101 >>> 33")
+    assert_equal evaluate("-3 >>> 1"), evaluate("-3.9999 >>> 1")
+  end
+
+
   def test_dangling_operators
     assert_raises { evaluate("+") }
     assert_raises { evaluate("3 *") }
