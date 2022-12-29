@@ -1,6 +1,8 @@
 require "strscan"
 require_relative "number"
 
+Operator = Struct.new(:value)
+
 class Tokenizer
   def initialize(javascript)
     @scanner = StringScanner.new(javascript)
@@ -52,13 +54,13 @@ class Tokenizer
       when scanner.scan(".")      then tokenize_dot
       when scanner.scan("+")      then tokenize_plus
       when scanner.scan("-")      then tokenize_minus
-      when scanner.scan("**")     then tokenize_double_star
-      when scanner.scan("*")      then tokenize_multiplication
-      when scanner.scan("/")      then tokenize_division
-      when scanner.scan(">=")     then tokenize_greater_than_or_equal
-      when scanner.scan(">")      then tokenize_greater_than
-      when scanner.scan("<=")     then tokenize_less_than_or_equal
-      when scanner.scan("<")      then tokenize_less_than
+      when scanner.scan("**")     then tokenize_operator
+      when scanner.scan("*")      then tokenize_operator
+      when scanner.scan("/")      then tokenize_operator
+      when scanner.scan(">=")     then tokenize_operator
+      when scanner.scan(">")      then tokenize_operator
+      when scanner.scan("<=")     then tokenize_operator
+      when scanner.scan("<")      then tokenize_operator
       end
     end
 
@@ -104,7 +106,7 @@ class Tokenizer
       if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
         tokenize_number
       else
-        "."
+        tokenize_operator
       end
     end
 
@@ -112,7 +114,7 @@ class Tokenizer
       if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
         tokenize_number
       else
-        "+"
+        tokenize_operator
       end
     end
 
@@ -120,36 +122,12 @@ class Tokenizer
       if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
         tokenize_number
       else
-        "-"
+        tokenize_operator
       end
     end
 
-    def tokenize_double_star
-      "**"
-    end
-
-    def tokenize_multiplication
-      "*"
-    end
-
-    def tokenize_division
-      "/"
-    end
-
-    def tokenize_greater_than
-      ">"
-    end
-
-    def tokenize_greater_than_or_equal
-      ">="
-    end
-
-    def tokenize_less_than
-      "<"
-    end
-
-    def tokenize_less_than_or_equal
-      "<="
+    def tokenize_operator
+      Operator.new(scanner.matched)
     end
 
 

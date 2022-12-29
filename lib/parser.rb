@@ -18,16 +18,8 @@ class Parser
 
     def parse_expression
       case
-      when tokenizer.consume(Number) then parse_number
-      when tokenizer.consume("+")    then parse_operation
-      when tokenizer.consume("-")    then parse_operation
-      when tokenizer.consume("*")    then parse_operation
-      when tokenizer.consume("**")   then parse_operation
-      when tokenizer.consume("/")    then parse_operation
-      when tokenizer.consume(">")    then parse_operation
-      when tokenizer.consume(">=")   then parse_operation
-      when tokenizer.consume("<")    then parse_operation
-      when tokenizer.consume("<=")   then parse_operation
+      when tokenizer.consume(Number)   then parse_number
+      when tokenizer.consume(Operator) then parse_operation
       end
     end
 
@@ -36,7 +28,7 @@ class Parser
     end
 
     def parse_operation
-      operator        = tokenizer.current_token
+      operator        = tokenizer.current_token.value
       left_hand_side  = @expressions.pop
       right_hand_side = parse_expression
 
