@@ -49,9 +49,9 @@ class Tokenizer
 
       case
       when scanner.scan(/[[:digit:]]/) then tokenize_number
-      when scanner.scan(".")           then tokenize_dot
-      when scanner.scan("+")           then tokenize_plus
-      when scanner.scan("-")           then tokenize_minus
+      when scanner.scan(".")           then tokenize_number_or_operator
+      when scanner.scan("+")           then tokenize_number_or_operator
+      when scanner.scan("-")           then tokenize_number_or_operator
       when scanner.scan("**")          then tokenize_operator
       when scanner.scan("*")           then tokenize_operator
       when scanner.scan("/")           then tokenize_operator
@@ -101,23 +101,7 @@ class Tokenizer
       end
     end
 
-    def tokenize_dot
-      if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
-        tokenize_number
-      else
-        tokenize_operator
-      end
-    end
-
-    def tokenize_plus
-      if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
-        tokenize_number
-      else
-        tokenize_operator
-      end
-    end
-
-    def tokenize_minus
+    def tokenize_number_or_operator
       if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
         tokenize_number
       else
