@@ -112,6 +112,7 @@ class Tokenizer
         when scanner.scan(/0x/i) then tokenize_nondecimal_number(number, base: 16, pattern: /[[:xdigit:]]/)
         when scanner.scan(/0b/i) then tokenize_nondecimal_number(number, base: 2)
         when scanner.scan(/0o/i) then tokenize_nondecimal_number(number, base: 8)
+        when scanner.scan("0")   then tokenize_potentially_nondecimal_number(number, base: 8)
         else                          tokenize_decimal_number(number)
         end
       end
@@ -140,6 +141,17 @@ class Tokenizer
         raise "Syntax error!"
       else
         number.digits << digits.to_i(base).to_s
+      end
+    end
+
+    def tokenize_potentially_nondecimal_number(number, base:)
+      scanner.unscan
+      tokenize_decimal_number(number)
+
+      if number.type == :integer && number.digits.match?(/^[0-#{base - 1}]+$/)
+        number.digits.replace number.digits.to_i(base).to_s
+      else
+        number
       end
     end
 

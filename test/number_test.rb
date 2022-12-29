@@ -69,6 +69,16 @@ class NumberTest < Javascript::Test
     assert_raises { evaluate("0o6_") }
   end
 
+  def test_legacy_octal_literals
+    assert_equal 0o77612, evaluate("077612")
+    assert_equal 0o4, evaluate("04")
+    assert_equal 0o0000720, evaluate("00000720")
+
+    assert_equal 0, evaluate("0")
+    assert_equal 1.23, evaluate("1.23")
+    assert_equal 19, evaluate("019")
+  end
+
   def test_number_separators_with_hex_literals
     assert_equal 0xf70de00a, evaluate("0xf7_0de_00a")
     assert_raises { evaluate("0x_") }
