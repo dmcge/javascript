@@ -24,7 +24,11 @@ class Parser
     end
 
     def parse_number
-      tokenizer.current_token
+      if @expressions.empty? || @expressions.last.is_a?(Operation)
+        tokenizer.current_token
+      else
+        raise "Syntax error!"
+      end
     end
 
     def parse_operation

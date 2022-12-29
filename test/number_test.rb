@@ -134,6 +134,11 @@ class NumberTest < Minitest::Test
     assert_raises { evaluate("/ 2") }
   end
 
+
+  def test_syntactic_boundaries
+    assert_raises { evaluate("1 2") }
+  end
+
   private
     def evaluate(script)
       Evaluator.new(script).evaluate
