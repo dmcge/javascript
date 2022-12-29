@@ -46,9 +46,10 @@ class Tokenizer
 
     def advance_to_next_token
       skip_whitespace
+      skip_comments
 
       case
-      when scanner.scan(/;|\R/)        then tokenize_semicolon
+      when scanner.scan(/;|\R|\z/)     then tokenize_semicolon
       when scanner.scan(/[[:digit:]]/) then tokenize_number
       when scanner.scan(".")           then tokenize_number_or_operator
       when scanner.scan("+")           then tokenize_number_or_operator
@@ -62,13 +63,38 @@ class Tokenizer
       when scanner.scan("<")           then tokenize_operator
       when scanner.scan("%")           then tokenize_operator
       else
-        raise "Unrecognised character: #{scanner.getch}"
+        raise "Unrecognised character: #{scanner.getch.inspect}"
       end
     end
+
 
     def skip_whitespace
       scanner.skip(/[[:blank:]]+/)
     end
+
+    def skip_comments
+      case
+      when scanner.scan("//") then skip_single_line_comment
+      when scanner.scan("/*") then skip_multiline_comment
+      end
+    end
+
+    def skip_single_line_comment
+      scanner.skip_until(/(?=\R)|\Z/)
+    end
+
+    def skip_multiline_comment
+      if comment = scanner.scan_until(/\*\//)
+        insert_line_break if comment.match?(/\R/)
+      else
+        raise "Syntax error!"
+      end
+    end
+
+    def insert_line_break
+      scanner.string[scanner.pos] = "\n" + scanner.string[scanner.pos]
+    end
+
 
     def tokenize_semicolon
       ";"

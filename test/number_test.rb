@@ -1,7 +1,6 @@
-require "minitest/autorun"
-require "evaluator"
+require "test_helper"
 
-class NumberTest < Minitest::Test
+class NumberTest < Javascript::Test
   def test_integer_literals
     assert_equal 69, evaluate("69")
     assert_equal 420, evaluate("420")
@@ -140,9 +139,4 @@ class NumberTest < Minitest::Test
     assert_equal 4, evaluate("3\n4")
     assert_raises { evaluate("5 6") }
   end
-
-  private
-    def evaluate(script)
-      Evaluator.new(script).evaluate
-    end
 end
