@@ -16,10 +16,23 @@ class NumberTest < Javascript::Test
     assert_raises { evaluate(".1.415") }
   end
 
+  def test_binary_literals
+    assert_equal 0b11001, evaluate("0b11001")
+    assert_equal 0b1, evaluate("0b1")
+    assert_equal 0b0001, evaluate("0B0001")
+
+    assert_raises { evaluate("0b") }
+    assert_raises { evaluate("0B") }
+    assert_raises { evaluate("0b111112") }
+  end
+
   def test_number_separators
     assert_equal 315_242_242_000, evaluate("315_242_242_000")
     assert_equal 420, evaluate("4_20")
+
     assert_equal 4.2000000, evaluate("4.2_000_000")
+    assert_equal 0b110011, evaluate("0b11_00_11")
+
     assert_raises { evaluate("345_") }
     assert_raises { evaluate("345_.232") }
     assert_raises { evaluate("345.232_") }
@@ -45,6 +58,7 @@ class NumberTest < Javascript::Test
     assert_raises { evaluate("3e18e1") }
     assert_raises { evaluate("3e18E1") }
   end
+
 
   def test_addition
     assert_equal 4, evaluate("1 + 1 + 2")

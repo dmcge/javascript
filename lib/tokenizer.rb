@@ -108,28 +108,60 @@ class Tokenizer
           number.digits << scanner.matched
         end
 
-        loop do
-          case
-          when scanner.scan(/[[:digit:]]+/)
-            number.digits << scanner.matched
-          when scanner.scan(/\.[[:digit:]]/)
-            if number.type == :integer
-              number.type = :decimal
-              number.digits << scanner.matched
-            else
-              raise "Parse error!"
-            end
-          when scanner.scan("_")
-            raise "Parse error!" unless scanner.peek(1).match?(/[[:digit:]]/)
-          when scanner.scan(/e/i)
-            if number.type == :exponential
-              raise "Parse error!"
-            else
-              number.digits << scanner.matched
-            end
+        case
+        when scanner.scan(/0b/i) then tokenize_binary_number(number)
+        else                          tokenize_decimal_number(number)
+        end
+      end
+    end
+
+    def tokenize_binary_number(number)
+      digits = ""
+
+      loop do
+        case
+        when scanner.scan(/[[:digit:]]/)
+          if scanner.matched.match?(/0|1/)
+            digits << scanner.matched.to_i(2).to_s
           else
-            break
+            raise "Syntax error!"
           end
+        when scanner.scan("_")
+          raise "Syntax error!" unless scanner.peek(1).match?(/0|1/)
+        else
+          break
+        end
+      end
+
+      if digits.empty?
+        raise "Syntax error!"
+      else
+        number.digits << digits.to_i(2).to_s
+      end
+    end
+
+    def tokenize_decimal_number(number)
+      loop do
+        case
+        when scanner.scan(/[[:digit:]]+/)
+          number.digits << scanner.matched
+        when scanner.scan(/\.[[:digit:]]/)
+          if number.type == :integer
+            number.type = :decimal
+            number.digits << scanner.matched
+          else
+            raise "Parse error!"
+          end
+        when scanner.scan("_")
+          raise "Parse error!" unless scanner.peek(1).match?(/[[:digit:]]/)
+        when scanner.scan(/e/i)
+          if number.type == :exponential
+            raise "Parse error!"
+          else
+            number.digits << scanner.matched
+          end
+        else
+          break
         end
       end
     end
