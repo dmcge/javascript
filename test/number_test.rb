@@ -121,6 +121,12 @@ class NumberTest < Minitest::Test
     assert_equal 7, evaluate("10 * 2 % 3 * 4 - 1")
   end
 
+  def test_dangling_operators
+    assert_raises { evaluate("+") }
+    assert_raises { evaluate("3 *") }
+    assert_raises { evaluate("/ 2") }
+  end
+
   private
     def evaluate(script)
       Evaluator.new(script).evaluate

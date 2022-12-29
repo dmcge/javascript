@@ -32,6 +32,10 @@ class Parser
       left_hand_side  = @expressions.pop
       right_hand_side = parse_expression
 
-      Operation.new(operator, left_hand_side, right_hand_side)
+      if left_hand_side && right_hand_side
+        Operation.new(operator, left_hand_side, right_hand_side)
+      else
+        raise "Syntax error!"
+      end
     end
 end
