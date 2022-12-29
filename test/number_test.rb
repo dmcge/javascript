@@ -136,6 +136,7 @@ class NumberTest < Minitest::Test
 
 
   def test_syntactic_boundaries
+    assert_equal 2, evaluate("1; 2")
     assert_raises { evaluate("1 2") }
   end
 

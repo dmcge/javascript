@@ -9,12 +9,19 @@ class Parser
   end
 
   def parse
-    @expressions << parse_expression until tokenizer.finished?
-    @expressions
+    [].tap do |expressions|
+      expressions.concat(parse_statement) until tokenizer.finished?
+    end
   end
 
   private
     attr_reader :tokenizer
+
+    def parse_statement
+      @expressions = []
+      @expressions << parse_expression until tokenizer.finished? || tokenizer.consume(";")
+      @expressions
+    end
 
     def parse_expression
       case

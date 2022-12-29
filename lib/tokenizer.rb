@@ -48,6 +48,7 @@ class Tokenizer
       skip_whitespace
 
       case
+      when scanner.scan(/;/)           then tokenize_semicolon
       when scanner.scan(/[[:digit:]]/) then tokenize_number
       when scanner.scan(".")           then tokenize_number_or_operator
       when scanner.scan("+")           then tokenize_number_or_operator
@@ -67,6 +68,10 @@ class Tokenizer
 
     def skip_whitespace
       scanner.skip(/\s+/)
+    end
+
+    def tokenize_semicolon
+      ";"
     end
 
     def tokenize_number
