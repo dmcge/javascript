@@ -16,6 +16,17 @@ class NumberTest < Javascript::Test
     assert_raises { evaluate(".1.415") }
   end
 
+  def test_hex_literals
+    assert_equal 0xfff901a, evaluate("0xfff901a")
+    assert_equal 0xfff901c, evaluate("0xfFf901C")
+    assert_equal 0xf, evaluate("0xf")
+    assert_equal 0x000e, evaluate("0X000e")
+
+    assert_raises { evaluate("0x") }
+    assert_raises { evaluate("0X") }
+    assert_raises { evaluate("0xabcg") }
+  end
+
   def test_binary_literals
     assert_equal 0b11001, evaluate("0b11001")
     assert_equal 0b1, evaluate("0b1")
@@ -56,6 +67,12 @@ class NumberTest < Javascript::Test
     assert_equal 0o7001216, evaluate("0o7_001_216")
     assert_raises { evaluate("0o_") }
     assert_raises { evaluate("0o6_") }
+  end
+
+  def test_number_separators_with_hex_literals
+    assert_equal 0xf70de00a, evaluate("0xf7_0de_00a")
+    assert_raises { evaluate("0x_") }
+    assert_raises { evaluate("0x6_") }
   end
 
   def test_signing

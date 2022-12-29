@@ -109,6 +109,7 @@ class Tokenizer
         end
 
         case
+        when scanner.scan(/0x/i) then tokenize_nondecimal_number(number, base: 16, pattern: /[[:xdigit:]]/)
         when scanner.scan(/0b/i) then tokenize_nondecimal_number(number, base: 2)
         when scanner.scan(/0o/i) then tokenize_nondecimal_number(number, base: 8)
         else                          tokenize_decimal_number(number)
@@ -116,19 +117,20 @@ class Tokenizer
       end
     end
 
-    def tokenize_nondecimal_number(number, base:)
+    def tokenize_nondecimal_number(number, base:, pattern: nil)
+      pattern ||= /[0-#{base - 1}]/
       digits = ""
 
       loop do
         case
-        when scanner.scan(/[[:digit:]]/)
-          if scanner.matched.match?(/[0-#{base - 1}]/)
+        when scanner.scan(/[[:alnum:]]/)
+          if scanner.matched.match?(pattern)
             digits << scanner.matched
           else
             raise "Syntax error!"
           end
         when scanner.scan("_")
-          raise "Syntax error!" unless scanner.peek(1).match?(/[0-#{base - 1}]/)
+          raise "Syntax error!" unless scanner.peek(1).match?(pattern)
         else
           break
         end
