@@ -60,6 +60,8 @@ class Tokenizer
       when scanner.scan("<=")          then tokenize_operator
       when scanner.scan("<")           then tokenize_operator
       when scanner.scan("%")           then tokenize_operator
+      else
+        raise "Unrecognised character: #{scanner.getch}"
       end
     end
 
