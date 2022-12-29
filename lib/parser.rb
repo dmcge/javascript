@@ -18,8 +18,8 @@ class Parser
 
     def parse_expression
       case
-      when tokenizer.consume(Number)   then parse_number
-      when tokenizer.consume(Operator) then parse_operation
+      when tokenizer.consume(Number)              then parse_number
+      when tokenizer.consume(Operation::Operator) then parse_operation
       end
     end
 
@@ -28,7 +28,7 @@ class Parser
     end
 
     def parse_operation
-      operator        = tokenizer.current_token.value
+      operator        = tokenizer.current_token
       left_hand_side  = @expressions.pop
       right_hand_side = parse_expression
 

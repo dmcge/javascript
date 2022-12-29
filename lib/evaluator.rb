@@ -27,7 +27,7 @@ class Evaluator
       left_hand_side  = evaluate_expression(operation.left_hand_side)
       right_hand_side = evaluate_expression(operation.right_hand_side)
 
-      case operation.operator
+      case operation.operator.value
       when "**" then left_hand_side ** right_hand_side
       when "/"  then left_hand_side / right_hand_side
       when "*"  then left_hand_side * right_hand_side

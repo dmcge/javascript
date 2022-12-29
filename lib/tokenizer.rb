@@ -1,8 +1,6 @@
 require "strscan"
 require_relative "number"
 
-Operator = Struct.new(:value)
-
 class Tokenizer
   def initialize(javascript)
     @scanner = StringScanner.new(javascript)
@@ -128,7 +126,7 @@ class Tokenizer
     end
 
     def tokenize_operator
-      Operator.new(scanner.matched)
+      Operation::Operator.new(scanner.matched)
     end
 
 
