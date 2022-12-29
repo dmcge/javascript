@@ -110,6 +110,7 @@ class Tokenizer
 
         case
         when scanner.scan(/0b/i) then tokenize_binary_number(number)
+        when scanner.scan(/0o/i) then tokenize_octal_number(number)
         else                          tokenize_decimal_number(number)
         end
       end
@@ -137,6 +138,31 @@ class Tokenizer
         raise "Syntax error!"
       else
         number.digits << digits.to_i(2).to_s
+      end
+    end
+
+    def tokenize_octal_number(number)
+      digits = ""
+
+      loop do
+        case
+        when scanner.scan(/[[:digit:]]/)
+          if scanner.matched.match?(/[0-7]/)
+            digits << scanner.matched.to_i(8).to_s
+          else
+            raise "Syntax error!"
+          end
+        when scanner.scan("_")
+          raise "Syntax error!" unless scanner.peek(1).match?(/[0-7]/)
+        else
+          break
+        end
+      end
+
+      if digits.empty?
+        raise "Syntax error!"
+      else
+        number.digits << digits.to_i(8).to_s
       end
     end
 

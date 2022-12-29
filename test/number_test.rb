@@ -26,16 +26,36 @@ class NumberTest < Javascript::Test
     assert_raises { evaluate("0b111112") }
   end
 
-  def test_number_separators
+  def test_octal_literals
+    assert_equal 0o77612, evaluate("0o77612")
+    assert_equal 0o4, evaluate("0o4")
+    assert_equal 0o0000720, evaluate("0O0000720")
+
+    assert_raises { evaluate("0o") }
+    assert_raises { evaluate("0O") }
+    assert_raises { evaluate("0O12345678") }
+  end
+
+  def test_number_separators_with_decimal_literals
     assert_equal 315_242_242_000, evaluate("315_242_242_000")
     assert_equal 420, evaluate("4_20")
-
     assert_equal 4.2000000, evaluate("4.2_000_000")
-    assert_equal 0b110011, evaluate("0b11_00_11")
 
     assert_raises { evaluate("345_") }
     assert_raises { evaluate("345_.232") }
     assert_raises { evaluate("345.232_") }
+  end
+
+  def test_number_separators_with_binary_literals
+    assert_equal 0b110011, evaluate("0b11_00_11")
+    assert_raises { evaluate("0b_") }
+    assert_raises { evaluate("0b1_") }
+  end
+
+  def test_number_separators_with_octal_literals
+    assert_equal 0o7001216, evaluate("0o7_001_216")
+    assert_raises { evaluate("0o_") }
+    assert_raises { evaluate("0o6_") }
   end
 
   def test_signing
