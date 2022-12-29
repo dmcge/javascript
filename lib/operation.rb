@@ -14,7 +14,7 @@ class Operation
   end
 
   private
-    OPERATOR_PRECEDENCE = { "**" => 4, "/" => 3, "*" => 3, "+" => 2, "-" => 2, "<" => 1, "<=" => 1, ">" => 1, ">=" => 1 }
+    OPERATOR_PRECEDENCE = { "**" => 4, "/" => 3, "*" => 3, "%" => 3, "+" => 2, "-" => 2, "<" => 1, "<=" => 1, ">" => 1, ">=" => 1 }
 
     def precedence_of(operator)
       OPERATOR_PRECEDENCE[operator]

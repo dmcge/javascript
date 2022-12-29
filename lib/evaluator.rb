@@ -31,6 +31,7 @@ class Evaluator
       when "**" then left_hand_side ** right_hand_side
       when "/"  then left_hand_side / right_hand_side
       when "*"  then left_hand_side * right_hand_side
+      when "%"  then left_hand_side % right_hand_side
       when "+"  then left_hand_side + right_hand_side
       when "-"  then left_hand_side - right_hand_side
       when ">"  then left_hand_side > right_hand_side

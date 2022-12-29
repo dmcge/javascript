@@ -114,6 +114,13 @@ class NumberTest < Minitest::Test
     refute evaluate("2 > 4")
   end
 
+  def test_modulo
+    assert_equal 1, evaluate("5 % 2")
+    assert_equal 0, evaluate("6 % 3")
+    assert_equal 8, evaluate("10 * 2 % 3 * 4")
+    assert_equal 7, evaluate("10 * 2 % 3 * 4 - 1")
+  end
+
   private
     def evaluate(script)
       Evaluator.new(script).evaluate
