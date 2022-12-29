@@ -73,7 +73,12 @@ class NumberTest < Minitest::Test
     assert_equal 2028, evaluate("8710193678316 / 4294967297")
     assert_equal BigDecimal("0.333333333333333333333333333333333333"), evaluate("1/3")
     assert_equal BigDecimal("0.1666666666666666666666666666666666665"), evaluate("1/3/2")
+  end
+
+  def test_dividing_by_zero
     assert_equal Float::INFINITY, evaluate("24 / 0")
+    assert_equal -Float::INFINITY, evaluate("24 / -0")
+    assert_equal -Float::INFINITY, evaluate("-24 / 0")
   end
 
   def test_exponentiation
