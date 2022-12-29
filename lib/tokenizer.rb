@@ -50,17 +50,17 @@ class Tokenizer
       skip_whitespace
 
       case
-      when scanner.scan(/[0-9]/)  then tokenize_number
-      when scanner.scan(".")      then tokenize_dot
-      when scanner.scan("+")      then tokenize_plus
-      when scanner.scan("-")      then tokenize_minus
-      when scanner.scan("**")     then tokenize_operator
-      when scanner.scan("*")      then tokenize_operator
-      when scanner.scan("/")      then tokenize_operator
-      when scanner.scan(">=")     then tokenize_operator
-      when scanner.scan(">")      then tokenize_operator
-      when scanner.scan("<=")     then tokenize_operator
-      when scanner.scan("<")      then tokenize_operator
+      when scanner.scan(/[[:digit:]]/) then tokenize_number
+      when scanner.scan(".")           then tokenize_dot
+      when scanner.scan("+")           then tokenize_plus
+      when scanner.scan("-")           then tokenize_minus
+      when scanner.scan("**")          then tokenize_operator
+      when scanner.scan("*")           then tokenize_operator
+      when scanner.scan("/")           then tokenize_operator
+      when scanner.scan(">=")          then tokenize_operator
+      when scanner.scan(">")           then tokenize_operator
+      when scanner.scan("<=")          then tokenize_operator
+      when scanner.scan("<")           then tokenize_operator
       end
     end
 
