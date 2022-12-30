@@ -1,5 +1,4 @@
 class Number
-  attr_accessor :type
   attr_reader :digits
 
   def initialize
@@ -9,5 +8,13 @@ class Number
 
   def value
     digits.join.to_f
+  end
+
+  def integer?
+    !digits.include?(".")
+  end
+
+  def exponential?
+    digits.include?("e")
   end
 end

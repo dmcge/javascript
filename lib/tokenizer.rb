@@ -158,7 +158,7 @@ class Tokenizer
       scanner.unscan
       tokenize_decimal_number(number)
 
-      if number.type == :integer && number.digits.all? { |digit| digit.match?(/[0-#{base - 1}]/) }
+      if number.integer? && number.digits.all? { |digit| digit.match?(/[0-#{base - 1}]/) }
         number.digits.replace(number.digits.join.to_i(base).to_s.chars)
       else
         number
@@ -170,9 +170,8 @@ class Tokenizer
         case
         when scanner.scan(/\d/)
           number.digits << scanner.matched
-        when scanner.scan(/\.\d/)
-          if number.type == :integer
-            number.type = :decimal
+        when scanner.scan(/\.(?=\d)/)
+          if number.integer?
             number.digits << scanner.matched
           else
             raise "Syntax error!"
@@ -180,10 +179,9 @@ class Tokenizer
         when scanner.scan("_")
           raise "Syntax error!" unless number.digits.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
         when scanner.scan(/e/i)
-          if number.type == :exponential
+          if number.exponential?
             raise "Syntax error!"
           else
-            number.type = :exponential
             number.digits << scanner.matched
           end
         when scanner.scan(/[a-z]/i)
