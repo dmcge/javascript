@@ -183,6 +183,7 @@ class Tokenizer
           if number.type == :exponential
             raise "Parse error!"
           else
+            number.type = :exponential
             number.digits << scanner.matched
           end
         else
