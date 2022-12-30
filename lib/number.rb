@@ -2,7 +2,6 @@ class Number
   attr_reader :digits
 
   def initialize
-    @type = :integer
     @digits = []
   end
 

@@ -113,91 +113,89 @@ class Tokenizer
 
     def tokenize_number
       scanner.unscan
+      scanner.skip("+")
 
+      case
+      when scanner.scan(/0x/i)     then tokenize_nondecimal_number(base: 16, pattern: /\h/)
+      when scanner.scan(/0b/i)     then tokenize_nondecimal_number(base: 2)
+      when scanner.scan(/0o/i)     then tokenize_nondecimal_number(base: 8)
+      when scanner.scan(/0(?=\d)/) then tokenize_potentially_nondecimal_number(base: 8)
+      else                              tokenize_decimal_number
+      end
+    end
+
+    def tokenize_nondecimal_number(base:, pattern: /[0-#{base - 1}]/)
       Number.new.tap do |number|
-        scanner.skip("+")
+        digits = []
 
-        case
-        when scanner.scan(/0x/i) then tokenize_nondecimal_number(number, base: 16, pattern: /\h/)
-        when scanner.scan(/0b/i) then tokenize_nondecimal_number(number, base: 2)
-        when scanner.scan(/0o/i) then tokenize_nondecimal_number(number, base: 8)
-        when scanner.scan("0")   then tokenize_potentially_nondecimal_number(number, base: 8)
-        else                          tokenize_decimal_number(number)
+        loop do
+          case
+          when scanner.scan(/[[:alnum:]]/)
+            if scanner.matched.match?(pattern)
+              digits << scanner.matched
+            else
+              raise "Syntax error!"
+            end
+          when scanner.scan("_")
+            raise "Syntax error!" unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
+          else
+            if digits.empty?
+              raise "Syntax error!"
+            else
+              break
+            end
+          end
+        end
+
+        number.digits.concat(digits.join.to_i(base).to_s.chars)
+      end
+    end
+
+    def tokenize_potentially_nondecimal_number(base:)
+      tokenize_decimal_number.tap do |number|
+        if number.integer? && number.digits.all? { |digit| digit.match?(/[0-#{base - 1}]/) }
+          number.digits.replace(number.digits.join.to_i(base).to_s.chars)
         end
       end
     end
 
-    def tokenize_nondecimal_number(number, base:, pattern: /[0-#{base - 1}]/)
-      digits = []
-
-      loop do
-        case
-        when scanner.scan(/[[:alnum:]]/)
-          if scanner.matched.match?(pattern)
-            digits << scanner.matched
-          else
-            raise "Syntax error!"
-          end
-        when scanner.scan("_")
-          raise "Syntax error!" unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
-        else
-          if digits.empty?
-            raise "Syntax error!"
-          else
-            break
-          end
-        end
-      end
-
-      number.digits.concat(digits.join.to_i(base).to_s.chars)
-    end
-
-    def tokenize_potentially_nondecimal_number(number, base:)
-      scanner.unscan
-      tokenize_decimal_number(number)
-
-      if number.integer? && number.digits.all? { |digit| digit.match?(/[0-#{base - 1}]/) }
-        number.digits.replace(number.digits.join.to_i(base).to_s.chars)
-      else
-        number
-      end
-    end
-
-    def tokenize_decimal_number(number)
-      loop do
-        case
-        when scanner.scan(/\d/)
-          number.digits << scanner.matched
-        when scanner.scan(".")
-          if number.integer? && scanner.peek(1).match?(/\d/)
+    def tokenize_decimal_number
+      Number.new.tap do |number|
+        loop do
+          case
+          when scanner.scan(/\d/)
             number.digits << scanner.matched
-          else
+          when scanner.scan(".")
+            if number.integer? && scanner.peek(1).match?(/\d/)
+              number.digits << scanner.matched
+            else
+              raise "Syntax error!"
+            end
+          when scanner.scan("_")
+            raise "Syntax error!" unless number.digits.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
+          when scanner.scan(/e/i)
+            if number.exponential?
+              raise "Syntax error!"
+            else
+              number.digits << scanner.matched
+            end
+          when scanner.scan(/[a-z]/i)
             raise "Syntax error!"
-          end
-        when scanner.scan("_")
-          raise "Syntax error!" unless number.digits.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
-        when scanner.scan(/e/i)
-          if number.exponential?
-            raise "Syntax error!"
+          when scanner.scan(/[+-]/)
+            if number.digits.last.casecmp?("e")
+              number.digits << scanner.matched
+            elsif number.digits.last == "."
+              raise "Syntax error!"
+            else
+              scanner.unscan
+              break
+            end
           else
-            number.digits << scanner.matched
-          end
-        when scanner.scan(/[a-z]/i)
-          raise "Syntax error!"
-        when scanner.scan(/[+-]/)
-          if number.digits.last.casecmp?("e")
-            number.digits << scanner.matched
-          elsif number.digits.last == "."
-            raise "Syntax error!"
-          else
-            scanner.unscan
-            break
-          end
-        else
-          if number.digits.last == "."
-            raise "Syntax error!"
-          else
-            break
+            if number.digits.last == "."
+              raise "Syntax error!"
+            else
+              break
+            end
           end
         end
       end
