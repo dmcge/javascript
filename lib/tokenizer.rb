@@ -57,7 +57,7 @@ class Tokenizer
       when scanner.scan("**")          then tokenize_operator
       when scanner.scan("*")           then tokenize_operator
       when scanner.scan("/")           then tokenize_operator
-        when scanner.scan(">>>")         then tokenize_operator
+      when scanner.scan(">>>")         then tokenize_operator
       when scanner.scan(">>")          then tokenize_operator
       when scanner.scan("<<")          then tokenize_operator
       when scanner.scan(">=")          then tokenize_operator
@@ -121,8 +121,7 @@ class Tokenizer
       end
     end
 
-    def tokenize_nondecimal_number(number, base:, pattern: nil)
-      pattern ||= /[0-#{base - 1}]/
+    def tokenize_nondecimal_number(number, base:, pattern: /[0-#{base - 1}]/)
       digits = ""
 
       loop do
@@ -136,15 +135,15 @@ class Tokenizer
         when scanner.scan("_")
           raise "Syntax error!" unless scanner.peek(1).match?(pattern)
         else
-          break
+          if digits.empty?
+            raise "Syntax error!"
+          else
+            break
+          end
         end
       end
 
-      if digits.empty?
-        raise "Syntax error!"
-      else
-        number.digits << digits.to_i(base).to_s
-      end
+      number.digits << digits.to_i(base).to_s
     end
 
     def tokenize_potentially_nondecimal_number(number, base:)
