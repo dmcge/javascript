@@ -50,29 +50,29 @@ class Tokenizer
 
       case
       # FIXME: this isn’t at all correct
-      when scanner.scan(/;|\R|\z/)     then tokenize_semicolon
+      when scanner.scan(/;|\R|\z/) then tokenize_semicolon
 
-      when scanner.scan(/[[:digit:]]/) then tokenize_number
+      when scanner.scan(/\d/)      then tokenize_number
 
       # FIXME: a dot isn’t an operator
-      when scanner.scan(".")           then tokenize_number_or_operator
+      when scanner.scan(".")       then tokenize_number_or_operator
 
       # FIXME: this probably isn’t right
-      when scanner.scan("+")           then tokenize_number_or_operator
-      when scanner.scan("-")           then tokenize_number_or_operator
+      when scanner.scan("+")       then tokenize_number_or_operator
+      when scanner.scan("-")       then tokenize_number_or_operator
 
       # FIXME: we don’t need all these lines when they all do the same thing
-      when scanner.scan("**")          then tokenize_operator
-      when scanner.scan("*")           then tokenize_operator
-      when scanner.scan("/")           then tokenize_operator
-      when scanner.scan(">>>")         then tokenize_operator
-      when scanner.scan(">>")          then tokenize_operator
-      when scanner.scan("<<")          then tokenize_operator
-      when scanner.scan(">=")          then tokenize_operator
-      when scanner.scan(">")           then tokenize_operator
-      when scanner.scan("<=")          then tokenize_operator
-      when scanner.scan("<")           then tokenize_operator
-      when scanner.scan("%")           then tokenize_operator
+      when scanner.scan("**")      then tokenize_operator
+      when scanner.scan("*")       then tokenize_operator
+      when scanner.scan("/")       then tokenize_operator
+      when scanner.scan(">>>")     then tokenize_operator
+      when scanner.scan(">>")      then tokenize_operator
+      when scanner.scan("<<")      then tokenize_operator
+      when scanner.scan(">=")      then tokenize_operator
+      when scanner.scan(">")       then tokenize_operator
+      when scanner.scan("<=")      then tokenize_operator
+      when scanner.scan("<")       then tokenize_operator
+      when scanner.scan("%")       then tokenize_operator
       else
         raise "Unrecognised character: #{scanner.getch.inspect}"
       end
@@ -120,7 +120,7 @@ class Tokenizer
         end
 
         case
-        when scanner.scan(/0x/i) then tokenize_nondecimal_number(number, base: 16, pattern: /[[:xdigit:]]/)
+        when scanner.scan(/0x/i) then tokenize_nondecimal_number(number, base: 16, pattern: /\h/)
         when scanner.scan(/0b/i) then tokenize_nondecimal_number(number, base: 2)
         when scanner.scan(/0o/i) then tokenize_nondecimal_number(number, base: 8)
         when scanner.scan("0")   then tokenize_potentially_nondecimal_number(number, base: 8)
@@ -141,7 +141,7 @@ class Tokenizer
             raise "Syntax error!"
           end
         when scanner.scan("_")
-          raise "Syntax error!" unless scanner.peek(1).match?(pattern)
+          raise "Syntax error!" unless digits.chars.last&.match?(pattern) && scanner.peek(1).match?(pattern)
         else
           if digits.empty?
             raise "Syntax error!"
@@ -168,24 +168,26 @@ class Tokenizer
     def tokenize_decimal_number(number)
       loop do
         case
-        when scanner.scan(/[[:digit:]]+/)
+        when scanner.scan(/\d+/)
           number.digits << scanner.matched
-        when scanner.scan(/\.[[:digit:]]/)
+        when scanner.scan(/\.\d/)
           if number.type == :integer
             number.type = :decimal
             number.digits << scanner.matched
           else
-            raise "Parse error!"
+            raise "Syntax error!"
           end
         when scanner.scan("_")
-          raise "Parse error!" unless scanner.peek(1).match?(/[[:digit:]]/)
+          raise "Syntax error!" unless number.digits.chars.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
         when scanner.scan(/e/i)
           if number.type == :exponential
-            raise "Parse error!"
+            raise "Syntax error!"
           else
             number.type = :exponential
             number.digits << scanner.matched
           end
+        when scanner.scan(/[a-z]/i)
+          raise "Syntax error!"
         when scanner.scan(/[+-]/)
           if number.digits.chars.last.casecmp?("e")
             number.digits << scanner.matched
@@ -200,7 +202,7 @@ class Tokenizer
     end
 
     def tokenize_number_or_operator
-      if follows_word_boundary? && scanner.peek(1).match?(/[[:digit:]]/)
+      if follows_word_boundary? && scanner.peek(1).match?(/\d/)
         tokenize_number
       else
         tokenize_operator
