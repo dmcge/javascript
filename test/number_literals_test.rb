@@ -85,24 +85,36 @@ class NumberLiteralsTest < Javascript::Test
     assert_raises { evaluate("0x6_") }
   end
 
-  def test_signed_literals
+  def test_exponential_literals
+    assert_equal 3e18, evaluate("3e18")
+    assert_equal 1.43e9, evaluate("1.43E9")
+
+    assert_raises { evaluate("3e18e1") }
+    assert_raises { evaluate("3e18E1") }
+  end
+
+
+  def test_signed_integer_literals
     assert_equal 78247, evaluate("+78247")
-    assert_equal 782.2424, evaluate("+782.2424")
     assert_equal -2424, evaluate("-2424")
-    assert_equal -2.8092, evaluate("-2.8092")
 
     assert_equal 0, evaluate("-1+1")
     assert_equal 0, evaluate("+1-1")
     assert_equal 0, evaluate("1 + -1")
-
-    # assert_equal 1, evaluate("2 +\n-1")
-    # assert_equal 1, evaluate("2 +\n -1")
   end
 
-  def test_exponential_literals
-    assert_equal 3e18, evaluate("3e18")
-    assert_equal 1.43e9, evaluate("1.43E9")
-    assert_raises { evaluate("3e18e1") }
-    assert_raises { evaluate("3e18E1") }
+  def test_signed_decimal_literals
+    assert_equal 782.2424, evaluate("+782.2424")
+    assert_equal -2.8092, evaluate("-2.8092")
+  end
+
+  def test_signed_exponents
+    assert_equal 4.5e110, evaluate("4.5e+110")
+    assert_equal 4.5e-110, evaluate("4.5e-110")
+
+    assert_equal 202, evaluate("2e+2+2")
+    assert_equal 198, evaluate("2e+2-2")
+    assert_equal 2.04, evaluate("4e-2+2")
+    assert_equal -1.96, evaluate("4e-2-2")
   end
 end

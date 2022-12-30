@@ -186,6 +186,13 @@ class Tokenizer
             number.type = :exponential
             number.digits << scanner.matched
           end
+        when scanner.scan(/[+-]/)
+          if number.digits.chars.last.casecmp?("e")
+            number.digits << scanner.matched
+          else
+            scanner.unscan
+            break
+          end
         else
           break
         end
