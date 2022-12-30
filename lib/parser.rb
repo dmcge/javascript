@@ -27,6 +27,8 @@ class Parser
       case
       when tokenizer.consume(Number)              then parse_number
       when tokenizer.consume(Operation::Operator) then parse_operation
+      else
+        raise "Can’t parse #{tokenizer.next_token.inspect}"
       end
     end
 
