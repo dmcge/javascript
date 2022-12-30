@@ -52,16 +52,12 @@ class Tokenizer
       # FIXME: this isn’t at all correct
       when scanner.scan(/;|\R|\z/) then tokenize_semicolon
 
-      when scanner.scan(/\d/)      then tokenize_number
+      when scanner.scan(/\d/)      then tokenize_numeric
+      when scanner.scan(".")       then tokenize_dot
+      when scanner.scan("+")       then tokenize_plus
 
-      # FIXME: a dot isn’t an operator
-      when scanner.scan(".")       then tokenize_number_or_operator
-
-      # FIXME: this probably isn’t right
-      when scanner.scan("+")       then tokenize_number_or_operator
+        # FIXME: we don’t need all these lines when they all do the same thing
       when scanner.scan("-")       then tokenize_operator
-
-      # FIXME: we don’t need all these lines when they all do the same thing
       when scanner.scan("**")      then tokenize_operator
       when scanner.scan("*")       then tokenize_operator
       when scanner.scan("/")       then tokenize_operator
@@ -111,10 +107,12 @@ class Tokenizer
       ";"
     end
 
-    def tokenize_number
+    def tokenize_numeric
       scanner.unscan
-      scanner.skip("+")
+      tokenize_number
+    end
 
+    def tokenize_number
       case
       when scanner.scan(/0x/i)     then tokenize_nondecimal_number(base: 16, pattern: /\h/)
       when scanner.scan(/0b/i)     then tokenize_nondecimal_number(base: 2)
@@ -201,7 +199,15 @@ class Tokenizer
       end
     end
 
-    def tokenize_number_or_operator
+    def tokenize_dot
+      if follows_word_boundary? && scanner.peek(1).match?(/\d/)
+        tokenize_numeric
+      else
+        "."
+      end
+    end
+
+    def tokenize_plus
       if follows_word_boundary? && scanner.peek(1).match?(/\d/)
         tokenize_number
       else
