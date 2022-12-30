@@ -1,4 +1,3 @@
-require "bigdecimal"
 require_relative "tokenizer"
 require_relative "operation"
 
