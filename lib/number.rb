@@ -8,6 +8,6 @@ class Number
   end
 
   def value
-    BigDecimal(digits)
+    BigDecimal(digits).to_f
   end
 end

@@ -1,6 +1,26 @@
 require "test_helper"
 
 class NumberTest < Javascript::Test
+  def test_minimum
+    assert_equal -1.7976931348623157e308, evaluate("-1.7976931348623157e308")
+    assert_equal -1.7976931348623157e308, evaluate("-1.7976931348623158e308")
+    assert_equal -Float::INFINITY, evaluate("-1.7976931348623159e308")
+    assert_equal -Float::INFINITY, evaluate("-1.1897314953572317650857593266280070162e4932")
+  end
+
+  def test_maximum
+    assert_equal 1.7976931348623157e308, evaluate("1.7976931348623157e308")
+    assert_equal 1.7976931348623157e308, evaluate("1.7976931348623158e308")
+    assert_equal Float::INFINITY, evaluate("1.7976931348623159e308")
+    assert_equal Float::INFINITY, evaluate("1.1897314953572317650857593266280070162e4932")
+  end
+
+  def test_maximum_precision
+    assert_equal 1.0000000000000002, evaluate("1.0000000000000002")
+    assert_equal 1, evaluate("1.0000000000000001")
+  end
+
+
   def test_addition
     assert_equal 4, evaluate("1 + 1 + 2")
     assert_equal 4294967297, evaluate("2274827419 + 2020139878")
@@ -25,8 +45,8 @@ class NumberTest < Javascript::Test
     assert_equal 5, evaluate("10 / 2")
     assert_equal 0.75, evaluate("3 / 4")
     assert_equal 2028, evaluate("8710193678316 / 4294967297")
-    assert_equal BigDecimal("0.333333333333333333333333333333333333"), evaluate("1/3")
-    assert_equal BigDecimal("0.1666666666666666666666666666666666665"), evaluate("1/3/2")
+    assert_equal 0.3333333333333333, evaluate("1/3")
+    assert_equal 0.16666666666666666, evaluate("1/3/2")
   end
 
   def test_dividing_by_zero
