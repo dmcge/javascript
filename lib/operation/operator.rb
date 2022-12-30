@@ -15,5 +15,9 @@ class Operation
       when "<<", ">>", ">>>"    then 1
       end
     end
+
+    def unary?
+      value == "+" || value == "-"
+    end
   end
 end

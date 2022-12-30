@@ -15,6 +15,7 @@ class NumberLiteralsTest < Javascript::Test
     assert_equal 0.728472, evaluate(".728472")
     assert_equal 0.7, evaluate("00.7000")
 
+    assert_raises { evaluate("3.1.") }
     assert_raises { evaluate("3.1.415") }
     assert_raises { evaluate(".1.415") }
     assert_raises { evaluate("3.4a2") }

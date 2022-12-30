@@ -59,7 +59,7 @@ class Tokenizer
 
       # FIXME: this probably isn’t right
       when scanner.scan("+")       then tokenize_number_or_operator
-      when scanner.scan("-")       then tokenize_number_or_operator
+      when scanner.scan("-")       then tokenize_operator
 
       # FIXME: we don’t need all these lines when they all do the same thing
       when scanner.scan("**")      then tokenize_operator
@@ -115,9 +115,7 @@ class Tokenizer
       scanner.unscan
 
       Number.new.tap do |number|
-        if scanner.scan(/\-|\+/)
-          number.digits << scanner.matched
-        end
+        scanner.skip("+")
 
         case
         when scanner.scan(/0x/i) then tokenize_nondecimal_number(number, base: 16, pattern: /\h/)
@@ -170,8 +168,8 @@ class Tokenizer
         case
         when scanner.scan(/\d/)
           number.digits << scanner.matched
-        when scanner.scan(/\.(?=\d)/)
-          if number.integer?
+        when scanner.scan(".")
+          if number.integer? && scanner.peek(1).match?(/\d/)
             number.digits << scanner.matched
           else
             raise "Syntax error!"
@@ -189,12 +187,18 @@ class Tokenizer
         when scanner.scan(/[+-]/)
           if number.digits.last.casecmp?("e")
             number.digits << scanner.matched
+          elsif number.digits.last == "."
+            raise "Syntax error!"
           else
             scanner.unscan
             break
           end
         else
-          break
+          if number.digits.last == "."
+            raise "Syntax error!"
+          else
+            break
+          end
         end
       end
     end

@@ -1,5 +1,6 @@
 require_relative "tokenizer"
-require_relative "operation"
+require_relative "binary_operation"
+require_relative "unary_operation"
 
 class Parser
   def initialize(javascript)
@@ -38,12 +39,30 @@ class Parser
     end
 
     def parse_operation
+      if @expressions.none?
+        parse_unary_operation
+      else
+        parse_binary_operation
+      end
+    end
+
+    def parse_unary_operation
+      operator = tokenizer.current_token
+
+      if operator.unary? && operand = parse_expression
+        UnaryOperation.new(operator, operand)
+      else
+        raise "Syntax error!"
+      end
+    end
+
+    def parse_binary_operation
       operator        = tokenizer.current_token
       left_hand_side  = @expressions.pop
       right_hand_side = parse_expression
 
       if left_hand_side && right_hand_side
-        Operation.new(operator, left_hand_side, right_hand_side)
+        BinaryOperation.new(operator, left_hand_side, right_hand_side)
       else
         raise "Syntax error!"
       end
