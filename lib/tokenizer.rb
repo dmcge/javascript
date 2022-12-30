@@ -49,11 +49,19 @@ class Tokenizer
       skip_comments
 
       case
+      # FIXME: this isn’t at all correct
       when scanner.scan(/;|\R|\z/)     then tokenize_semicolon
+
       when scanner.scan(/[[:digit:]]/) then tokenize_number
+
+      # FIXME: a dot isn’t an operator
       when scanner.scan(".")           then tokenize_number_or_operator
+
+      # FIXME: this probably isn’t right
       when scanner.scan("+")           then tokenize_number_or_operator
       when scanner.scan("-")           then tokenize_number_or_operator
+
+      # FIXME: we don’t need all these lines when they all do the same thing
       when scanner.scan("**")          then tokenize_operator
       when scanner.scan("*")           then tokenize_operator
       when scanner.scan("/")           then tokenize_operator
