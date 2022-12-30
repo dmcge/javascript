@@ -130,7 +130,7 @@ class Tokenizer
     end
 
     def tokenize_nondecimal_number(number, base:, pattern: /[0-#{base - 1}]/)
-      digits = ""
+      digits = []
 
       loop do
         case
@@ -141,7 +141,7 @@ class Tokenizer
             raise "Syntax error!"
           end
         when scanner.scan("_")
-          raise "Syntax error!" unless digits.chars.last&.match?(pattern) && scanner.peek(1).match?(pattern)
+          raise "Syntax error!" unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
         else
           if digits.empty?
             raise "Syntax error!"
@@ -151,15 +151,15 @@ class Tokenizer
         end
       end
 
-      number.digits << digits.to_i(base).to_s
+      number.digits.concat(digits.join.to_i(base).to_s.chars)
     end
 
     def tokenize_potentially_nondecimal_number(number, base:)
       scanner.unscan
       tokenize_decimal_number(number)
 
-      if number.type == :integer && number.digits.match?(/^[0-#{base - 1}]+$/)
-        number.digits.replace number.digits.to_i(base).to_s
+      if number.type == :integer && number.digits.all? { |digit| digit.match?(/[0-#{base - 1}]/) }
+        number.digits.replace(number.digits.join.to_i(base).to_s.chars)
       else
         number
       end
@@ -168,7 +168,7 @@ class Tokenizer
     def tokenize_decimal_number(number)
       loop do
         case
-        when scanner.scan(/\d+/)
+        when scanner.scan(/\d/)
           number.digits << scanner.matched
         when scanner.scan(/\.\d/)
           if number.type == :integer
@@ -178,7 +178,7 @@ class Tokenizer
             raise "Syntax error!"
           end
         when scanner.scan("_")
-          raise "Syntax error!" unless number.digits.chars.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
+          raise "Syntax error!" unless number.digits.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
         when scanner.scan(/e/i)
           if number.type == :exponential
             raise "Syntax error!"
@@ -189,7 +189,7 @@ class Tokenizer
         when scanner.scan(/[a-z]/i)
           raise "Syntax error!"
         when scanner.scan(/[+-]/)
-          if number.digits.chars.last.casecmp?("e")
+          if number.digits.last.casecmp?("e")
             number.digits << scanner.matched
           else
             scanner.unscan

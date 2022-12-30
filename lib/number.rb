@@ -4,10 +4,10 @@ class Number
 
   def initialize
     @type = :integer
-    @digits = ""
+    @digits = []
   end
 
   def value
-    digits.to_f
+    digits.join.to_f
   end
 end
