@@ -1,6 +1,9 @@
 require "strscan"
 require_relative "number"
 
+Semicolon = Class.new
+Dot = Class.new
+
 class Tokenizer
   def initialize(javascript)
     @scanner = StringScanner.new(javascript)
@@ -104,7 +107,7 @@ class Tokenizer
 
 
     def tokenize_semicolon
-      ";"
+      Semicolon.new
     end
 
     def tokenize_numeric
@@ -203,7 +206,7 @@ class Tokenizer
       if follows_word_boundary? && scanner.peek(1).match?(/\d/)
         tokenize_numeric
       else
-        "."
+        Dot.new
       end
     end
 

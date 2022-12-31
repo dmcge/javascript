@@ -19,7 +19,7 @@ class Parser
 
     def parse_statement
       @expressions = []
-      @expressions << parse_expression until tokenizer.finished? || tokenizer.consume(";")
+      @expressions << parse_expression until tokenizer.finished? || tokenizer.consume(Semicolon)
       @expressions
     end
 
