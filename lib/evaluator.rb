@@ -26,14 +26,14 @@ class Evaluator
     end
 
     def evaluate_number(number)
-      number.value
+      number
     end
 
     def evaluate_unary_operation(operation)
       value = evaluate_expression(operation.operand)
 
       case operation.operator.value
-      when "-" then -value.to_f
+      when "-" then Number.new(-value.to_f)
       end
     end
 
@@ -48,9 +48,8 @@ class Evaluator
       when "%"  then left_hand_side % right_hand_side
       when "+"
         if left_hand_side.is_a?(String) || right_hand_side.is_a?(String)
-          # FIXME: we shouldn’t be massaging the strings here
-          left_hand_side  = left_hand_side.to_s.tr("0", "").delete_suffix(".")
-          right_hand_side = right_hand_side.to_s.tr("0", "").delete_suffix(".")
+          left_hand_side  = left_hand_side.to_s
+          right_hand_side = right_hand_side.to_s
         end
 
         left_hand_side + right_hand_side

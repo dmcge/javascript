@@ -1,19 +1,41 @@
+require_relative "number/literal"
+require_relative "number/non_decimal_literal"
+
 class Number
-  attr_reader :digits
+  include Comparable
 
-  def initialize
-    @digits = []
+  attr_reader :value
+
+  def initialize(value)
+    @value = value.to_f
   end
 
-  def value
-    digits.join.to_f
-  end
+  def <=>(other) = value <=> other.to_f
+
+  def +(other)  = Number.new(value + other.to_f)
+  def -(other)  = Number.new(value - other.to_f)
+  def *(other)  = Number.new(value * other.to_f)
+  def /(other)  = Number.new(value / other.to_f)
+  def %(other)  = Number.new(value % other.to_f)
+  def **(other) = Number.new(value ** other.to_f)
 
   def integer?
-    !digits.include?(".")
+    value.to_i == value
   end
 
-  def exponential?
-    digits.include?("e")
+  def to_s
+    if integer?
+      value.to_i.to_s
+    else
+      value.to_s
+    end
+  end
+
+  def to_i
+    value.to_i
+  end
+
+  def to_f
+    value
   end
 end

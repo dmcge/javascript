@@ -172,6 +172,10 @@ class Tokenizer
     end
 
     def tokenize_number
+      Number.new(tokenize_number_literal.value)
+    end
+
+    def tokenize_number_literal
       case
       when scanner.scan(/0x/i)     then tokenize_nondecimal_number(base: 16, pattern: /\h/)
       when scanner.scan(/0b/i)     then tokenize_nondecimal_number(base: 2)
@@ -182,29 +186,25 @@ class Tokenizer
     end
 
     def tokenize_nondecimal_number(base:, pattern: /[0-#{base - 1}]/)
-      Number.new.tap do |number|
-        digits = []
-
+      Number::NonDecimalLiteral.new(base: base).tap do |number|
         loop do
           case
           when scanner.scan(/[[:alnum:]]/)
             if scanner.matched.match?(pattern)
-              digits << scanner.matched
+              number.digits << scanner.matched
             else
               raise "Syntax error!"
             end
           when scanner.scan("_")
-            raise "Syntax error!" unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
+            raise "Syntax error!" unless number.digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
           else
-            if digits.empty?
+            if number.digits.none?
               raise "Syntax error!"
             else
               break
             end
           end
         end
-
-        number.digits.concat(digits.join.to_i(base).to_s.chars)
       end
     end
 
@@ -217,7 +217,7 @@ class Tokenizer
     end
 
     def tokenize_decimal_number
-      Number.new.tap do |number|
+      Number::Literal.new.tap do |number|
         loop do
           case
           when scanner.scan(/\d/)
