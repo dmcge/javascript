@@ -25,11 +25,16 @@ class Parser
 
     def parse_expression
       case
+      when tokenizer.consume(String)              then parse_string
       when tokenizer.consume(Number)              then parse_number
       when tokenizer.consume(Operation::Operator) then parse_operation
       else
         raise "Can’t parse #{tokenizer.next_token.inspect}"
       end
+    end
+
+    def parse_string
+      tokenizer.current_token
     end
 
     def parse_number

@@ -55,6 +55,7 @@ class Tokenizer
       # FIXME: this isn’t at all correct
       when scanner.scan(/;|\R|\z/) then tokenize_semicolon
 
+      when scanner.scan(/"|'/)     then tokenize_string
       when scanner.scan(/\d/)      then tokenize_numeric
       when scanner.scan(".")       then tokenize_dot
       when scanner.scan("+")       then tokenize_plus
@@ -108,6 +109,61 @@ class Tokenizer
 
     def tokenize_semicolon
       Semicolon.new
+    end
+
+    def tokenize_string
+      quotation_mark = scanner.matched
+
+      String.new(encoding: "UTF-8").tap do |string|
+        loop do
+          case
+          when scanner.scan(quotation_mark)
+            break
+          when scanner.eos?
+            raise "Syntax error!"
+          when scanner.scan(/\R/)
+            raise "Syntax error!"
+          when scanner.scan("\\")
+            string << consume_escaped_character unless scanner.scan(/\R/)
+          else
+            string << scanner.getch
+          end
+        end
+      end
+    end
+
+    def consume_escaped_character
+      case
+      when scanner.scan(/n|t|b|f|v/)
+        %("\\#{scanner.matched}").undump
+      when scanner.scan("u")
+        if scanner.scan(/(\h{4})/) || scanner.scan(/{(\h{1,6})}/)
+          scanner.captures[0].to_i(16).chr("UTF-8")
+        else
+          raise "Syntax error!"
+        end
+      when scanner.scan("x")
+        if scanner.scan(/\h{2}/)
+          scanner.matched.to_i(16).chr("UTF-8")
+        else
+          raise "Syntax error!"
+        end
+      when scanner.scan(/[0-7]/)
+        octal = ""
+
+        octal << scanner.matched
+
+        case scanner.matched.to_i
+        when 0..3
+          octal << scanner.scan(/[0-7]{1,2}/).to_s
+        when 4..7
+          octal << scanner.scan(/[0-7]{1}/).to_s
+        end
+
+        octal.to_i(8).chr("UTF-8")
+      else
+        scanner.getch
+      end
     end
 
     def tokenize_numeric

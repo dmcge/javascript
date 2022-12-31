@@ -14,10 +14,15 @@ class Evaluator
   private
     def evaluate_expression(expression)
       case expression
+      when String          then evaluate_string(expression)
       when Number          then evaluate_number(expression)
       when UnaryOperation  then evaluate_unary_operation(expression)
       when BinaryOperation then evaluate_binary_operation(expression)
       end
+    end
+
+    def evaluate_string(string)
+      string
     end
 
     def evaluate_number(number)
