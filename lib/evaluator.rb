@@ -46,7 +46,14 @@ class Evaluator
       when "/"  then left_hand_side / right_hand_side
       when "*"  then left_hand_side * right_hand_side
       when "%"  then left_hand_side % right_hand_side
-      when "+"  then left_hand_side + right_hand_side
+      when "+"
+        if left_hand_side.is_a?(String) || right_hand_side.is_a?(String)
+          # FIXME: we shouldn’t be massaging the strings here
+          left_hand_side  = left_hand_side.to_s.tr("0", "").delete_suffix(".")
+          right_hand_side = right_hand_side.to_s.tr("0", "").delete_suffix(".")
+        end
+
+        left_hand_side + right_hand_side
       when "-"  then left_hand_side - right_hand_side
       when ">"  then left_hand_side > right_hand_side
       when ">=" then left_hand_side >= right_hand_side
