@@ -30,59 +30,13 @@ class Evaluator
     end
 
     def evaluate_unary_operation(operation)
-      value = evaluate_expression(operation.operand)
-
-      case operation.operator.value
-      when "+" then value.to_number
-      when "-" then -value.to_number
-      end
+      operation.operator.perform_unary(evaluate_expression(operation.operand))
     end
 
     def evaluate_binary_operation(operation)
       left_hand_side  = evaluate_expression(operation.left_hand_side)
       right_hand_side = evaluate_expression(operation.right_hand_side)
 
-      case operation.operator.value
-      when "**" then left_hand_side.to_number ** right_hand_side.to_number
-      when "/"  then left_hand_side.to_number /  right_hand_side.to_number
-      when "*"  then left_hand_side.to_number *  right_hand_side.to_number
-      when "%"  then left_hand_side.to_number %  right_hand_side.to_number
-      when "+"
-        if left_hand_side.is_a?(String) || right_hand_side.is_a?(String)
-          left_hand_side  = left_hand_side.to_s
-          right_hand_side = right_hand_side.to_s
-        end
-
-        left_hand_side + right_hand_side
-      when "-"   then left_hand_side.to_number - right_hand_side.to_number
-      when ">"
-        if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
-          left_hand_side > right_hand_side
-        else
-          left_hand_side.to_number > right_hand_side.to_number
-        end
-      when ">="
-        if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
-          left_hand_side >= right_hand_side
-        else
-          left_hand_side.to_number >= right_hand_side.to_number
-        end
-      when "<"
-        if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
-          left_hand_side < right_hand_side
-        else
-          left_hand_side.to_number < right_hand_side.to_number
-        end
-      when "<="
-        if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
-          left_hand_side <= right_hand_side
-        else
-          left_hand_side.to_number <= right_hand_side.to_number
-        end
-      when "-"   then left_hand_side.to_number - right_hand_side.to_number
-      when "<<"  then left_hand_side.to_number << right_hand_side.to_number
-      when ">>"  then left_hand_side.to_number >> right_hand_side.to_number
-      when ">>>" then left_hand_side.to_number.unsigned >> right_hand_side.to_number
-      end
+      operation.operator.perform_binary(left_hand_side, right_hand_side)
     end
 end

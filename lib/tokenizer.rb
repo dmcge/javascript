@@ -278,7 +278,7 @@ class Tokenizer
     end
 
     def tokenize_operator
-      Operation::Operator.new(scanner.matched)
+      Operation::Operator.for(scanner.matched)
     end
 
 
