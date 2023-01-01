@@ -36,7 +36,7 @@ class Number
   end
 
   def unsigned
-    Number.new(("%.32b" % to_i).sub(/^\.\./, "11").to_i(2))
+    Number.new(to_f % (2 ** 32))
   end
 
   def integer?
