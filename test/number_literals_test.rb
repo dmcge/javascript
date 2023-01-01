@@ -25,6 +25,7 @@ class NumberLiteralsTest < Javascript::Test
     assert_equal 3e18, evaluate("3e18")
     assert_equal 1.43e9, evaluate("1.43E9")
 
+    assert_raises { evaluate("3e") }
     assert_raises { evaluate("3e18e1") }
     assert_raises { evaluate("3e18E1") }
   end

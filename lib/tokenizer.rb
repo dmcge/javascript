@@ -231,7 +231,8 @@ class Tokenizer
           when scanner.scan("_")
             raise "Syntax error!" unless number.digits.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
           when scanner.scan(/e/i)
-            if number.exponential?
+            case
+            when number.exponential?
               raise "Syntax error!"
             else
               number.digits << scanner.matched
@@ -248,7 +249,8 @@ class Tokenizer
               break
             end
           else
-            if number.digits.last == "."
+            case number.digits.last
+            when ".", /e/i
               raise "Syntax error!"
             else
               break
