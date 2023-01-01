@@ -9,7 +9,7 @@ module Javascript
       when numeric.start_with?("+")
         String.new(delete_prefix("+")).to_number
       when numeric.start_with?("-")
-        String.new(delete_prefix("-")).to_number * -1
+        -String.new(delete_prefix("-")).to_number
       when numeric.match?(/\AInfinity\z/)
         Number.new(Float::INFINITY)
       when numeric.match?(/\s/)

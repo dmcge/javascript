@@ -43,10 +43,10 @@ class Evaluator
       right_hand_side = evaluate_expression(operation.right_hand_side)
 
       case operation.operator.value
-      when "**" then left_hand_side ** right_hand_side
-      when "/"  then left_hand_side / right_hand_side
-      when "*"  then left_hand_side * right_hand_side
-      when "%"  then left_hand_side % right_hand_side
+      when "**" then left_hand_side.to_number ** right_hand_side.to_number
+      when "/"  then left_hand_side.to_number /  right_hand_side.to_number
+      when "*"  then left_hand_side.to_number *  right_hand_side.to_number
+      when "%"  then left_hand_side.to_number %  right_hand_side.to_number
       when "+"
         if left_hand_side.is_a?(String) || right_hand_side.is_a?(String)
           left_hand_side  = left_hand_side.to_s
@@ -54,14 +54,15 @@ class Evaluator
         end
 
         left_hand_side + right_hand_side
-      when "-"   then left_hand_side - right_hand_side
+      when "-"   then left_hand_side.to_number - right_hand_side.to_number
       when ">"   then left_hand_side > right_hand_side
       when ">="  then left_hand_side >= right_hand_side
       when "<"   then left_hand_side < right_hand_side
       when "<="  then left_hand_side <= right_hand_side
-      when "<<"  then left_hand_side.to_i << (right_hand_side.to_i % 32)
-      when ">>"  then left_hand_side.to_i >> (right_hand_side.to_i % 32)
-      when ">>>" then left_hand_side.unsigned.to_i >> (right_hand_side.to_i % 32)
+      when "-"   then left_hand_side.to_number - right_hand_side.to_number
+      when "<<"  then left_hand_side.to_number << right_hand_side.to_number
+      when ">>"  then left_hand_side.to_number >> right_hand_side.to_number
+      when ">>>" then left_hand_side.to_number.unsigned >> right_hand_side.to_number
       end
     end
 end

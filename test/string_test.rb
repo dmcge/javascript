@@ -50,4 +50,54 @@ class StringTest < Javascript::Test
 
     # TODO: what about _ separators
   end
+
+  def test_subtracting
+    assert_equal 4, evaluate(%("14" - "10"))
+    assert_equal 3, evaluate(%("10" - 7))
+    assert_equal 2, evaluate(%(6 - '4'))
+
+    assert_equal Float::NAN, evaluate(%("a" - 8))
+    assert_equal Float::NAN, evaluate(%("b" - "c"))
+    assert_equal Float::NAN, evaluate(%(9 - "d"))
+  end
+
+  def test_multiplying
+    assert_equal 15, evaluate(%("3" * "5"))
+    assert_equal 24, evaluate(%("4" * 6))
+    assert_equal -35, evaluate(%(-5 * '7'))
+
+    assert_equal Float::NAN, evaluate(%("a" * 8))
+    assert_equal Float::NAN, evaluate(%("b" * "c"))
+    assert_equal Float::NAN, evaluate(%(9 * "d"))
+  end
+
+  def test_dividing
+    assert_equal 3, evaluate(%("15" / "5"))
+    assert_equal 4, evaluate(%("24" / 6))
+    assert_equal 5, evaluate(%(35 / '7'))
+
+    assert_equal Float::NAN, evaluate(%("a" / 8))
+    assert_equal Float::NAN, evaluate(%("b" / "c"))
+    assert_equal Float::NAN, evaluate(%(9 / "d"))
+  end
+
+  def test_exponentiating
+    assert_equal 243, evaluate(%("3" ** "5"))
+    assert_equal 4096, evaluate(%("4" ** 6))
+    assert_equal 78125, evaluate(%(5 ** '7'))
+
+    assert_equal Float::NAN, evaluate(%("a" ** 8))
+    assert_equal Float::NAN, evaluate(%("b" ** "c"))
+    assert_equal Float::NAN, evaluate(%(9 ** "d"))
+  end
+
+  def test_modulus
+    assert_equal 1, evaluate(%("16" % "5"))
+    assert_equal 2, evaluate(%("26" % 4))
+    assert_equal 5, evaluate(%(35 % '6'))
+
+    assert_equal Float::NAN, evaluate(%("a" % 8))
+    assert_equal Float::NAN, evaluate(%("b" % "c"))
+    assert_equal Float::NAN, evaluate(%(9 % "d"))
+  end
 end

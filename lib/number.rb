@@ -12,12 +12,12 @@ class Number
 
   def <=>(other) = value <=> other.to_f
 
-  def +(other)  = Number.new(value + other.to_f)
-  def -(other)  = Number.new(value - other.to_f)
-  def *(other)  = Number.new(value * other.to_f)
-  def /(other)  = Number.new(value / other.to_f)
-  def %(other)  = Number.new(value % other.to_f)
-  def **(other) = Number.new(value ** other.to_f)
+  def +(other)  = Number.new(value + other.value)
+  def -(other)  = Number.new(value - other.value)
+  def *(other)  = Number.new(value * other.value)
+  def /(other)  = Number.new(value / other.value)
+  def %(other)  = Number.new(value % other.value)
+  def **(other) = Number.new(value ** other.value)
 
   def ==(other)
     value.nan? && other.to_f.nan? || value == other.to_f
