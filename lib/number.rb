@@ -19,6 +19,14 @@ class Number
   def %(other)  = Number.new(value % other.value)
   def **(other) = Number.new(value ** other.value)
 
+  def <<(other)
+    Number.new(value.to_i << (other.value.to_i % 32))
+  end
+
+  def >>(other)
+    Number.new(value.to_i >> (other.value.to_i % 32))
+  end
+
   def ==(other)
     value.nan? && other.to_f.nan? || value == other.to_f
   end
