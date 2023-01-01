@@ -60,6 +60,7 @@ class StringLiteralsTest < Javascript::Test
 
   def test_special_character_escapes
     assert_equal "\n", evaluate(%("\\n"))
+    assert_equal "\r", evaluate(%("\\r"))
     assert_equal "\t", evaluate(%('\\t'))
     assert_equal "\b", evaluate(%("\\b"))
     assert_equal "\f", evaluate(%('\\f'))

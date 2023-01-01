@@ -19,6 +19,10 @@ class Number
   def %(other)  = Number.new(value % other.to_f)
   def **(other) = Number.new(value ** other.to_f)
 
+  def ==(other)
+    value.nan? && other.to_f.nan? || value == other.to_f
+  end
+
   def unsigned
     Number.new(("%.32b" % value.to_i).sub(/^\.\./, "11").to_i(2))
   end

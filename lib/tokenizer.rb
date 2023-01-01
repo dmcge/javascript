@@ -1,4 +1,5 @@
 require "strscan"
+require_relative "string"
 require_relative "number"
 
 Semicolon = Class.new
@@ -114,7 +115,7 @@ class Tokenizer
     def tokenize_string
       quotation_mark = scanner.matched
 
-      String.new(encoding: "UTF-8").tap do |string|
+      Javascript::String.new(String.new(encoding: "UTF-8").tap do |string|
         loop do
           case
           when scanner.scan(quotation_mark)
@@ -129,7 +130,7 @@ class Tokenizer
             string << scanner.getch
           end
         end
-      end
+      end)
     end
 
     def consume_escaped_character

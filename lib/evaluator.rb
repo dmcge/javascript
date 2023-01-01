@@ -33,6 +33,7 @@ class Evaluator
       value = evaluate_expression(operation.operand)
 
       case operation.operator.value
+      when "+" then value.to_number
       when "-" then Number.new(-value.to_f)
       end
     end
