@@ -30,6 +30,7 @@ class Number
     Number.new(to_i >> (other.unsigned.to_i % 32))
   end
 
+  # FIXME: this overrides the method further up, and isn’t correct (whereas the other method is)
   def ==(other)
     value.nan? && other.to_f.nan? || value == other.to_f
   end
