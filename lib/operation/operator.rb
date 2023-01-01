@@ -16,6 +16,8 @@ class Operation
       ">>>" => { class: "ShiftRightUnsigned", precedence: 1              }
     }
 
+    SYMBOLS = ALL.keys
+
     attr_reader :precedence, :unary
     alias unary? unary
 

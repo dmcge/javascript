@@ -1,5 +1,6 @@
 require "strscan"
 require_relative "string"
+require_relative "operation/operator"
 require_relative "number"
 
 Semicolon = Class.new
@@ -48,6 +49,8 @@ class Tokenizer
       tokens << Token.new(starting_position: scanner.pos, type: advance_to_next_token, ending_position: scanner.pos)
     end
 
+    OPERATORS = Regexp.union(Operation::Operator::SYMBOLS.sort_by(&:length).reverse)
+
     def advance_to_next_token
       skip_whitespace
       skip_comments
@@ -60,20 +63,7 @@ class Tokenizer
       when scanner.scan(/\d/)      then tokenize_numeric
       when scanner.scan(".")       then tokenize_dot
       when scanner.scan("+")       then tokenize_plus
-
-        # FIXME: we don’t need all these lines when they all do the same thing
-      when scanner.scan("-")       then tokenize_operator
-      when scanner.scan("**")      then tokenize_operator
-      when scanner.scan("*")       then tokenize_operator
-      when scanner.scan("/")       then tokenize_operator
-      when scanner.scan(">>>")     then tokenize_operator
-      when scanner.scan(">>")      then tokenize_operator
-      when scanner.scan("<<")      then tokenize_operator
-      when scanner.scan(">=")      then tokenize_operator
-      when scanner.scan(">")       then tokenize_operator
-      when scanner.scan("<=")      then tokenize_operator
-      when scanner.scan("<")       then tokenize_operator
-      when scanner.scan("%")       then tokenize_operator
+      when scanner.scan(OPERATORS) then tokenize_operator
       else
         raise "Unrecognised character: #{scanner.getch.inspect}"
       end
