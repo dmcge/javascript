@@ -134,7 +134,7 @@ class Tokenizer
 
     def consume_escaped_character
       case
-      when scanner.scan(/n|t|b|f|v/)
+      when scanner.scan(/n|r|t|b|f|v/)
         %("\\#{scanner.matched}").undump
       when scanner.scan("u")
         if scanner.scan(/(\h{4})/) || scanner.scan(/{(\h{1,6})}/)
