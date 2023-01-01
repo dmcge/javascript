@@ -124,4 +124,46 @@ class StringTest < Javascript::Test
 
     assert_equal 0, evaluate(%("Infinity" >>> 12))
   end
+
+  def test_less_than
+    assert evaluate(%("a" < 'b'))
+    assert evaluate(%("abc" < 'abcdef'))
+    refute evaluate(%("zyx" < 'xyz'))
+
+    assert evaluate(%("-Infinity" < 0))
+    refute evaluate(%("x" < 3))
+    refute evaluate(%(3 < "x"))
+  end
+
+  def test_greater_than
+    assert evaluate(%("z" > 'x'))
+    assert evaluate(%("zyxw" > 'zyx'))
+    refute evaluate(%("abc" > 'def'))
+
+    assert evaluate(%("Infinity" > 0))
+    refute evaluate(%("x" > 3))
+    refute evaluate(%(3 > "x"))
+  end
+
+  def test_less_than_or_equal
+    assert evaluate(%("a" <= 'b'))
+    assert evaluate(%("abc" <= 'abc'))
+    refute evaluate(%("zyx" <= 'xyz'))
+
+    assert evaluate(%("0" <= 0))
+    assert evaluate(%("-Infinity" <= 0))
+    refute evaluate(%("x" <= 3))
+    refute evaluate(%(3 <= "x"))
+  end
+
+  def test_greater_than_or_equal
+    assert evaluate(%("z" >= 'x'))
+    assert evaluate(%("zyxw" >= 'zyx'))
+    refute evaluate(%("abc" >= 'def'))
+
+    assert evaluate(%(0 >= 0))
+    assert evaluate(%("Infinity" >= 0))
+    refute evaluate(%("x" >= 3))
+    refute evaluate(%(3 >= "x"))
+  end
 end

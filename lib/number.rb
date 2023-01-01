@@ -2,15 +2,11 @@ require_relative "number/literal"
 require_relative "number/non_decimal_literal"
 
 class Number
-  include Comparable
-
   attr_reader :value
 
   def initialize(value)
     @value = value.to_f
   end
-
-  def <=>(other) = value <=> other.to_f
 
   def +(other)  = Number.new(value + other.value)
   def -(other)  = Number.new(value - other.value)
@@ -18,6 +14,13 @@ class Number
   def /(other)  = Number.new(value / other.value)
   def %(other)  = Number.new(value % other.value)
   def **(other) = Number.new(value ** other.value)
+
+  def <=>(other) = value <=> other.to_f
+  def ==(other)  = (self <=> other)&.zero?
+  def <(other)   = (self <=> other)&.negative?
+  def >(other)   = (self <=> other)&.positive?
+  def <=(other)  = self < other || self == other
+  def >=(other)  = self > other || self == other
 
   def <<(other)
     Number.new(to_i << (other.unsigned.to_i % 32))

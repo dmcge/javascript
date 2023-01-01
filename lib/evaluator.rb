@@ -55,10 +55,30 @@ class Evaluator
 
         left_hand_side + right_hand_side
       when "-"   then left_hand_side.to_number - right_hand_side.to_number
-      when ">"   then left_hand_side > right_hand_side
-      when ">="  then left_hand_side >= right_hand_side
-      when "<"   then left_hand_side < right_hand_side
-      when "<="  then left_hand_side <= right_hand_side
+      when ">"
+        if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
+          left_hand_side > right_hand_side
+        else
+          left_hand_side.to_number > right_hand_side.to_number
+        end
+      when ">="
+        if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
+          left_hand_side >= right_hand_side
+        else
+          left_hand_side.to_number >= right_hand_side.to_number
+        end
+      when "<"
+        if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
+          left_hand_side < right_hand_side
+        else
+          left_hand_side.to_number < right_hand_side.to_number
+        end
+      when "<="
+        if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
+          left_hand_side <= right_hand_side
+        else
+          left_hand_side.to_number <= right_hand_side.to_number
+        end
       when "-"   then left_hand_side.to_number - right_hand_side.to_number
       when "<<"  then left_hand_side.to_number << right_hand_side.to_number
       when ">>"  then left_hand_side.to_number >> right_hand_side.to_number
