@@ -20,11 +20,11 @@ class Number
   def **(other) = Number.new(value ** other.value)
 
   def <<(other)
-    Number.new(value.to_i << (other.value.to_i % 32))
+    Number.new(to_i << (other.unsigned.to_i % 32))
   end
 
   def >>(other)
-    Number.new(value.to_i >> (other.value.to_i % 32))
+    Number.new(to_i >> (other.unsigned.to_i % 32))
   end
 
   def ==(other)
@@ -36,11 +36,19 @@ class Number
   end
 
   def unsigned
-    Number.new(("%.32b" % value.to_i).sub(/^\.\./, "11").to_i(2))
+    Number.new(("%.32b" % to_i).sub(/^\.\./, "11").to_i(2))
   end
 
   def integer?
-    value.to_i == value
+    to_i == value
+  end
+
+  def nan?
+    value.nan?
+  end
+
+  def infinity?
+    value.infinite?
   end
 
   def to_number
@@ -56,7 +64,11 @@ class Number
   end
 
   def to_i
-    value.to_i
+    if nan? || infinity?
+      0
+    else
+      value.to_i
+    end
   end
 
   def to_f

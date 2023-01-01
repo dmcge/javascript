@@ -100,4 +100,28 @@ class StringTest < Javascript::Test
     assert_equal Float::NAN, evaluate(%("b" % "c"))
     assert_equal Float::NAN, evaluate(%(9 % "d"))
   end
+
+  def test_shifting_left
+    assert_equal 0b100100, evaluate(%("0b1001" << "2"))
+    assert_equal 0b101010, evaluate(%("0b10101" << 33))
+    assert_equal -0b11101000, evaluate(%(-0b11101 << "3"))
+
+    assert_equal 0, evaluate(%("Infinity" << 12))
+  end
+
+  def test_shifting_right
+    assert_equal 0b10, evaluate(%("0b1001" >> "2"))
+    assert_equal 0b1010, evaluate(%("0b10101" >> 33))
+    assert_equal -0b100, evaluate(%(-0b11101 >> "3"))
+
+    assert_equal 0, evaluate(%("Infinity" >> 12))
+  end
+
+  def test_shifting_right_unsigned
+    assert_equal 0b10, evaluate(%("0b1001" >>> "2"))
+    assert_equal 0, evaluate(%("0b10101" >>> -33))
+    assert_equal 0b11111111111111111111111111100, evaluate(%(-0b11101 >>> "3"))
+
+    assert_equal 0, evaluate(%("Infinity" >>> 12))
+  end
 end
