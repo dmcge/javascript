@@ -34,7 +34,7 @@ class Evaluator
 
       case operation.operator.value
       when "+" then value.to_number
-      when "-" then Number.new(-value.to_f)
+      when "-" then -value.to_number
       end
     end
 

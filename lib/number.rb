@@ -23,12 +23,20 @@ class Number
     value.nan? && other.to_f.nan? || value == other.to_f
   end
 
+  def -@
+    Number.new(-value)
+  end
+
   def unsigned
     Number.new(("%.32b" % value.to_i).sub(/^\.\./, "11").to_i(2))
   end
 
   def integer?
     value.to_i == value
+  end
+
+  def to_number
+    self
   end
 
   def to_s
