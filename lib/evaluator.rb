@@ -18,6 +18,7 @@ class Evaluator
       when Number          then evaluate_number(expression)
       when UnaryOperation  then evaluate_unary_operation(expression)
       when BinaryOperation then evaluate_binary_operation(expression)
+      when Parenthetical   then evaluate_parenthetical(expression)
       end
     end
 
@@ -38,5 +39,9 @@ class Evaluator
       right_hand_side = evaluate_expression(operation.right_hand_side)
 
       operation.operator.perform_binary(left_hand_side, right_hand_side)
+    end
+
+    def evaluate_parenthetical(parenthetical)
+      evaluate_expression(parenthetical.expression)
     end
 end

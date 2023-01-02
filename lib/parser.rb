@@ -2,6 +2,8 @@ require_relative "tokenizer"
 require_relative "binary_operation"
 require_relative "unary_operation"
 
+Parenthetical = Struct.new(:expression)
+
 class Parser
   def initialize(javascript)
     @tokenizer = Tokenizer.new(javascript)
@@ -19,7 +21,12 @@ class Parser
 
     def parse_statement
       @expressions = []
-      @expressions << parse_expression until tokenizer.finished? || tokenizer.consume(Semicolon)
+
+      until tokenizer.finished? || tokenizer.consume(Semicolon)
+        expression = parse_expression
+        @expressions << expression
+      end
+
       @expressions
     end
 
@@ -28,6 +35,7 @@ class Parser
       when tokenizer.consume(String)              then parse_string
       when tokenizer.consume(Number)              then parse_number
       when tokenizer.consume(Operation::Operator) then parse_operation
+      when tokenizer.consume(OpeningBracket)      then parse_parenthetical
       else
         raise "Can’t parse #{tokenizer.next_token.inspect}"
       end
@@ -72,6 +80,32 @@ class Parser
         BinaryOperation.new(operator, left_hand_side, right_hand_side)
       else
         raise "Syntax error!"
+      end
+    end
+
+    def parse_parenthetical
+      previous_expressions = @expressions.dup
+
+      Parenthetical.new.tap do |parenthetical|
+        loop do
+          case
+          when tokenizer.consume(Semicolon)
+            raise "Semicolon!"
+          when tokenizer.consume(ClosingBracket)
+            break
+          else
+            @expressions << parse_expression
+          end
+        end
+
+        expressions = @expressions - previous_expressions
+        @expressions = previous_expressions
+
+        if expressions.one?
+          parenthetical.expression = expressions.first
+        else
+          raise "Syntax error!"
+        end
       end
     end
 end

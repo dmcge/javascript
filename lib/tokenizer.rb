@@ -4,6 +4,8 @@ require_relative "operation/operator"
 require_relative "number"
 
 Semicolon = Class.new
+OpeningBracket = Class.new
+ClosingBracket = Class.new
 Dot = Class.new
 
 class Tokenizer
@@ -61,6 +63,8 @@ class Tokenizer
 
       when scanner.scan(/"|'/)     then tokenize_string
       when scanner.scan(/\d/)      then tokenize_numeric
+      when scanner.scan("(")       then tokenize_opening_bracket
+      when scanner.scan(")")       then tokenize_closing_bracket
       when scanner.scan(".")       then tokenize_dot
       when scanner.scan("+")       then tokenize_plus
       when scanner.scan(OPERATORS) then tokenize_operator
@@ -249,6 +253,14 @@ class Tokenizer
           end
         end
       end
+    end
+
+    def tokenize_opening_bracket
+      OpeningBracket.new
+    end
+
+    def tokenize_closing_bracket
+      ClosingBracket.new
     end
 
     def tokenize_dot
