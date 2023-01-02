@@ -105,7 +105,7 @@ class Tokenizer
     def tokenize_string
       quotation_mark = scanner.matched
 
-      Javascript::String.new(String.new(encoding: "UTF-8").tap do |string|
+      Javascript::String.new.tap do |string|
         loop do
           case
           when scanner.scan(quotation_mark)
@@ -120,7 +120,7 @@ class Tokenizer
             string << scanner.getch
           end
         end
-      end)
+      end
     end
 
     def consume_escaped_character
