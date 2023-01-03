@@ -1,6 +1,4 @@
 class Number
-  attr_reader :value
-
   def initialize(value)
     @value = value.to_f
   end
@@ -79,6 +77,8 @@ class Number
   end
 
   protected
+    attr_reader :value
+
     def to_i32
       [to_i].pack("l").unpack1("l")
     end
