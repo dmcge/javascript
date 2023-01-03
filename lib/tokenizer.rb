@@ -218,6 +218,7 @@ class Tokenizer
           when scanner.scan(/\d/)
             number.digits << scanner.matched
           when scanner.scan(".")
+            # TODO: probably won’t need to raise when dot parsing is implemented proper
             if number.integer? && scanner.peek(1).match?(/\d/)
               number.digits << scanner.matched
             else
@@ -232,11 +233,13 @@ class Tokenizer
             else
               number.digits << scanner.matched
             end
+          # TODO: probably won’t need this case eventually
           when scanner.scan(/[a-z]/i)
             raise "Syntax error!"
           when scanner.scan(/[+-]/)
             if number.digits.last.casecmp?("e")
               number.digits << scanner.matched
+            # TODO: probably won’t need this when dot parsing is implemented proper
             elsif number.digits.last == "."
               raise "Syntax error!"
             else
@@ -244,6 +247,7 @@ class Tokenizer
               break
             end
           else
+            # TODO: just break when dot parsing is implemented proper
             case number.digits.last
             when ".", /e/i
               raise "Syntax error!"
