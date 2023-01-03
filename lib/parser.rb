@@ -22,7 +22,7 @@ class Parser
     def parse_statement
       @expressions = []
 
-      until tokenizer.finished? || tokenizer.consume(Semicolon)
+      until tokenizer.finished? || tokenizer.consume(:semicolon)
         expression = parse_expression
         @expressions << expression
       end
@@ -32,22 +32,22 @@ class Parser
 
     def parse_expression
       case
-      when tokenizer.consume(String)              then parse_string
-      when tokenizer.consume(Number)              then parse_number
-      when tokenizer.consume(Operation::Operator) then parse_operation
-      when tokenizer.consume(OpeningBracket)      then parse_parenthetical
+      when tokenizer.consume(:string)          then parse_string
+      when tokenizer.consume(:number)          then parse_number
+      when tokenizer.consume(:operator)        then parse_operation
+      when tokenizer.consume(:opening_bracket) then parse_parenthetical
       else
         raise "Can’t parse #{tokenizer.next_token.inspect}"
       end
     end
 
     def parse_string
-      tokenizer.current_token
+      Javascript::String.new(tokenizer.current_token.literal)
     end
 
     def parse_number
       if @expressions.empty? || @expressions.last.is_a?(Operation)
-        tokenizer.current_token
+        Number.new(tokenizer.current_token.literal.value)
       else
         raise "Syntax error!"
       end
@@ -62,7 +62,7 @@ class Parser
     end
 
     def parse_unary_operation
-      operator = tokenizer.current_token
+      operator = Operation::Operator.for(tokenizer.current_token.text)
 
       if operator.unary? && operand = parse_expression
         UnaryOperation.new(operator, operand)
@@ -72,7 +72,7 @@ class Parser
     end
 
     def parse_binary_operation
-      operator        = tokenizer.current_token
+      operator        = Operation::Operator.for(tokenizer.current_token.text)
       left_hand_side  = @expressions.pop
       right_hand_side = parse_expression
 
@@ -89,9 +89,9 @@ class Parser
       Parenthetical.new.tap do |parenthetical|
         loop do
           case
-          when tokenizer.consume(Semicolon)
+          when tokenizer.consume(:semicolon)
             raise "Semicolon!"
-          when tokenizer.consume(ClosingBracket)
+          when tokenizer.consume(:closing_bracket)
             break
           else
             @expressions << parse_expression

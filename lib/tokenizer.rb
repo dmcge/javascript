@@ -3,19 +3,20 @@ require_relative "string"
 require_relative "operation/operator"
 require_relative "number"
 
-Semicolon = Class.new
-OpeningBracket = Class.new
-ClosingBracket = Class.new
-Dot = Class.new
-
 class Tokenizer
+  Token = Struct.new(:type, :raw, :literal, :starting_position, :ending_position, keyword_init: true) do
+    def text
+      raw.strip
+    end
+  end
+
   def initialize(javascript)
     @scanner = StringScanner.new(javascript)
     @tokens  = []
   end
 
   def current_token
-    @tokens.last&.type
+    @tokens.last
   end
 
   def next_token
@@ -26,7 +27,7 @@ class Tokenizer
   def consume(type)
     token = next_token
 
-    if type === token
+    if type === token.type
       token
     else
       rewind
@@ -43,12 +44,17 @@ class Tokenizer
   end
 
   private
-    Token = Struct.new(:type, :starting_position, :ending_position, keyword_init: true)
-
     attr_reader :scanner, :tokens
 
     def advance
-      tokens << Token.new(starting_position: scanner.pos, type: advance_to_next_token, ending_position: scanner.pos)
+      Token.new.tap do |token|
+        token.starting_position   = scanner.pos
+        token.type, token.literal = advance_to_next_token
+        token.ending_position     = scanner.pos
+        token.raw                 = scanner.string[token.starting_position...token.ending_position]
+
+        tokens << token
+      end
     end
 
     OPERATORS = Regexp.union(Operation::Operator::SYMBOLS.sort_by(&:length).reverse)
@@ -59,15 +65,15 @@ class Tokenizer
 
       case
       # FIXME: this isn’t at all correct
-      when scanner.scan(/;|\R|\z/) then tokenize_semicolon
+      when scanner.scan(/;|\R|\z/) then :semicolon
 
       when scanner.scan(/"|'/)     then tokenize_string
       when scanner.scan(/\d/)      then tokenize_numeric
-      when scanner.scan("(")       then tokenize_opening_bracket
-      when scanner.scan(")")       then tokenize_closing_bracket
+      when scanner.scan("(")       then :opening_bracket
+      when scanner.scan(")")       then :closing_bracket
       when scanner.scan(".")       then tokenize_dot
       when scanner.scan("+")       then tokenize_plus
-      when scanner.scan(OPERATORS) then tokenize_operator
+      when scanner.scan(OPERATORS) then :operator
       else
         raise "Unrecognised character: #{scanner.getch.inspect}"
       end
@@ -102,29 +108,26 @@ class Tokenizer
     end
 
 
-    def tokenize_semicolon
-      Semicolon.new
-    end
-
     def tokenize_string
       quotation_mark = scanner.matched
+      string = String.new
 
-      Javascript::String.new.tap do |string|
-        loop do
-          case
-          when scanner.scan(quotation_mark)
-            break
-          when scanner.eos?
-            raise "Syntax error!"
-          when scanner.scan(/\R/)
-            raise "Syntax error!"
-          when scanner.scan("\\")
-            string << consume_escaped_character unless scanner.scan(/\R/)
-          else
-            string << scanner.getch
-          end
+      loop do
+        case
+        when scanner.scan(quotation_mark)
+          break
+        when scanner.eos?
+          raise "Syntax error!"
+        when scanner.scan(/\R/)
+          raise "Syntax error!"
+        when scanner.scan("\\")
+          string << consume_escaped_character unless scanner.scan(/\R/)
+        else
+          string << scanner.getch
         end
       end
+
+      [ :string, string ]
     end
 
     def consume_escaped_character
@@ -167,7 +170,7 @@ class Tokenizer
     end
 
     def tokenize_number
-      Number.new(tokenize_number_literal.value)
+      [ :number, tokenize_number_literal ]
     end
 
     def tokenize_number_literal
@@ -259,19 +262,11 @@ class Tokenizer
       end
     end
 
-    def tokenize_opening_bracket
-      OpeningBracket.new
-    end
-
-    def tokenize_closing_bracket
-      ClosingBracket.new
-    end
-
     def tokenize_dot
       if follows_word_boundary? && scanner.peek(1).match?(/\d/)
         tokenize_numeric
       else
-        Dot.new
+        :dot
       end
     end
 
@@ -279,12 +274,8 @@ class Tokenizer
       if follows_word_boundary? && scanner.peek(1).match?(/\d/)
         tokenize_number
       else
-        tokenize_operator
+        :operator
       end
-    end
-
-    def tokenize_operator
-      Operation::Operator.for(scanner.matched)
     end
 
 

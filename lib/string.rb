@@ -14,8 +14,8 @@ module Javascript
         Number.new(Float::INFINITY)
       when numeric.match?(/\s/)
         Number.new(Float::NAN)
-      when number_token = (Tokenizer.new(numeric).consume(Number) rescue nil)
-        number_token
+      when number_token = (Tokenizer.new(numeric).consume(:number) rescue nil)
+        Number.new(number_token.literal.value)
       else
         Number.new(Float::NAN)
       end
