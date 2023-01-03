@@ -23,11 +23,11 @@ class Number
   def >=(other)  = self > other || self == other
 
   def <<(other)
-    Number.new(to_i << (other.unsigned.to_i % 32))
+    Number.new(Number.new(to_i32 << other.to_ui32 % 32).to_i32)
   end
 
   def >>(other)
-    Number.new(to_i >> (other.unsigned.to_i % 32))
+    Number.new(Number.new(to_i32 >> other.to_ui32 % 32).to_i32)
   end
 
   # FIXME: this overrides the method further up, and isn’t correct (whereas the other method is)
@@ -40,7 +40,9 @@ class Number
   end
 
   def unsigned
-    Number.new(to_f % (2 ** 32))
+    Number.new(to_ui32).tap do |number|
+      number.define_singleton_method(:to_i32) { number.to_ui32 }
+    end
   end
 
   def integer?
@@ -78,4 +80,13 @@ class Number
   def to_f
     value
   end
+
+  protected
+    def to_i32
+      [to_i].pack("l").unpack1("l")
+    end
+
+    def to_ui32
+      [to_i].pack("L").unpack1("L")
+    end
 end
