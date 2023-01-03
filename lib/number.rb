@@ -1,6 +1,3 @@
-require_relative "number/literal"
-require_relative "number/non_decimal_literal"
-
 class Number
   attr_reader :value
 

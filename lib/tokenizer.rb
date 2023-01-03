@@ -184,82 +184,88 @@ class Tokenizer
     end
 
     def tokenize_nondecimal_number(base:, pattern: /[0-#{base - 1}]/)
-      Number::NonDecimalLiteral.new(base: base).tap do |number|
-        loop do
-          case
-          when scanner.scan(/[[:alnum:]]/)
-            if scanner.matched.match?(pattern)
-              number.digits << scanner.matched
-            else
-              raise "Syntax error!"
-            end
-          when scanner.scan("_")
-            raise "Syntax error!" unless number.digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
+      digits = []
+
+      loop do
+        case
+        when scanner.scan(/[[:alnum:]]/)
+          if scanner.matched.match?(pattern)
+            digits << scanner.matched
           else
-            if number.digits.none?
-              raise "Syntax error!"
-            else
-              break
-            end
+            raise "Syntax error!"
+          end
+        when scanner.scan("_")
+          raise "Syntax error!" unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
+        else
+          if digits.none?
+            raise "Syntax error!"
+          else
+            break
           end
         end
       end
+
+      digits.join.to_i(base).to_f
     end
 
     def tokenize_potentially_nondecimal_number(base:)
-      tokenize_decimal_number.tap do |number|
-        if number.integer? && number.digits.all? { |digit| digit.match?(/[0-#{base - 1}]/) }
-          number.digits.replace(number.digits.join.to_i(base).to_s.chars)
-        end
+      decimal = tokenize_decimal_number
+
+      if decimal.to_i == decimal
+        Integer(decimal.to_i.to_s, base, exception: false) || decimal
+      else
+        decimal
       end
     end
 
     def tokenize_decimal_number
-      Number::Literal.new.tap do |number|
-        loop do
-          case
-          when scanner.scan(/\d/)
-            number.digits << scanner.matched
-          when scanner.scan(".")
-            # TODO: probably won’t need to raise when dot parsing is implemented proper
-            if number.integer? && scanner.peek(1).match?(/\d/)
-              number.digits << scanner.matched
-            else
-              raise "Syntax error!"
-            end
-          when scanner.scan("_")
-            raise "Syntax error!" unless number.digits.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
-          when scanner.scan(/e/i)
-            case
-            when number.exponential?
-              raise "Syntax error!"
-            else
-              number.digits << scanner.matched
-            end
-          # TODO: probably won’t need this case eventually
-          when scanner.scan(/[a-z]/i)
-            raise "Syntax error!"
-          when scanner.scan(/[+-]/)
-            if number.digits.last.casecmp?("e")
-              number.digits << scanner.matched
-            # TODO: probably won’t need this when dot parsing is implemented proper
-            elsif number.digits.last == "."
-              raise "Syntax error!"
-            else
-              scanner.unscan
-              break
-            end
+      digits = []
+
+      loop do
+        case
+        when scanner.scan(/\d/)
+          digits << scanner.matched
+        when scanner.scan(".")
+          # TODO: probably won’t need to raise when dot parsing is implemented proper
+          if !digits.include?(".") && scanner.peek(1).match?(/\d/)
+            digits << scanner.matched
           else
-            # TODO: just break when dot parsing is implemented proper
-            case number.digits.last
-            when ".", /e/i
-              raise "Syntax error!"
-            else
-              break
-            end
+            raise "Syntax error!"
+          end
+        when scanner.scan("_")
+          raise "Syntax error!" unless digits.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
+        when scanner.scan(/e/i)
+          case
+          when digits.include?("e") || digits.include?("E")
+            raise "Syntax error!"
+          else
+            digits << scanner.matched
+          end
+        # TODO: probably won’t need this case eventually
+        when scanner.scan(/[a-z]/i)
+          raise "Syntax error!"
+        when scanner.scan(/[+-]/)
+          if digits.last.casecmp?("e")
+            digits << scanner.matched
+          # TODO: probably won’t need this when dot parsing is implemented proper
+          elsif digits.last == "."
+            raise "Syntax error!"
+          else
+            scanner.unscan
+            break
+          end
+        else
+          # TODO: just break when dot parsing is implemented proper
+          case digits.last
+          when ".", /e/i
+            raise "Syntax error!"
+          else
+            break
           end
         end
       end
+
+      digits.join.to_f
     end
 
     def tokenize_dot

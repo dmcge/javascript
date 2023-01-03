@@ -47,7 +47,7 @@ class Parser
 
     def parse_number
       if @expressions.empty? || @expressions.last.is_a?(Operation)
-        Number.new(tokenizer.current_token.literal.value)
+        Number.new(tokenizer.current_token.literal)
       else
         raise "Syntax error!"
       end
