@@ -1,5 +1,3 @@
-require_relative "operation/operator"
-
 class UnaryOperation
   attr_reader :operator, :operand
 

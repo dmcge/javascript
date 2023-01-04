@@ -62,7 +62,7 @@ class Parser
     end
 
     def parse_unary_operation
-      operator = Operation::Operator.for(tokenizer.current_token.text)
+      operator = Operator.for(tokenizer.current_token.text)
 
       if operator.unary? && operand = parse_expression
         UnaryOperation.new(operator, operand)
@@ -72,7 +72,7 @@ class Parser
     end
 
     def parse_binary_operation
-      operator        = Operation::Operator.for(tokenizer.current_token.text)
+      operator        = Operator.for(tokenizer.current_token.text)
       left_hand_side  = @expressions.pop
       right_hand_side = parse_expression
 

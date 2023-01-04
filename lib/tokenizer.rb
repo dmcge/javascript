@@ -1,6 +1,6 @@
 require "strscan"
 require_relative "string"
-require_relative "operation/operator"
+require_relative "operator"
 require_relative "number"
 
 class Tokenizer
@@ -57,7 +57,7 @@ class Tokenizer
       end
     end
 
-    OPERATORS = Regexp.union(Operation::Operator::SYMBOLS.sort_by(&:length).reverse)
+    OPERATORS = Regexp.union(Operator::SYMBOLS.sort_by(&:length).reverse)
 
     def advance_to_next_token
       skip_whitespace

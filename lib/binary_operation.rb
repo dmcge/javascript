@@ -1,5 +1,3 @@
-require_relative "operation/operator"
-
 class BinaryOperation
   attr_reader :operator, :left_hand_side, :right_hand_side
 
