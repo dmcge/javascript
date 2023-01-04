@@ -1,12 +1,12 @@
 require "minitest/autorun"
-require "evaluator"
+require "interpreter"
 
 module Javascript
   class Test < Minitest::Test
     private
 
     def evaluate(script)
-      Evaluator.new(script).evaluate
+      Interpreter.new(script).evaluate
     end
   end
 end

@@ -1,6 +1,6 @@
 require_relative "parser"
 
-class Evaluator
+class Interpreter
   def initialize(script)
     @expressions = Parser.new(script).parse
   end
