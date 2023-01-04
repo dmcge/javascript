@@ -6,4 +6,10 @@ class SyntaxTest < Javascript::Test
     assert_equal 4, evaluate("3\n4")
     assert_raises { evaluate("5 6") }
   end
+
+  def test_empty_parentheticals
+    assert_raises { evaluate("()") }
+    assert_raises { evaluate("() * 7") }
+    assert_raises { evaluate("3 / ()") }
+  end
 end

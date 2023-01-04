@@ -84,6 +84,8 @@ class Parser
     end
 
     def parse_parenthetical
+      raise "Syntax error!" if tokenizer.consume(:closing_bracket)
+
       previous_expressions = @expressions.dup
 
       Parenthetical.new.tap do |parenthetical|
