@@ -83,6 +83,7 @@ class Tokenizer
       when scanner.scan(/"|'/)     then tokenize_string
       when scanner.scan(/\d/)      then tokenize_numeric
       when scanner.scan("if")      then :if
+      when scanner.scan("else")    then :else
       when scanner.scan("(")       then :opening_bracket
       when scanner.scan(")")       then :closing_bracket
       when scanner.scan("{")       then :opening_brace

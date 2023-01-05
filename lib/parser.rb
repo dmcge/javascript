@@ -3,7 +3,7 @@ require_relative "binary_operation"
 require_relative "unary_operation"
 
 Parenthetical = Struct.new(:expression)
-If = Struct.new(:condition, :consequent)
+If = Struct.new(:condition, :consequent, :alternative)
 
 class Parser
   def initialize(javascript)
@@ -59,6 +59,10 @@ class Parser
       If.new.tap do |if_statement|
         if_statement.condition  = parse_condition
         if_statement.consequent = parse_branch
+
+        if tokenizer.consume(:else)
+          if_statement.alternative = parse_branch
+        end
       end
     end
 

@@ -16,4 +16,24 @@ class IfTest < Javascript::Test
       }
     JS
   end
+
+  def test_else_true
+    assert_equal "phew!", evaluate(<<~JS)
+      if (0 > 5) {
+        "lies!"
+      } else {
+        "phew!"
+      }
+    JS
+  end
+
+  def test_else_false
+    assert_equal "yes", evaluate(<<~JS)
+      if (0 < 5) {
+        "yes"
+      } else {
+        "no"
+      }
+    JS
+  end
 end
