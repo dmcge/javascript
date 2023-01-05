@@ -35,6 +35,19 @@ class Tokenizer
     end
   end
 
+  def until(type)
+    loop do
+      case
+      when consume(type)
+        break
+      when finished?
+        raise "Syntax error!"
+      else
+        yield
+      end
+    end
+  end
+
   def rewind
     scanner.pos = tokens.pop.starting_position
   end

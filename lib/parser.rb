@@ -76,17 +76,9 @@ class Parser
 
       previous_expressions = @expressions.dup
 
-      loop do
-        case
-        when tokenizer.consume(:closing_brace)
-          tokenizer.consume(:semicolon) # FIXME
-          break
-        when tokenizer.finished?
-          raise "Syntax error!"
-        else
-          @expressions << parse_expression
-          tokenizer.consume(:semicolon) # FIXME
-        end
+      tokenizer.until(:closing_brace) do
+        @expressions << parse_expression
+        tokenizer.consume(:semicolon) # FIXME
       end
 
       branch = @expressions - previous_expressions
@@ -131,12 +123,9 @@ class Parser
       previous_expressions = @expressions.dup
 
       Parenthetical.new.tap do |parenthetical|
-        loop do
-          case
-          when tokenizer.consume(:semicolon)
+        tokenizer.until(:closing_bracket) do
+          if tokenizer.consume(:semicolon)
             raise "Semicolon!"
-          when tokenizer.consume(:closing_bracket)
-            break
           else
             @expressions << parse_expression
           end
