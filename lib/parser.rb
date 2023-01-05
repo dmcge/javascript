@@ -3,6 +3,7 @@ require_relative "binary_operation"
 require_relative "unary_operation"
 
 Parenthetical = Struct.new(:expression)
+If = Struct.new(:condition, :consequent)
 
 class Parser
   def initialize(javascript)
@@ -34,6 +35,7 @@ class Parser
       case
       when tokenizer.consume(:string)          then parse_string
       when tokenizer.consume(:number)          then parse_number
+      when tokenizer.consume(:if)              then parse_if
       when tokenizer.consume(:operator)        then parse_operation
       when tokenizer.consume(:opening_bracket) then parse_parenthetical
       else
@@ -52,6 +54,46 @@ class Parser
         raise "Syntax error!"
       end
     end
+
+    def parse_if
+      If.new.tap do |if_statement|
+        if_statement.condition  = parse_condition
+        if_statement.consequent = parse_branch
+      end
+    end
+
+    def parse_condition
+      if tokenizer.consume(:opening_bracket)
+        parse_parenthetical.expression
+      else
+        raise "Syntax error!"
+      end
+    end
+
+    def parse_branch
+      tokenizer.consume(:opening_brace)
+      tokenizer.consume(:semicolon) # FIXME
+
+      previous_expressions = @expressions.dup
+
+      loop do
+        case
+        when tokenizer.consume(:closing_brace)
+          tokenizer.consume(:semicolon) # FIXME
+          break
+        when tokenizer.finished?
+          raise "Syntax error!"
+        else
+          @expressions << parse_expression
+          tokenizer.consume(:semicolon) # FIXME
+        end
+      end
+
+      branch = @expressions - previous_expressions
+      @expressions = previous_expressions
+      branch
+    end
+
 
     def parse_operation
       if @expressions.none?
