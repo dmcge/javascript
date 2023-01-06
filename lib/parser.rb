@@ -61,7 +61,11 @@ class Parser
         if_statement.consequent = parse_branch
 
         if tokenizer.consume(:else)
-          if_statement.alternative = parse_branch
+          if tokenizer.consume(:if)
+            if_statement.alternative = parse_if
+          else
+            if_statement.alternative = parse_branch
+          end
         end
       end
     end

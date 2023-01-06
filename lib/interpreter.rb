@@ -36,8 +36,12 @@ class Interpreter
         result = evaluate_expression(if_statement.consequent.shift) until if_statement.consequent.empty?
         result
       elsif if_statement.alternative
-        result = evaluate_expression(if_statement.alternative.shift) until if_statement.alternative.empty?
-        result
+        if if_statement.alternative.is_a?(If)
+          evaluate_expression(if_statement.alternative)
+        else
+          result = evaluate_expression(if_statement.alternative.shift) until if_statement.alternative.empty?
+          result
+        end
       end
     end
 
