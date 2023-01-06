@@ -12,7 +12,8 @@ class Operator
     "<="  => { class: "LessThanOrEqual",    precedence: 2              },
     "<<"  => { class: "ShiftLeft",          precedence: 1              },
     ">>"  => { class: "ShiftRight",         precedence: 1              },
-    ">>>" => { class: "ShiftRightUnsigned", precedence: 1              }
+    ">>>" => { class: "ShiftRightUnsigned", precedence: 1              },
+    "=="  => { class: "Equality",           precedence: 0              }
   }
 
   SYMBOLS = ALL.keys
@@ -147,6 +148,21 @@ class Operator
   class ShiftRightUnsigned < Operator
     def perform_binary(left_hand_side, right_hand_side)
       left_hand_side.to_number.unsigned >> right_hand_side.to_number
+    end
+  end
+
+  class Equality < Operator
+    def perform_binary(left_hand_side, right_hand_side)
+      case
+      when left_hand_side.class == right_hand_side.class
+        left_hand_side == right_hand_side
+      when left_hand_side.is_a?(Number) && right_hand_side.is_a?(String)
+        left_hand_side == right_hand_side.to_number
+      when left_hand_side.is_a?(String) && right_hand_side.is_a?(Number)
+        left_hand_side.to_number == right_hand_side
+      else
+        false
+      end
     end
   end
 end
