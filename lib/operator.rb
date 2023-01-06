@@ -13,7 +13,8 @@ class Operator
     "<<"  => { class: "ShiftLeft",          precedence: 1              },
     ">>"  => { class: "ShiftRight",         precedence: 1              },
     ">>>" => { class: "ShiftRightUnsigned", precedence: 1              },
-    "=="  => { class: "Equality",           precedence: 0              }
+    "=="  => { class: "Equality",           precedence: 0              },
+    "!="  => { class: "Inequality",         precedence: 0              }
   }
 
   SYMBOLS = ALL.keys
@@ -163,6 +164,12 @@ class Operator
       else
         false
       end
+    end
+  end
+
+  class Inequality < Operator
+    def perform_binary(left_hand_side, right_hand_side)
+      !Equality.allocate.perform_binary(left_hand_side, right_hand_side)
     end
   end
 end
