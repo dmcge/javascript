@@ -86,7 +86,7 @@ class Operator
     end
   end
 
-  class Inequality < Operator
+  class Comparison < Operator
     def perform_binary(left_hand_side, right_hand_side)
       if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
         compare(left_hand_side, right_hand_side)
@@ -101,7 +101,7 @@ class Operator
       end
   end
 
-  class GreaterThan < Inequality
+  class GreaterThan < Comparison
     private
 
     def compare(left_hand_side, right_hand_side)
@@ -109,7 +109,7 @@ class Operator
     end
   end
 
-  class GreaterThanOrEqual < Inequality
+  class GreaterThanOrEqual < Comparison
     private
 
     def compare(left_hand_side, right_hand_side)
@@ -117,7 +117,7 @@ class Operator
     end
   end
 
-  class LessThan < Inequality
+  class LessThan < Comparison
     private
 
     def compare(left_hand_side, right_hand_side)
@@ -125,7 +125,7 @@ class Operator
     end
   end
 
-  class LessThanOrEqual < Inequality
+  class LessThanOrEqual < Comparison
     private
 
     def compare(left_hand_side, right_hand_side)
