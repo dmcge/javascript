@@ -17,6 +17,7 @@ class Interpreter
       when String          then evaluate_string(expression)
       when Number          then evaluate_number(expression)
       when If              then evaluate_if(expression)
+      when Branch          then evaluate_branch(expression)
       when UnaryOperation  then evaluate_unary_operation(expression)
       when BinaryOperation then evaluate_binary_operation(expression)
       when Parenthetical   then evaluate_parenthetical(expression)
@@ -33,16 +34,15 @@ class Interpreter
 
     def evaluate_if(if_statement)
       if evaluate_expression(if_statement.condition)
-        result = evaluate_expression(if_statement.consequent.shift) until if_statement.consequent.empty?
-        result
+        evaluate_expression(if_statement.consequent)
       elsif if_statement.alternative
-        if if_statement.alternative.is_a?(If)
-          evaluate_expression(if_statement.alternative)
-        else
-          result = evaluate_expression(if_statement.alternative.shift) until if_statement.alternative.empty?
-          result
-        end
+        evaluate_expression(if_statement.alternative)
       end
+    end
+
+    def evaluate_branch(branch)
+      result = evaluate_expression(branch.expressions.shift) until branch.expressions.empty?
+      result
     end
 
     def evaluate_unary_operation(operation)

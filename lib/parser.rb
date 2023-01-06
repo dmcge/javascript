@@ -4,6 +4,7 @@ require_relative "unary_operation"
 
 Parenthetical = Struct.new(:expression)
 If = Struct.new(:condition, :consequent, :alternative)
+Branch = Struct.new(:expressions)
 
 class Parser
   def initialize(javascript)
@@ -89,9 +90,10 @@ class Parser
         tokenizer.consume(:semicolon) # FIXME
       end
 
-      branch = @expressions - previous_expressions
-      @expressions = previous_expressions
-      branch
+      Branch.new.tap do |branch|
+        branch.expressions = @expressions - previous_expressions
+        @expressions = previous_expressions
+      end
     end
 
 
