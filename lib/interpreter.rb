@@ -33,7 +33,7 @@ class Interpreter
     end
 
     def evaluate_if(if_statement)
-      if evaluate_expression(if_statement.condition)
+      if evaluate_expression(if_statement.condition).true?
         evaluate_expression(if_statement.consequent)
       elsif if_statement.alternative
         evaluate_expression(if_statement.alternative)

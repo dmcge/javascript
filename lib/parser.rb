@@ -1,6 +1,7 @@
 require_relative "tokenizer"
 require_relative "binary_operation"
 require_relative "unary_operation"
+require_relative "boolean"
 
 Parenthetical = Struct.new(:expression)
 If = Struct.new(:condition, :consequent, :alternative)

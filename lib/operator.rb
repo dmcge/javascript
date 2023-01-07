@@ -90,9 +90,9 @@ class Operator
   class Comparison < Operator
     def perform_binary(left_hand_side, right_hand_side)
       if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
-        compare(left_hand_side, right_hand_side)
+        Boolean.wrap(compare(left_hand_side, right_hand_side))
       else
-        compare(left_hand_side.to_number, right_hand_side.to_number)
+        Boolean.wrap(compare(left_hand_side.to_number, right_hand_side.to_number))
       end
     end
 
@@ -154,22 +154,33 @@ class Operator
 
   class Equality < Operator
     def perform_binary(left_hand_side, right_hand_side)
-      case
-      when left_hand_side.class == right_hand_side.class
-        left_hand_side == right_hand_side
-      when left_hand_side.is_a?(Number) && right_hand_side.is_a?(String)
-        left_hand_side == right_hand_side.to_number
-      when left_hand_side.is_a?(String) && right_hand_side.is_a?(Number)
-        left_hand_side.to_number == right_hand_side
-      else
-        false
-      end
+      Boolean.wrap(equivalent?(left_hand_side, right_hand_side))
     end
+
+    private
+      def equivalent?(left_hand_side, right_hand_side)
+        case
+        when left_hand_side.class == right_hand_side.class
+          left_hand_side == right_hand_side
+        when left_hand_side.is_a?(Number) && right_hand_side.is_a?(String)
+          left_hand_side == right_hand_side.to_number
+        when left_hand_side.is_a?(String) && right_hand_side.is_a?(Number)
+          left_hand_side.to_number == right_hand_side
+        when left_hand_side.is_a?(Boolean)
+          left_hand_side.to_number == right_hand_side
+        when right_hand_side.is_a?(Boolean)
+          left_hand_side == right_hand_side.to_number
+        else
+          false
+        end
+      end
   end
 
-  class Inequality < Operator
-    def perform_binary(left_hand_side, right_hand_side)
-      !Equality.allocate.perform_binary(left_hand_side, right_hand_side)
+  class Inequality < Equality
+    private
+
+    def equivalent?(left_hand_side, right_hand_side)
+      !super
     end
   end
 end
