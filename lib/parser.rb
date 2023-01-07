@@ -7,7 +7,7 @@ EmptyStatement = Class.new
 ExpressionStatement = Struct.new(:expression)
 Parenthetical = Struct.new(:expression)
 If = Struct.new(:condition, :consequent, :alternative)
-Branch = Struct.new(:statements)
+Block = Struct.new(:statements)
 
 class Parser
   def initialize(javascript)
@@ -27,7 +27,7 @@ class Parser
     def parse_statement
       case
       when tokenizer.consume(:if)            then parse_if_statement
-      when tokenizer.consume(:opening_brace) then parse_branch
+      when tokenizer.consume(:opening_brace) then parse_block
       when tokenizer.consume(:semicolon)     then parse_empty_statement
       else
         parse_expression_statement
@@ -50,7 +50,7 @@ class Parser
       end
     end
 
-    def parse_branch
+    def parse_block
       tokenizer.consume(:semicolon) # FIXME
 
       statements = []
@@ -59,7 +59,7 @@ class Parser
         statements << parse_statement
       end
 
-      Branch.new(statements: statements)
+      Block.new(statements: statements)
     end
 
     def parse_empty_statement

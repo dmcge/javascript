@@ -15,7 +15,7 @@ class Interpreter
     def evaluate_statement(statement)
       case statement
       when If                  then evaluate_if_statement(statement)
-      when Branch              then evaluate_branch(statement)
+      when Block               then evaluate_block(statement)
       when ExpressionStatement then evaluate_expression_statement(statement)
       end
     end
@@ -55,8 +55,8 @@ class Interpreter
       end
     end
 
-    def evaluate_branch(branch)
-      result = evaluate_statement(branch.statements.shift) until branch.statements.empty?
+    def evaluate_block(block)
+      result = evaluate_statement(block.statements.shift) until block.statements.empty?
       result
     end
 
