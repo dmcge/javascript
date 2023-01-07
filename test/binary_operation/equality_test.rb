@@ -18,4 +18,11 @@ class BinaryEqualityTest < Javascript::Test
     assert evaluate(%(5 < "3" == 0)).true?
     refute evaluate("4 > 1 == 0").true?
   end
+
+  def test_zero
+    assert evaluate("0 == 0").true?
+    assert evaluate("-0 == -0").true?
+    assert evaluate("0 == -0").true?
+    assert evaluate("-0 == 0").true?
+  end
 end
