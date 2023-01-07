@@ -53,13 +53,11 @@ class Parser
     def parse_block
       tokenizer.consume(:semicolon) # FIXME
 
-      statements = []
-
-      tokenizer.until(:closing_brace) do
-        statements << parse_statement
+      Block.new(statements: []).tap do |block|
+        tokenizer.until(:closing_brace) do
+          block.statements << parse_statement
+        end
       end
-
-      Block.new(statements: statements)
     end
 
     def parse_empty_statement
