@@ -2,7 +2,7 @@ require "test_helper"
 
 class IfTest < Javascript::Test
   def test_true_condition
-    assert_equal "true", evaluate(<<~JS)
+    assert_equal "true", evaluate(<<~JS.chomp)
       if (2 < 3) {
         "true"
       }
@@ -10,7 +10,7 @@ class IfTest < Javascript::Test
   end
 
   def test_truthy
-    assert_equal "truthy", evaluate(<<~JS)
+    assert_equal "truthy", evaluate(<<~JS.chomp)
       if (2) {
         "truthy"
       }
@@ -18,7 +18,7 @@ class IfTest < Javascript::Test
   end
 
   def test_falsey
-    assert_nil evaluate(<<~JS)
+    assert_nil evaluate(<<~JS.chomp)
       if ("") {
         "truthy"
       }
@@ -26,15 +26,15 @@ class IfTest < Javascript::Test
   end
 
   def test_false_condition
-    assert_nil evaluate(<<~JS)
-      if (0 > 5) {
+    assert_nil evaluate(<<~JS.chomp)
+      if (4 > 5) {
         "lies!"
       }
     JS
   end
 
   def test_else_true
-    assert_equal "phew!", evaluate(<<~JS)
+    assert_equal "phew!", evaluate(<<~JS.chomp)
       if (0 > 5) {
         "lies!"
       } else {
@@ -44,7 +44,7 @@ class IfTest < Javascript::Test
   end
 
   def test_else_false
-    assert_equal "yes", evaluate(<<~JS)
+    assert_equal "yes", evaluate(<<~JS.chomp)
       if (0 < 5) {
         "yes"
       } else {
@@ -54,7 +54,7 @@ class IfTest < Javascript::Test
   end
 
   def test_else_if
-    assert_equal "yes!", evaluate(<<~JS)
+    assert_equal "yes!", evaluate(<<~JS.chomp)
       if (0 > 5) {
         "lies!"
       } else if (0 > -5) {
@@ -64,7 +64,7 @@ class IfTest < Javascript::Test
   end
 
   def test_else_if_else
-    assert_equal "finally", evaluate(<<~JS)
+    assert_equal "finally", evaluate(<<~JS.chomp)
       if (0 > 5) {
         "lies"
       } else if (1 > 5) {

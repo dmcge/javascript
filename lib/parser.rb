@@ -3,9 +3,11 @@ require_relative "binary_operation"
 require_relative "unary_operation"
 require_relative "boolean"
 
+EmptyStatement = Class.new
+ExpressionStatement = Struct.new(:expression)
 Parenthetical = Struct.new(:expression)
 If = Struct.new(:condition, :consequent, :alternative)
-Branch = Struct.new(:expressions)
+Branch = Struct.new(:statements)
 
 class Parser
   def initialize(javascript)
@@ -14,8 +16,8 @@ class Parser
   end
 
   def parse
-    [].tap do |expressions|
-      expressions.concat(parse_statement) until tokenizer.finished?
+    [].tap do |statements|
+      statements << parse_statement until tokenizer.finished?
     end
   end
 
@@ -23,6 +25,48 @@ class Parser
     attr_reader :tokenizer
 
     def parse_statement
+      case
+      when tokenizer.consume(:if)            then parse_if_statement
+      when tokenizer.consume(:opening_brace) then parse_branch
+      when tokenizer.consume(:semicolon)     then parse_empty_statement
+      else
+        parse_expression_statement
+      end
+    end
+
+    def parse_if_statement
+      If.new.tap do |if_statement|
+        if_statement.condition   = parse_condition
+        if_statement.consequent  = parse_statement
+        if_statement.alternative = parse_statement if tokenizer.consume(:else)
+      end
+    end
+
+    def parse_condition
+      if tokenizer.consume(:opening_bracket)
+        parse_parenthetical.expression
+      else
+        raise "Syntax error!"
+      end
+    end
+
+    def parse_branch
+      tokenizer.consume(:semicolon) # FIXME
+
+      statements = []
+
+      tokenizer.until(:closing_brace) do
+        statements << parse_statement
+      end
+
+      Branch.new(statements: statements)
+    end
+
+    def parse_empty_statement
+      EmptyStatement.new
+    end
+
+    def parse_expression_statement
       @expressions = []
 
       until tokenizer.finished? || tokenizer.consume(:semicolon)
@@ -30,8 +74,15 @@ class Parser
         @expressions << expression
       end
 
-      @expressions
+      if @expressions.one?
+        ExpressionStatement.new(@expressions.first)
+      else
+        raise "Syntax error!"
+      end
+    ensure
+      @expressions = []
     end
+
 
     def parse_expression
       case
@@ -39,7 +90,6 @@ class Parser
       when tokenizer.consume(:number)          then parse_number
       when tokenizer.consume(:true)            then parse_true
       when tokenizer.consume(:false)           then parse_false
-      when tokenizer.consume(:if)              then parse_if
       when tokenizer.consume(:operator)        then parse_operation
       when tokenizer.consume(:opening_bracket) then parse_parenthetical
       else
@@ -66,47 +116,6 @@ class Parser
     def parse_false
       False.new
     end
-
-    def parse_if
-      If.new.tap do |if_statement|
-        if_statement.condition  = parse_condition
-        if_statement.consequent = parse_branch
-
-        if tokenizer.consume(:else)
-          if tokenizer.consume(:if)
-            if_statement.alternative = parse_if
-          else
-            if_statement.alternative = parse_branch
-          end
-        end
-      end
-    end
-
-    def parse_condition
-      if tokenizer.consume(:opening_bracket)
-        parse_parenthetical.expression
-      else
-        raise "Syntax error!"
-      end
-    end
-
-    def parse_branch
-      tokenizer.consume(:opening_brace)
-      tokenizer.consume(:semicolon) # FIXME
-
-      previous_expressions = @expressions.dup
-
-      tokenizer.until(:closing_brace) do
-        @expressions << parse_expression
-        tokenizer.consume(:semicolon) # FIXME
-      end
-
-      Branch.new.tap do |branch|
-        branch.expressions = @expressions - previous_expressions
-        @expressions = previous_expressions
-      end
-    end
-
 
     def parse_operation
       if @expressions.none?

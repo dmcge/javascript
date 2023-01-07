@@ -13,7 +13,7 @@ class CommentsTest < Javascript::Test
     assert_equal 2, evaluate("/* Magic number!*/\n2")
     assert_equal 2, evaluate("1 /* Magic number!*/\n2")
     assert_equal 2, evaluate("1 /* Magic number!\n*/2")
-    assert_equal 1, evaluate(<<~JAVASCRIPT)
+    assert_equal 1, evaluate(<<~JAVASCRIPT.chomp)
       1 /*
 
 

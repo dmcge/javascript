@@ -123,7 +123,9 @@ class Tokenizer
     end
 
     def insert_line_break
-      scanner.string[scanner.pos] = "\n" + scanner.string[scanner.pos]
+      unless scanner.eos?
+        scanner.string[scanner.pos] = "\n" + scanner.string[scanner.pos]
+      end
     end
 
 
