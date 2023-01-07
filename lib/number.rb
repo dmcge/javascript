@@ -25,11 +25,6 @@ class Number
     Number.new(Number.new(to_i32 >> other.to_ui32 % 32).to_i32)
   end
 
-  # FIXME: this overrides the method further up, and isn’t correct (whereas the other method is)
-  def ==(other)
-    value.nan? && other.to_f.nan? || value == other.to_f
-  end
-
   def -@
     Number.new(-value)
   end

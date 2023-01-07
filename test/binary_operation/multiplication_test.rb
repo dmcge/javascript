@@ -15,9 +15,9 @@ class BinaryMultiplicationTest < Javascript::Test
   end
 
   def test_multiplying_non_numeric_strings
-    assert_equal Float::NAN, evaluate(%("a" * 8))
-    assert_equal Float::NAN, evaluate(%("b" * "c"))
-    assert_equal Float::NAN, evaluate(%(9 * "d"))
+    assert evaluate(%("a" * 8)).nan?
+    assert evaluate(%("b" * "c")).nan?
+    assert evaluate(%(9 * "d")).nan?
   end
 
   def test_multiplying_with_negative_numbers

@@ -25,4 +25,11 @@ class BinaryEqualityTest < Javascript::Test
     assert evaluate("0 == -0").true?
     assert evaluate("-0 == 0").true?
   end
+
+  def test_nan
+    refute evaluate(%(+"NaN" == +"NaN")).true?
+    refute evaluate(%(-"NaN" == -"NaN")).true?
+    refute evaluate(%(+"NaN" == -"NaN")).true?
+    refute evaluate(%(-"NaN" == +"NaN")).true?
+  end
 end

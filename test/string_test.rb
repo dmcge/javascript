@@ -23,18 +23,18 @@ class StringTest < Javascript::Test
     assert_equal -Float::INFINITY, evaluate(%(-"+Infinity"))
     assert_equal Float::INFINITY, evaluate(%(-"-Infinity"))
 
-    assert_equal Float::NAN, evaluate(%(+"infinity"))
-    assert_equal Float::NAN, evaluate(%(+"-infinity"))
+    assert evaluate(%(+"infinity")).nan?
+    assert evaluate(%(+"-infinity")).nan?
 
     assert_equal 3.14159, evaluate(%(+"3.14159    "))
     assert_equal 0b1010101, evaluate(%(+"            0b1010101"))
     assert_equal 4e2, evaluate(%(+"\\r4e2\\n"))
     assert_equal 0, evaluate(%(+" \t\\f"))
 
-    assert_equal Float::NAN, evaluate(%(+"ab"))
-    assert_equal Float::NAN, evaluate(%(+"12."))
-    assert_equal Float::NAN, evaluate(%(+"12.2E"))
-    assert_equal Float::NAN, evaluate(%(+" 10 10 101 "))
+    assert evaluate(%(+"ab")).nan?
+    assert evaluate(%(+"12.")).nan?
+    assert evaluate(%(+"12.2E")).nan?
+    assert evaluate(%(+" 10 10 101 ")).nan?
 
     # TODO: what about _ separators
   end

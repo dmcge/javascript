@@ -13,9 +13,9 @@ class BinaryModuloTest < Javascript::Test
   end
 
   def test_modulus_of_non_numeric_strings
-    assert_equal Float::NAN, evaluate(%("a" % 8))
-    assert_equal Float::NAN, evaluate(%("b" % "c"))
-    assert_equal Float::NAN, evaluate(%(9 % "d"))
+    assert evaluate(%("a" % 8)).nan?
+    assert evaluate(%("b" % "c")).nan?
+    assert evaluate(%(9 % "d")).nan?
   end
 
   def modulus_with_negative_numbers
@@ -24,8 +24,8 @@ class BinaryModuloTest < Javascript::Test
   end
 
   def test_modulus_with_infinity
-    assert_equal Float::NAN, evaluate(%("Infinity" % 8))
-    assert_equal Float::NAN, evaluate(%(-"Infinity" % 8))
+    assert evaluate(%("Infinity" % 8)).nan?
+    assert evaluate(%(-"Infinity" % 8)).nan?
     assert_equal 8, evaluate(%(8 % "Infinity"))
   end
 end
