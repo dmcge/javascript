@@ -37,6 +37,8 @@ class Parser
       case
       when tokenizer.consume(:string)          then parse_string
       when tokenizer.consume(:number)          then parse_number
+      when tokenizer.consume(:true)            then parse_true
+      when tokenizer.consume(:false)           then parse_false
       when tokenizer.consume(:if)              then parse_if
       when tokenizer.consume(:operator)        then parse_operation
       when tokenizer.consume(:opening_bracket) then parse_parenthetical
@@ -55,6 +57,14 @@ class Parser
       else
         raise "Syntax error!"
       end
+    end
+
+    def parse_true
+      True.new
+    end
+
+    def parse_false
+      False.new
     end
 
     def parse_if

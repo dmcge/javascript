@@ -16,6 +16,7 @@ class Interpreter
       case expression
       when String          then evaluate_string(expression)
       when Number          then evaluate_number(expression)
+      when Boolean         then evaluate_boolean(expression)
       when If              then evaluate_if(expression)
       when Branch          then evaluate_branch(expression)
       when UnaryOperation  then evaluate_unary_operation(expression)
@@ -30,6 +31,10 @@ class Interpreter
 
     def evaluate_number(number)
       number
+    end
+
+    def evaluate_boolean(boolean)
+      boolean
     end
 
     def evaluate_if(if_statement)
