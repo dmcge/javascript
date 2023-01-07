@@ -9,6 +9,22 @@ class IfTest < Javascript::Test
     JS
   end
 
+  def test_truthy
+    assert_equal "truthy", evaluate(<<~JS)
+      if (2) {
+        "truthy"
+      }
+    JS
+  end
+
+  def test_falsey
+    assert_nil evaluate(<<~JS)
+      if ("") {
+        "truthy"
+      }
+    JS
+  end
+
   def test_false_condition
     assert_nil evaluate(<<~JS)
       if (0 > 5) {

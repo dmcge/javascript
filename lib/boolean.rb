@@ -13,6 +13,10 @@ class Boolean
     raise NotImplementedError
   end
 
+  def truthy?
+    true?
+  end
+
   def to_number
     Number.new(to_i)
   end

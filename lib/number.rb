@@ -44,12 +44,20 @@ class Number
     to_i == value
   end
 
+  def zero?
+    value.zero?
+  end
+
   def nan?
     value.nan?
   end
 
   def infinity?
     value.infinite?
+  end
+
+  def truthy?
+    !zero?
   end
 
   def to_number

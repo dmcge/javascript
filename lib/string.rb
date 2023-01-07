@@ -1,5 +1,9 @@
 module Javascript
   class String < ::String
+    def truthy?
+      !empty?
+    end
+
     def to_number
       numeric = strip
 
