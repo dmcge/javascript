@@ -74,4 +74,19 @@ class IfTest < Javascript::Test
       }
     JS
   end
+
+  def test_if_without_braces
+    assert_equal "yep", evaluate(%(if ("1" == 1) "yep"))
+    assert_equal "yadda yadda", evaluate(<<~JS.chomp)
+      if (8 == 5) "lies"
+      "yadda yadda"
+    JS
+  end
+
+  def test_else_without_braces
+    assert_equal "Phew!", evaluate(<<~JS.chomp)
+      if (8 == 5) "lies"
+      else "Phew!"
+    JS
+  end
 end
