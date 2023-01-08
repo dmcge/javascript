@@ -189,20 +189,20 @@ class NumberLiteralsTest < Javascript::Test
   end
 
   def test_non_ascii_hex_literals
-    assert_raises { evaluate("e١f") }
-    assert_raises { evaluate("+e١f") }
-    assert_raises { evaluate("-e١f") }
+    assert_raises { evaluate("0xe١f") }
+    assert_raises { evaluate("+0xe١f") }
+    assert_raises { evaluate("-0xe١f") }
   end
 
   def test_non_ascii_binary_literals
-    assert_raises { evaluate("١0") }
-    assert_raises { evaluate("+١0") }
-    assert_raises { evaluate("-١0") }
+    assert_raises { evaluate("0b١0") }
+    assert_raises { evaluate("+0b١0") }
+    assert_raises { evaluate("-0b١0") }
   end
 
   def test_non_ascii_octal_literals
-    assert_raises { evaluate("6١") }
-    assert_raises { evaluate("+6١") }
-    assert_raises { evaluate("-6١") }
+    assert_raises { evaluate("0o6١") }
+    assert_raises { evaluate("+0o6١") }
+    assert_raises { evaluate("-0o6١") }
   end
 end
