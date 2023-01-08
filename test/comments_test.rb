@@ -27,4 +27,15 @@ class CommentsTest < Javascript::Test
     assert_raises { evaluate("/*") }
     assert_raises { evaluate("/*\n\n\nYo") }
   end
+
+  def test_only_comments
+    assert_nil evaluate("// Well then")
+    assert_nil evaluate("/* This is awkward */")
+    assert_nil evaluate(<<~JAVASCRIPT.chomp)
+      /*
+        All these lines.
+        And for what?
+      */
+    JAVASCRIPT
+  end
 end

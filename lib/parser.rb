@@ -3,7 +3,6 @@ require_relative "binary_operation"
 require_relative "unary_operation"
 require_relative "boolean"
 
-EmptyStatement = Class.new
 ExpressionStatement = Struct.new(:expression)
 Parenthetical = Struct.new(:expression)
 If = Struct.new(:condition, :consequent, :alternative)
@@ -61,7 +60,7 @@ class Parser
     end
 
     def parse_empty_statement
-      EmptyStatement.new
+      parse_statement unless tokenizer.finished?
     end
 
     def parse_expression_statement
