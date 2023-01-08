@@ -1,4 +1,7 @@
 module Javascript
+  VariableStatement = Struct.new(:declarations, keyword_init: true)
+  VariableDeclaration = Struct.new(:name, :value)
+  VariableReference = Struct.new(:name)
   ExpressionStatement = Struct.new(:expression)
   Parenthetical = Struct.new(:expression)
   If = Struct.new(:condition, :consequent, :alternative)
@@ -20,6 +23,7 @@ module Javascript
 
       def parse_statement
         case
+        when tokenizer.consume(:var)           then parse_variable_statement
         when tokenizer.consume(:if)            then parse_if_statement
         when tokenizer.consume(:opening_brace) then parse_block
         when tokenizer.consume(:semicolon)     then parse_empty_statement
@@ -27,6 +31,24 @@ module Javascript
           parse_expression_statement
         end
       end
+
+      def parse_variable_statement
+        VariableStatement.new(declarations: []).tap do |statement|
+          tokenizer.until(:semicolon) do
+            statement.declarations << parse_variable_declaration
+
+            break unless tokenizer.consume(:comma)
+          end
+        end
+      end
+
+      def parse_variable_declaration
+        VariableDeclaration.new.tap do |declaration|
+          declaration.name  = tokenizer.consume(:identifier).text
+          declaration.value = parse_expression if tokenizer.consume(:equals)
+        end
+      end
+
 
       def parse_if_statement
         If.new.tap do |if_statement|
@@ -70,6 +92,7 @@ module Javascript
 
       def parse_expression
         case
+        when tokenizer.consume(:identifier)      then parse_identifier
         when tokenizer.consume(:string)          then parse_string
         when tokenizer.consume(:number)          then parse_number
         when tokenizer.consume(:true)            then parse_true
@@ -79,6 +102,10 @@ module Javascript
         else
           raise "Can’t parse #{tokenizer.next_token.inspect}"
         end
+      end
+
+      def parse_identifier
+        VariableReference.new(tokenizer.current_token.text)
       end
 
       def parse_string

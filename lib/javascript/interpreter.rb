@@ -2,6 +2,7 @@ module Javascript
   class Interpreter
     def initialize(script)
       @statements = Parser.new(script).parse
+      @variables  = {} # FIXME
     end
 
     def evaluate
@@ -13,10 +14,19 @@ module Javascript
     private
       def evaluate_statement(statement)
         case statement
+        when VariableStatement   then evaluate_variable_statement(statement)
         when If                  then evaluate_if_statement(statement)
         when Block               then evaluate_block(statement)
         when ExpressionStatement then evaluate_expression_statement(statement)
         end
+      end
+
+      def evaluate_variable_statement(statement)
+        statement.declarations.each { |declaration| evaluate_variable_declaration(declaration) }
+      end
+
+      def evaluate_variable_declaration(declaration)
+        @variables[declaration.name] = evaluate_expression(declaration.value)
       end
 
       def evaluate_expression_statement(statement)
@@ -25,13 +35,18 @@ module Javascript
 
       def evaluate_expression(expression)
         case expression
-        when String          then evaluate_string(expression)
-        when Number          then evaluate_number(expression)
-        when Boolean         then evaluate_boolean(expression)
-        when UnaryOperation  then evaluate_unary_operation(expression)
-        when BinaryOperation then evaluate_binary_operation(expression)
-        when Parenthetical   then evaluate_parenthetical(expression)
+        when VariableReference then evaluate_variable_reference(expression)
+        when String            then evaluate_string(expression)
+        when Number            then evaluate_number(expression)
+        when Boolean           then evaluate_boolean(expression)
+        when UnaryOperation    then evaluate_unary_operation(expression)
+        when BinaryOperation   then evaluate_binary_operation(expression)
+        when Parenthetical     then evaluate_parenthetical(expression)
         end
+      end
+
+      def evaluate_variable_reference(reference)
+        @variables[reference.name]
       end
 
       def evaluate_string(string)
