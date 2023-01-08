@@ -1,5 +1,6 @@
 require "minitest/autorun"
-require "interpreter"
+require "bundler/setup"
+require "javascript"
 
 module Javascript
   class Test < Minitest::Test
