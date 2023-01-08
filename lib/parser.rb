@@ -11,7 +11,6 @@ Block = Struct.new(:statements)
 class Parser
   def initialize(javascript)
     @tokenizer = Tokenizer.new(javascript)
-    @expressions = []
   end
 
   def parse
@@ -64,20 +63,12 @@ class Parser
     end
 
     def parse_expression_statement
-      @expressions = []
+      @previous_expression = nil
+      @previous_expression = parse_expression until tokenizer.finished? || tokenizer.consume(:semicolon)
 
-      until tokenizer.finished? || tokenizer.consume(:semicolon)
-        expression = parse_expression
-        @expressions << expression
-      end
-
-      if @expressions.one?
-        ExpressionStatement.new(@expressions.first)
-      else
-        raise "Syntax error!"
-      end
+      ExpressionStatement.new(@previous_expression)
     ensure
-      @expressions = []
+      @previous_expression = nil
     end
 
 
@@ -99,7 +90,7 @@ class Parser
     end
 
     def parse_number
-      if @expressions.empty? || @expressions.last.is_a?(Operation)
+      if @previous_expression.nil?
         Number.new(tokenizer.current_token.literal)
       else
         raise "Syntax error!"
@@ -115,10 +106,10 @@ class Parser
     end
 
     def parse_operation
-      if @expressions.none?
-        parse_unary_operation
-      else
+      if @previous_expression
         parse_binary_operation
+      else
+        parse_unary_operation
       end
     end
 
@@ -133,8 +124,9 @@ class Parser
     end
 
     def parse_binary_operation
+      left_hand_side  = @previous_expression
+      @previous_expression = nil
       operator        = Operator.for(tokenizer.current_token.text)
-      left_hand_side  = @expressions.pop
       right_hand_side = parse_expression
 
       if left_hand_side && right_hand_side
@@ -147,25 +139,21 @@ class Parser
     def parse_parenthetical
       raise "Syntax error!" if tokenizer.consume(:closing_bracket)
 
-      previous_expressions = @expressions.dup
+      previous_expression  = @previous_expression
+      @previous_expression = nil
 
       Parenthetical.new.tap do |parenthetical|
         tokenizer.until(:closing_bracket) do
           if tokenizer.consume(:semicolon)
             raise "Semicolon!"
           else
-            @expressions << parse_expression
+            @previous_expression = parse_expression
           end
         end
 
-        expressions = @expressions - previous_expressions
-        @expressions = previous_expressions
-
-        if expressions.one?
-          parenthetical.expression = expressions.first
-        else
-          raise "Syntax error!"
-        end
+        parenthetical.expression = @previous_expression
+      ensure
+        @previous_expression = previous_expression
       end
     end
 end
