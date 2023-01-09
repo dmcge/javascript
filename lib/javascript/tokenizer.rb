@@ -259,7 +259,7 @@ module Javascript
           when scanner.scan(/\R/)
             raise "Syntax error!"
           when scanner.scan("\\")
-            string << consume_escaped_character unless scanner.scan(/\R/)
+            string << consume_escape_sequence unless scanner.scan(/\R/)
           else
             string << scanner.getch
           end
@@ -268,38 +268,50 @@ module Javascript
         [ :string, string ]
       end
 
-      def consume_escaped_character
+      def consume_escape_sequence
         case
-        when scanner.scan(/n|r|t|b|f|v/)
-          %("\\#{scanner.matched}").undump
-        when scanner.scan("u")
-          if scanner.scan(/(\h{4})/) || scanner.scan(/{(\h{1,6})}/)
-            scanner.captures[0].to_i(16).chr("UTF-8")
-          else
-            raise "Syntax error!"
-          end
-        when scanner.scan("x")
-          if scanner.scan(/\h{2}/)
-            scanner.matched.to_i(16).chr("UTF-8")
-          else
-            raise "Syntax error!"
-          end
-        when scanner.scan(/[0-7]/)
-          octal = ""
-
-          octal << scanner.matched
-
-          case scanner.matched.to_i
-          when 0..3
-            octal << scanner.scan(/[0-7]{1,2}/).to_s
-          when 4..7
-            octal << scanner.scan(/[0-7]{1}/).to_s
-          end
-
-          octal.to_i(8).chr("UTF-8")
+        when scanner.scan(/n|r|t|b|f|v/) then consume_escaped_character
+        when scanner.scan("u")           then consume_unicode_escape
+        when scanner.scan("x")           then consume_hex_escape
+        when scanner.scan(/[0-7]/)       then consume_octal_escape
         else
           scanner.getch
         end
+      end
+
+      def consume_escaped_character
+        %("\\#{scanner.matched}").undump
+      end
+
+      def consume_unicode_escape
+        if scanner.scan(/(\h{4})/) || scanner.scan(/{(\h{1,6})}/)
+          scanner.captures[0].to_i(16).chr("UTF-8")
+        else
+          raise "Syntax error!"
+        end
+      end
+
+      def consume_hex_escape
+        if scanner.scan(/\h{2}/)
+          scanner.matched.to_i(16).chr("UTF-8")
+        else
+          raise "Syntax error!"
+        end
+      end
+
+      def consume_octal_escape
+        octal = ""
+
+        octal << scanner.matched
+
+        case scanner.matched.to_i
+        when 0..3
+          octal << scanner.scan(/[0-7]{1,2}/).to_s
+        when 4..7
+          octal << scanner.scan(/[0-7]{1}/).to_s
+        end
+
+        octal.to_i(8).chr("UTF-8")
       end
 
       def tokenize_dot
