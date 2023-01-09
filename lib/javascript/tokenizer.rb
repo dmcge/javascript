@@ -3,7 +3,7 @@ require "strscan"
 module Javascript
   class Tokenizer
     Token = Struct.new(:type, :raw, :literal, :starting_position, :ending_position, keyword_init: true) do
-      def text
+      def value
         raw.strip
       end
     end

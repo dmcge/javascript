@@ -44,7 +44,7 @@ module Javascript
 
       def parse_variable_declaration
         VariableDeclaration.new.tap do |declaration|
-          declaration.name  = tokenizer.consume(:identifier).text
+          declaration.name  = tokenizer.consume(:identifier).value
           declaration.value = parse_expression if tokenizer.consume(:equals)
         end
       end
@@ -105,7 +105,7 @@ module Javascript
       end
 
       def parse_identifier
-        VariableReference.new(tokenizer.current_token.text)
+        VariableReference.new(tokenizer.current_token.value)
       end
 
       def parse_string
@@ -137,7 +137,7 @@ module Javascript
       end
 
       def parse_unary_operation
-        operator = Operator.for(tokenizer.current_token.text)
+        operator = Operator.for(tokenizer.current_token.value)
 
         if operator.unary? && operand = parse_expression
           UnaryOperation.new(operator, operand)
@@ -149,7 +149,7 @@ module Javascript
       def parse_binary_operation
         left_hand_side  = @previous_expression
         @previous_expression = nil
-        operator        = Operator.for(tokenizer.current_token.text)
+        operator        = Operator.for(tokenizer.current_token.value)
         right_hand_side = parse_expression
 
         if left_hand_side && right_hand_side
