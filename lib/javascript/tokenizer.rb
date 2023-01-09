@@ -300,18 +300,16 @@ module Javascript
       end
 
       def consume_octal_escape
-        octal = ""
+        String.new.tap do |octal|
+          octal << scanner.matched
 
-        octal << scanner.matched
-
-        case scanner.matched.to_i
-        when 0..3
-          octal << scanner.scan(/[0-7]{1,2}/).to_s
-        when 4..7
-          octal << scanner.scan(/[0-7]{1}/).to_s
-        end
-
-        octal.to_i(8).chr("UTF-8")
+          case scanner.matched.to_i
+          when 0..3
+            octal << scanner.scan(/[0-7]{1,2}/).to_s
+          when 4..7
+            octal << scanner.scan(/[0-7]{1}/).to_s
+          end
+        end.to_i(8).chr("UTF-8")
       end
 
       def tokenize_dot
