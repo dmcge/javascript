@@ -68,6 +68,7 @@ module Javascript
         end
       end
 
+      START_OF_IDENTIFIER = /\p{L}|_|\$/
       OPERATORS = Regexp.union(Operator::SYMBOLS.sort_by(&:length).reverse)
 
       def advance_to_next_token
@@ -76,20 +77,20 @@ module Javascript
 
         case
         # FIXME: this isn’t at all correct
-        when scanner.scan(/;|\R|\z/)          then :semicolon
+        when scanner.scan(/;|\R|\z/)           then :semicolon
 
-        when scanner.scan(/[[:alpha:]]|\$|_/) then tokenize_identifier
-        when scanner.scan(/\d/)               then tokenize_numeric
-        when scanner.scan(/"|'/)              then tokenize_string
-        when scanner.scan(",")                then :comma
-        when scanner.scan("(")                then :opening_bracket
-        when scanner.scan(")")                then :closing_bracket
-        when scanner.scan("{")                then :opening_brace
-        when scanner.scan("}")                then :closing_brace
-        when scanner.scan(".")                then tokenize_dot
-        when scanner.scan("+")                then tokenize_plus
-        when scanner.scan(OPERATORS)          then :operator
-        when scanner.scan("=")                then :equals
+        when scanner.scan(START_OF_IDENTIFIER) then tokenize_identifier
+        when scanner.scan(/\d/)                then tokenize_numeric
+        when scanner.scan(/"|'/)               then tokenize_string
+        when scanner.scan(",")                 then :comma
+        when scanner.scan("(")                 then :opening_bracket
+        when scanner.scan(")")                 then :closing_bracket
+        when scanner.scan("{")                 then :opening_brace
+        when scanner.scan("}")                 then :closing_brace
+        when scanner.scan(".")                 then tokenize_dot
+        when scanner.scan("+")                 then tokenize_plus
+        when scanner.scan(OPERATORS)           then :operator
+        when scanner.scan("=")                 then :equals
         else
           raise "Unrecognised character: #{scanner.getch.inspect}"
         end
@@ -126,12 +127,13 @@ module Javascript
       end
 
 
+      IDENTIFIER_CHARACTER = /#{START_OF_IDENTIFIER}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|\u200c|\u200d/
       KEYWORDS = %w( var if else true false )
 
       def tokenize_identifier
         scanner.unscan
 
-        identifier = scanner.scan_until(/.(?!([[:alnum:]]|\$)+)/)
+        identifier = scanner.scan_until(/.(?!#{IDENTIFIER_CHARACTER})/)
 
         if KEYWORDS.include?(identifier)
           identifier.to_sym
