@@ -2,14 +2,14 @@ require "test_helper"
 
 class VarTest < Javascript::Test
   def test_declaring_a_variable
-    assert evaluate("var a")
-    assert evaluate("var text")
-    assert evaluate("var foo = 'bar'")
+    assert_valid "var a"
+    assert_valid "var text"
+    assert_valid "var foo = 'bar'"
   end
 
   def test_declaring_multiple_variables
-    assert evaluate("var he, she, them")
-    assert evaluate("var he = 1, she = 2, them = 3")
+    assert_valid "var he, she, them"
+    assert_valid "var he = 1, she = 2, them = 3"
   end
 
   def test_referencing_a_variable
@@ -25,24 +25,24 @@ class VarTest < Javascript::Test
   end
 
   def test_variable_names
-    assert evaluate("var $")
-    assert evaluate("var _")
-    assert evaluate("var ᪧῼ")
+    assert_valid "var $"
+    assert_valid "var _"
+    assert_valid "var ᪧῼ"
 
-    assert evaluate("var abc123")
-    assert evaluate("var bengali_six_৫")
+    assert_valid "var abc123"
+    assert_valid "var bengali_six_৫"
     assert_invalid "var 1"
     assert_invalid "var 123456"
     assert_invalid "var ৫"
 
-    assert evaluate("var well\u200d")
+    assert_valid "var well\u200d"
     assert_invalid "var \u200dd"
 
-    assert evaluate("var fඃd")
+    assert_valid "var fඃd"
     assert_invalid "var ඃ"
 
-    assert evaluate("var iffy")
-    assert evaluate("var elsewhere")
+    assert_valid "var iffy"
+    assert_valid "var elsewhere"
     assert_invalid "var if"
   end
 end

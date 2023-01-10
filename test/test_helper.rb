@@ -14,5 +14,9 @@ module Javascript
     def assert_invalid(script)
       assert_raises { evaluate(script) }
     end
+
+    def assert_valid(script)
+      assert evaluate(script)
+    end
   end
 end
