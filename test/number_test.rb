@@ -22,8 +22,8 @@ class NumberTest < Javascript::Test
 
 
   def test_dangling_operators
-    assert_raises { evaluate("+") }
-    assert_raises { evaluate("3 *") }
-    assert_raises { evaluate("/ 2") }
+    assert_invalid "+"
+    assert_invalid "3 *"
+    assert_invalid "/ 2"
   end
 end

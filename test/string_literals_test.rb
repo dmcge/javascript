@@ -86,8 +86,8 @@ class StringLiteralsTest < Javascript::Test
     assert_equal "􀐏", evaluate(%('\\u{10040F}'))
     assert_equal "abc", evaluate(%("a\\u{62}c"))
 
-    assert_raises { evaluate("\\u{}") }
-    assert_raises { evaluate("\\u{11FFFF}") }
+    assert_invalid "\\u{}"
+    assert_invalid "\\u{11FFFF}"
     assert_raises { evaluate('\\u{100FFFF}') }
   end
 

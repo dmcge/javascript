@@ -31,18 +31,18 @@ class VarTest < Javascript::Test
 
     assert evaluate("var abc123")
     assert evaluate("var bengali_six_৫")
-    assert_raises { evaluate("var 1") }
-    assert_raises { evaluate("var 123456") }
-    assert_raises { evaluate("var ৫") }
+    assert_invalid "var 1"
+    assert_invalid "var 123456"
+    assert_invalid "var ৫"
 
     assert evaluate("var well\u200d")
-    assert_raises { evaluate("var \u200dd") }
+    assert_invalid "var \u200dd"
 
     assert evaluate("var fඃd")
-    assert_raises { evaluate("var ඃ") }
+    assert_invalid "var ඃ"
 
     assert evaluate("var iffy")
     assert evaluate("var elsewhere")
-    assert_raises { evaluate("var if") }
+    assert_invalid "var if"
   end
 end
