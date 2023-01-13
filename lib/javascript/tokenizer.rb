@@ -128,7 +128,7 @@ module Javascript
 
 
       IDENTIFIER_CHARACTER = /#{START_OF_IDENTIFIER}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|\u200c|\u200d/
-      KEYWORDS = %w( var if else true false )
+      KEYWORDS = %w( var if else true false function )
 
       def tokenize_identifier
         scanner.unscan

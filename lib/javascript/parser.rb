@@ -1,4 +1,6 @@
 module Javascript
+  FunctionDefinition = Struct.new(:name, :parameters, :body)
+  FunctionCall = Struct.new(:name, :arguments)
   VariableStatement = Struct.new(:declarations, keyword_init: true)
   VariableDeclaration = Struct.new(:name, :value)
   VariableReference = Struct.new(:name)
@@ -92,6 +94,7 @@ module Javascript
 
       def parse_expression
         case
+        when tokenizer.consume(:function)        then parse_function
         when tokenizer.consume(:identifier)      then parse_identifier
         when tokenizer.consume(:string)          then parse_string
         when tokenizer.consume(:number)          then parse_number
@@ -104,8 +107,44 @@ module Javascript
         end
       end
 
+      def parse_function
+        FunctionDefinition.new.tap do |function|
+          function.name = tokenizer.consume(:identifier).value
+          function.parameters = []
+
+          if tokenizer.consume(:opening_bracket)
+            tokenizer.until(:closing_bracket) do
+              function.parameters << tokenizer.consume(:identifier).value
+              tokenizer.consume(:comma)
+            end
+          else
+            raise "Syntax error!"
+          end
+
+          if tokenizer.consume(:opening_brace)
+            function.body = parse_block
+          else
+            raise "Syntax error!"
+          end
+        end
+      end
+
       def parse_identifier
-        VariableReference.new(tokenizer.current_token.value)
+        identifier = tokenizer.current_token.value
+
+        if tokenizer.consume(:opening_bracket)
+          FunctionCall.new.tap do |function_call|
+            function_call.name = identifier
+            function_call.arguments = []
+
+            tokenizer.until(:closing_bracket) do
+              function_call.arguments << parse_expression
+              tokenizer.consume(:comma)
+            end
+          end
+        else
+          VariableReference.new(identifier)
+        end
       end
 
       def parse_string

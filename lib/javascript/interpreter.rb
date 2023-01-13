@@ -3,6 +3,7 @@ module Javascript
     def initialize(script)
       @statements = Parser.new(script).parse
       @variables  = {} # FIXME
+      @functions  = {} # FIXME
     end
 
     def evaluate
@@ -35,14 +36,34 @@ module Javascript
 
       def evaluate_expression(expression)
         case expression
-        when VariableReference then evaluate_variable_reference(expression)
-        when String            then evaluate_string(expression)
-        when Number            then evaluate_number(expression)
-        when Boolean           then evaluate_boolean(expression)
-        when UnaryOperation    then evaluate_unary_operation(expression)
-        when BinaryOperation   then evaluate_binary_operation(expression)
-        when Parenthetical     then evaluate_parenthetical(expression)
+        when FunctionDefinition then evaluate_function_definition(expression)
+        when FunctionCall       then evaluate_function_call(expression)
+        when VariableReference  then evaluate_variable_reference(expression)
+        when String             then evaluate_string(expression)
+        when Number             then evaluate_number(expression)
+        when Boolean            then evaluate_boolean(expression)
+        when UnaryOperation     then evaluate_unary_operation(expression)
+        when BinaryOperation    then evaluate_binary_operation(expression)
+        when Parenthetical      then evaluate_parenthetical(expression)
         end
+      end
+
+      def evaluate_function_definition(definition)
+        @functions[definition.name] = definition
+      end
+
+      def evaluate_function_call(function_call)
+        function = @functions[function_call.name]
+
+        previous_variables = @variables.dup
+
+        arguments = function.parameters.zip(function_call.arguments).map do |parameter, argument|
+          @variables[parameter] = evaluate_expression(argument) if argument
+        end
+
+        evaluate_block(function.body)
+      ensure
+        @variables = previous_variables
       end
 
       def evaluate_variable_reference(reference)
