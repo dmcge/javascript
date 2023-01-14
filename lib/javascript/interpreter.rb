@@ -37,7 +37,7 @@ module Javascript
         case expression
         when FunctionDefinition then evaluate_function_definition(expression)
         when FunctionCall       then evaluate_function_call(expression)
-        when VariableReference  then evaluate_variable_reference(expression)
+        when Reference          then evaluate_reference(expression)
         when String             then evaluate_string(expression)
         when Number             then evaluate_number(expression)
         when Boolean            then evaluate_boolean(expression)
@@ -65,7 +65,7 @@ module Javascript
         @identifiers = previous_identifiers
       end
 
-      def evaluate_variable_reference(reference)
+      def evaluate_reference(reference)
         @identifiers[reference.name]
       end
 

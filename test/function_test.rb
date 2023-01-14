@@ -20,4 +20,18 @@ class FunctionTest < Javascript::Test
       multiply(4, 5)
     JS
   end
+
+  def test_referencing_functions_by_name
+    assert_equal 4, evaluate(<<~JS)
+      function double(n) {
+        return n * 2
+      }
+
+      function call_indirect(func, argument) {
+        return func(argument)
+      }
+
+      call_indirect(double, 2)
+    JS
+  end
 end

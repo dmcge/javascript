@@ -3,7 +3,7 @@ module Javascript
   FunctionCall = Struct.new(:name, :arguments)
   VariableStatement = Struct.new(:declarations, keyword_init: true)
   VariableDeclaration = Struct.new(:name, :value)
-  VariableReference = Struct.new(:name)
+  Reference = Struct.new(:name)
   ExpressionStatement = Struct.new(:expression)
   Parenthetical = Struct.new(:expression)
   If = Struct.new(:condition, :consequent, :alternative)
@@ -143,7 +143,7 @@ module Javascript
             end
           end
         else
-          VariableReference.new(identifier)
+          Reference.new(identifier)
         end
       end
 
