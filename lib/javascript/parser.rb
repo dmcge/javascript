@@ -207,19 +207,23 @@ module Javascript
       def parse_function
         FunctionDefinition.new.tap do |function|
           function.name = tokenizer.consume(:identifier)&.value
-          function.parameters = []
-
-          if tokenizer.consume(:opening_bracket)
-            tokenizer.until(:closing_bracket) do
-              function.parameters << tokenizer.consume(:identifier).value
-              tokenizer.consume(:comma)
-            end
-          else
-            raise "Syntax error!"
-          end
+          function.parameters = parse_parameters
 
           if tokenizer.consume(:opening_brace)
             function.body = parse_block
+          else
+            raise "Syntax error!"
+          end
+        end
+      end
+
+      def parse_parameters
+        [].tap do |parameters|
+          if tokenizer.consume(:opening_bracket)
+            tokenizer.until(:closing_bracket) do
+              parameters << tokenizer.consume(:identifier).value
+              tokenizer.consume(:comma)
+            end
           else
             raise "Syntax error!"
           end
