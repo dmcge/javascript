@@ -56,4 +56,14 @@ class FunctionTest < Javascript::Test
       double(2)
     JS
   end
+
+  def test_void_return
+    assert_nil evaluate(<<~JS)
+      function no_op() {
+        return
+      }
+
+      no_op()
+    JS
+  end
 end
