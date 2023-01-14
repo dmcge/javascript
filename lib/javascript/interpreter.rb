@@ -1,7 +1,7 @@
 module Javascript
   class Interpreter
     def initialize(script)
-      @statements  = Parser.new(script).parse
+      @statements  = Parser.new(script).parse.statements
       @identifiers = {} # FIXME
     end
 
@@ -19,6 +19,7 @@ module Javascript
         when Block               then evaluate_block(statement)
         when Return              then evaluate_return(statement)
         when ExpressionStatement then evaluate_expression_statement(statement)
+        when StatementList       then evaluate_statement_list(statement)
         end
       end
 
@@ -98,7 +99,11 @@ module Javascript
       end
 
       def evaluate_block(block)
-        result = evaluate_statement(block.statements.shift) until block.statements.empty?
+        evaluate_statement(block.body)
+      end
+
+      def evaluate_statement_list(list)
+        result = evaluate_statement(list.statements.shift) until list.statements.empty?
         result
       end
 

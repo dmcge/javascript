@@ -1,4 +1,5 @@
 module Javascript
+  StatementList = Struct.new(:statements)
   FunctionDefinition = Struct.new(:name, :parameters, :body)
   FunctionCall = Struct.new(:name, :arguments)
   VariableStatement = Struct.new(:declarations, keyword_init: true)
@@ -8,7 +9,7 @@ module Javascript
   ExpressionStatement = Struct.new(:expression)
   Parenthetical = Struct.new(:expression)
   If = Struct.new(:condition, :consequent, :alternative)
-  Block = Struct.new(:statements)
+  Block = Struct.new(:body)
   BinaryOperation = Struct.new(:operator, :left_hand_side, :right_hand_side)
   UnaryOperation = Struct.new(:operator, :operand)
 
@@ -18,8 +19,8 @@ module Javascript
     end
 
     def parse
-      [].tap do |statements|
-        statements << parse_statement until tokenizer.finished?
+      StatementList.new(statements: []).tap do |list|
+        list.statements << parse_statement until tokenizer.finished?
       end
     end
 
@@ -74,10 +75,13 @@ module Javascript
 
       def parse_block
         tokenizer.consume(:semicolon) # FIXME
+        Block.new(parse_statement_list)
+      end
 
-        Block.new(statements: []).tap do |block|
+      def parse_statement_list
+        StatementList.new(statements: []).tap do |list|
           tokenizer.until(:closing_brace) do
-            block.statements << parse_statement
+            list.statements << parse_statement
           end
         end
       end
