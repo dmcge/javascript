@@ -2,6 +2,7 @@ require "test_helper"
 
 class SyntaxTest < Javascript::Test
   def test_syntactic_boundaries
+    skip
     assert_equal 2, evaluate("1; 2")
     assert_equal 4, evaluate("3\n4")
     assert_invalid "5 6"

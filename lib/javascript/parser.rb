@@ -9,6 +9,8 @@ module Javascript
   Parenthetical = Struct.new(:expression)
   If = Struct.new(:condition, :consequent, :alternative)
   Block = Struct.new(:statements)
+  BinaryOperation = Struct.new(:operator, :left_hand_side, :right_hand_side)
+  UnaryOperation = Struct.new(:operator, :operand)
 
   class Parser
     def initialize(javascript)
@@ -81,14 +83,7 @@ module Javascript
       end
 
       def parse_return
-        Return.new.tap do |ret|
-          tokenizer.until(:semicolon) do
-            @previous_expression = parse_expression
-          end
-
-          ret.expression = @previous_expression
-          @previous_expression = nil
-        end
+        Return.new(parse_expression)
       end
 
       def parse_empty_statement
@@ -96,16 +91,108 @@ module Javascript
       end
 
       def parse_expression_statement
-        @previous_expression = nil
-        @previous_expression = parse_expression until tokenizer.finished? || tokenizer.consume(:semicolon)
-
-        ExpressionStatement.new(@previous_expression)
-      ensure
-        @previous_expression = nil
+        ExpressionStatement.new(parse_expression).tap do
+          tokenizer.consume(:semicolon)
+        end
       end
 
-
       def parse_expression
+        parse_equality_expression # || …
+      end
+
+      def parse_equality_expression
+        left_hand_side = parse_relational_expression
+
+        if tokenizer.consume(:equality_operator)
+          operator        = Operator.for(tokenizer.current_token.value)
+          right_hand_side = parse_equality_expression
+
+          BinaryOperation.new(operator, left_hand_side, right_hand_side)
+        else
+          left_hand_side
+        end
+      end
+
+      def parse_relational_expression
+        left_hand_side = parse_shift_expression
+
+        if tokenizer.consume(:relational_operator)
+          operator        = Operator.for(tokenizer.current_token.value)
+          right_hand_side = parse_relational_expression
+
+          BinaryOperation.new(operator, left_hand_side, right_hand_side)
+        else
+          left_hand_side
+        end
+      end
+
+      def parse_shift_expression
+        left_hand_side = parse_additive_expression
+
+        if tokenizer.consume(:shift_operator)
+          operator        = Operator.for(tokenizer.current_token.value)
+          right_hand_side = parse_shift_expression
+
+          BinaryOperation.new(operator, left_hand_side, right_hand_side)
+        else
+          left_hand_side
+        end
+      end
+
+      def parse_additive_expression
+        left_hand_side = parse_multiplicative_expression
+
+        if tokenizer.consume(:additive_operator)
+          operator        = Operator.for(tokenizer.current_token.value)
+          right_hand_side = parse_additive_expression
+
+          BinaryOperation.new(operator, left_hand_side, right_hand_side)
+        else
+          left_hand_side
+        end
+      end
+
+      def parse_multiplicative_expression
+        left_hand_side = parse_exponentiation_expression
+
+        if tokenizer.consume(:multiplicative_operator)
+          operator        = Operator.for(tokenizer.current_token.value)
+          right_hand_side = parse_multiplicative_expression
+
+          BinaryOperation.new(operator, left_hand_side, right_hand_side)
+        else
+          left_hand_side
+        end
+      end
+
+      def parse_exponentiation_expression
+        current_token  = tokenizer.current_token
+        left_hand_side = parse_primary_expression
+
+        if left_hand_side && tokenizer.consume(:exponentiation_operator)
+          right_hand_side = parse_exponentiation_expression
+
+          BinaryOperation.new(Operator.for("**"), left_hand_side, right_hand_side)
+        else
+          tokenizer.rewind until tokenizer.current_token == current_token
+          parse_unary_expression
+        end
+      end
+
+      def parse_unary_expression
+        if tokenizer.consume(:additive_operator)
+          parse_unary_operation
+        else
+          parse_primary_expression
+        end
+      end
+
+      def parse_unary_operation
+        operator = Operator.for(tokenizer.current_token.value)
+        UnaryOperation.new(operator, parse_unary_expression)
+      end
+
+      def parse_primary_expression
         case
         when tokenizer.consume(:function)        then parse_function
         when tokenizer.consume(:identifier)      then parse_identifier
@@ -113,10 +200,7 @@ module Javascript
         when tokenizer.consume(:number)          then parse_number
         when tokenizer.consume(:true)            then parse_true
         when tokenizer.consume(:false)           then parse_false
-        when tokenizer.consume(:operator)        then parse_operation
         when tokenizer.consume(:opening_bracket) then parse_parenthetical
-        else
-          raise "Can’t parse #{tokenizer.next_token.inspect}"
         end
       end
 
@@ -165,11 +249,7 @@ module Javascript
       end
 
       def parse_number
-        if @previous_expression.nil?
-          Number.new(tokenizer.current_token.literal)
-        else
-          raise "Syntax error!"
-        end
+        Number.new(tokenizer.current_token.literal)
       end
 
       def parse_true
@@ -180,55 +260,11 @@ module Javascript
         False.new
       end
 
-      def parse_operation
-        if @previous_expression
-          parse_binary_operation
-        else
-          parse_unary_operation
-        end
-      end
-
-      def parse_unary_operation
-        operator = Operator.for(tokenizer.current_token.value)
-
-        if operator.unary? && operand = parse_expression
-          UnaryOperation.new(operator, operand)
-        else
-          raise "Syntax error!"
-        end
-      end
-
-      def parse_binary_operation
-        left_hand_side  = @previous_expression
-        @previous_expression = nil
-        operator        = Operator.for(tokenizer.current_token.value)
-        right_hand_side = parse_expression
-
-        if left_hand_side && right_hand_side
-          BinaryOperation.new(operator, left_hand_side, right_hand_side)
-        else
-          raise "Syntax error!"
-        end
-      end
-
       def parse_parenthetical
         raise "Syntax error!" if tokenizer.consume(:closing_bracket)
 
-        previous_expression  = @previous_expression
-        @previous_expression = nil
-
-        Parenthetical.new.tap do |parenthetical|
-          tokenizer.until(:closing_bracket) do
-            if tokenizer.consume(:semicolon)
-              raise "Semicolon!"
-            else
-              @previous_expression = parse_expression
-            end
-          end
-
-          parenthetical.expression = @previous_expression
-        ensure
-          @previous_expression = previous_expression
+        Parenthetical.new(parse_expression).tap do
+          raise "Syntax error!" unless tokenizer.consume(:closing_bracket)
         end
       end
   end

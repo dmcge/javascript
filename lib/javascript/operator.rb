@@ -1,34 +1,23 @@
 module Javascript
   class Operator
-    ALL = {
-      "**"  => { class: "Exponentiation",     precedence: 5              },
-      "/"   => { class: "Division",           precedence: 4              },
-      "*"   => { class: "Multiplication",     precedence: 4              },
-      "%"   => { class: "Modulo",             precedence: 4              },
-      "+"   => { class: "Plus",               precedence: 3, unary: true },
-      "-"   => { class: "Minus",              precedence: 3, unary: true },
-      ">"   => { class: "GreaterThan",        precedence: 2              },
-      ">="  => { class: "GreaterThanOrEqual", precedence: 2              },
-      "<"   => { class: "LessThan",           precedence: 2              },
-      "<="  => { class: "LessThanOrEqual",    precedence: 2              },
-      "<<"  => { class: "ShiftLeft",          precedence: 1              },
-      ">>"  => { class: "ShiftRight",         precedence: 1              },
-      ">>>" => { class: "ShiftRightUnsigned", precedence: 1              },
-      "=="  => { class: "Equality",           precedence: 0              },
-      "!="  => { class: "Inequality",         precedence: 0              }
-    }
-
-    SYMBOLS = ALL.keys
-
-    attr_reader :precedence, :unary
-    alias unary? unary
-
-    def initialize(precedence:, unary: false)
-      @precedence, @unary = precedence, unary
-    end
-
     def self.for(symbol)
-      const_get(ALL[symbol][:class].to_sym).new(**ALL[symbol].slice(:precedence, :unary))
+      case symbol
+      when "**"  then Exponentiation
+      when "/"   then Division
+      when "*"   then Multiplication
+      when "%"   then Modulo
+      when "+"   then Plus
+      when "-"   then Minus
+      when ">"   then GreaterThan
+      when ">="  then GreaterThanOrEqual
+      when "<"   then LessThan
+      when "<="  then LessThanOrEqual
+      when "<<"  then ShiftLeft
+      when ">>"  then ShiftRight
+      when ">>>" then ShiftRightUnsigned
+      when "=="  then Equality
+      when "!="  then Inequality
+      end.new
     end
 
     def perform_binary(left_hand_side, right_hand_side)

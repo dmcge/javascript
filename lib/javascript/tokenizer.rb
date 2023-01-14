@@ -69,7 +69,6 @@ module Javascript
       end
 
       START_OF_IDENTIFIER = /\p{L}|_|\$/
-      OPERATORS = Regexp.union(Operator::SYMBOLS.sort_by(&:length).reverse)
 
       def advance_to_next_token
         skip_whitespace
@@ -89,7 +88,20 @@ module Javascript
         when scanner.scan("}")                 then :closing_brace
         when scanner.scan(".")                 then tokenize_dot
         when scanner.scan("+")                 then tokenize_plus
-        when scanner.scan(OPERATORS)           then :operator
+        when scanner.scan("-")                 then :additive_operator
+        when scanner.scan("**")                then :exponentiation_operator
+        when scanner.scan("*")                 then :multiplicative_operator
+        when scanner.scan("/")                 then :multiplicative_operator
+        when scanner.scan("%")                 then :multiplicative_operator
+        when scanner.scan("<<")                then :shift_operator
+        when scanner.scan(">>>")               then :shift_operator
+        when scanner.scan(">>")                then :shift_operator
+        when scanner.scan(">=")                then :relational_operator
+        when scanner.scan(">")                 then :relational_operator
+        when scanner.scan("<=")                then :relational_operator
+        when scanner.scan("<")                 then :relational_operator
+        when scanner.scan("==")                then :equality_operator
+        when scanner.scan("!=")                then :equality_operator
         when scanner.scan("=")                 then :equals
         else
           raise "Unrecognised character: #{scanner.getch.inspect}"
@@ -324,7 +336,7 @@ module Javascript
         if follows_word_boundary? && scanner.peek(1).match?(/\d/)
           tokenize_number
         else
-          :operator
+          :additive_operator
         end
       end
 
