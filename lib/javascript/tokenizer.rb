@@ -325,16 +325,11 @@ module Javascript
       end
 
       def tokenize_dot
-        if follows_word_boundary? && scanner.peek(1).match?(/\d/)
+        if scanner.peek(1).match?(/\d/)
           tokenize_numeric
         else
           :dot
         end
-      end
-
-
-      def follows_word_boundary?
-        tokens.last&.ending_position != scanner.pos - 1
       end
   end
 end
