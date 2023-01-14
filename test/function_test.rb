@@ -34,4 +34,26 @@ class FunctionTest < Javascript::Test
       call_indirect(double, 2)
     JS
   end
+
+
+  def test_no_return
+    assert_nil evaluate(<<~JS)
+      function double(n) {
+        n * 2
+      }
+
+      double(2)
+    JS
+  end
+
+  def test_early_return
+    assert_equal "tricked ya!", evaluate(<<~JS)
+      function double(n) {
+        return "tricked ya!"
+        return n * 2
+      }
+
+      double(2)
+    JS
+  end
 end

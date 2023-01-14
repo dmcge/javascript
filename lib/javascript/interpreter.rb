@@ -17,6 +17,7 @@ module Javascript
         when VariableStatement   then evaluate_variable_statement(statement)
         when If                  then evaluate_if_statement(statement)
         when Block               then evaluate_block(statement)
+        when Return              then evaluate_return(statement)
         when ExpressionStatement then evaluate_expression_statement(statement)
         end
       end
@@ -27,6 +28,10 @@ module Javascript
 
       def evaluate_variable_declaration(declaration)
         @identifiers[declaration.name] = evaluate_expression(declaration.value)
+      end
+
+      def evaluate_return(statement)
+        throw :return, evaluate_expression(statement.expression)
       end
 
       def evaluate_expression_statement(statement)
@@ -60,7 +65,10 @@ module Javascript
           @identifiers[parameter] = evaluate_expression(argument) if argument
         end
 
-        evaluate_block(function.body)
+        catch :return do
+          evaluate_block(function.body)
+          nil
+        end
       ensure
         @identifiers = previous_identifiers
       end

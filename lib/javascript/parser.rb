@@ -2,6 +2,7 @@ module Javascript
   FunctionDefinition = Struct.new(:name, :parameters, :body)
   FunctionCall = Struct.new(:name, :arguments)
   VariableStatement = Struct.new(:declarations, keyword_init: true)
+  Return = Struct.new(:expression)
   VariableDeclaration = Struct.new(:name, :value)
   Reference = Struct.new(:name)
   ExpressionStatement = Struct.new(:expression)
@@ -28,6 +29,7 @@ module Javascript
         when tokenizer.consume(:var)           then parse_variable_statement
         when tokenizer.consume(:if)            then parse_if_statement
         when tokenizer.consume(:opening_brace) then parse_block
+        when tokenizer.consume(:return)        then parse_return
         when tokenizer.consume(:semicolon)     then parse_empty_statement
         else
           parse_expression_statement
@@ -75,6 +77,17 @@ module Javascript
           tokenizer.until(:closing_brace) do
             block.statements << parse_statement
           end
+        end
+      end
+
+      def parse_return
+        Return.new.tap do |ret|
+          tokenizer.until(:semicolon) do
+            @previous_expression = parse_expression
+          end
+
+          ret.expression = @previous_expression
+          @previous_expression = nil
         end
       end
 
