@@ -109,7 +109,7 @@ module Javascript
 
       def parse_function
         FunctionDefinition.new.tap do |function|
-          function.name = tokenizer.consume(:identifier).value
+          function.name = tokenizer.consume(:identifier)&.value
           function.parameters = []
 
           if tokenizer.consume(:opening_bracket)

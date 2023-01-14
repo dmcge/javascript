@@ -1,9 +1,8 @@
 module Javascript
   class Interpreter
     def initialize(script)
-      @statements = Parser.new(script).parse
-      @variables  = {} # FIXME
-      @functions  = {} # FIXME
+      @statements  = Parser.new(script).parse
+      @identifiers = {} # FIXME
     end
 
     def evaluate
@@ -27,7 +26,7 @@ module Javascript
       end
 
       def evaluate_variable_declaration(declaration)
-        @variables[declaration.name] = evaluate_expression(declaration.value)
+        @identifiers[declaration.name] = evaluate_expression(declaration.value)
       end
 
       def evaluate_expression_statement(statement)
@@ -49,25 +48,25 @@ module Javascript
       end
 
       def evaluate_function_definition(definition)
-        @functions[definition.name] = definition
+        @identifiers[definition.name] = definition
       end
 
       def evaluate_function_call(function_call)
-        function = @functions[function_call.name]
+        function = @identifiers[function_call.name]
 
-        previous_variables = @variables.dup
+        previous_identifiers = @identifiers.dup
 
         arguments = function.parameters.zip(function_call.arguments).map do |parameter, argument|
-          @variables[parameter] = evaluate_expression(argument) if argument
+          @identifiers[parameter] = evaluate_expression(argument) if argument
         end
 
         evaluate_block(function.body)
       ensure
-        @variables = previous_variables
+        @identifiers = previous_identifiers
       end
 
       def evaluate_variable_reference(reference)
-        @variables[reference.name]
+        @identifiers[reference.name]
       end
 
       def evaluate_string(string)
