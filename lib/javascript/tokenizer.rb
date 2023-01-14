@@ -87,7 +87,7 @@ module Javascript
         when scanner.scan("{")                 then :opening_brace
         when scanner.scan("}")                 then :closing_brace
         when scanner.scan(".")                 then tokenize_dot
-        when scanner.scan("+")                 then tokenize_plus
+        when scanner.scan("+")                 then :additive_operator
         when scanner.scan("-")                 then :additive_operator
         when scanner.scan("**")                then :exponentiation_operator
         when scanner.scan("*")                 then :multiplicative_operator
@@ -329,14 +329,6 @@ module Javascript
           tokenize_numeric
         else
           :dot
-        end
-      end
-
-      def tokenize_plus
-        if follows_word_boundary? && scanner.peek(1).match?(/\d/)
-          tokenize_number
-        else
-          :additive_operator
         end
       end
 
