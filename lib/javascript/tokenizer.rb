@@ -87,21 +87,12 @@ module Javascript
         when scanner.scan("{")                 then :opening_brace
         when scanner.scan("}")                 then :closing_brace
         when scanner.scan(".")                 then tokenize_dot
-        when scanner.scan("+")                 then :additive_operator
-        when scanner.scan("-")                 then :additive_operator
+        when scanner.scan(/\+|\-/)             then :additive_operator
         when scanner.scan("**")                then :exponentiation_operator
-        when scanner.scan("*")                 then :multiplicative_operator
-        when scanner.scan("/")                 then :multiplicative_operator
-        when scanner.scan("%")                 then :multiplicative_operator
-        when scanner.scan("<<")                then :shift_operator
-        when scanner.scan(">>>")               then :shift_operator
-        when scanner.scan(">>")                then :shift_operator
-        when scanner.scan(">=")                then :relational_operator
-        when scanner.scan(">")                 then :relational_operator
-        when scanner.scan("<=")                then :relational_operator
-        when scanner.scan("<")                 then :relational_operator
-        when scanner.scan("==")                then :equality_operator
-        when scanner.scan("!=")                then :equality_operator
+        when scanner.scan(/\*|\/|%/)           then :multiplicative_operator
+        when scanner.scan(/<<|>>>|>>/)         then :shift_operator
+        when scanner.scan(/[<>]=?/)            then :relational_operator
+        when scanner.scan(/==|!=/)             then :equality_operator
         when scanner.scan("=")                 then :equals
         else
           raise "Unrecognised character: #{scanner.getch.inspect}"
