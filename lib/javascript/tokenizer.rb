@@ -156,50 +156,32 @@ module Javascript
 
       def tokenize_numeric
         scanner.unscan
-        tokenize_number
+
+        number = consume_number
+
+        if scanner.scan(START_OF_IDENTIFIER) || scanner.scan(/\d/) || scanner.scan(".")
+          raise "Syntax error!"
+        else
+          [ :number, number ]
+        end
       end
 
-      def tokenize_number
-        [ :number, tokenize_number_literal ]
-      end
-
-      def tokenize_number_literal
+      def consume_number
         case
-        when scanner.scan(/0x/i)     then tokenize_nondecimal_number(base: 16, pattern: /\h/)
-        when scanner.scan(/0b/i)     then tokenize_nondecimal_number(base: 2)
-        when scanner.scan(/0o/i)     then tokenize_nondecimal_number(base: 8)
-        when scanner.scan(/0(?=\d)/) then tokenize_potentially_nondecimal_number(base: 8)
-        else                              tokenize_decimal_number
+        when scanner.scan(/0x/i)     then consume_nondecimal_number(base: 16)
+        when scanner.scan(/0b/i)     then consume_nondecimal_number(base: 2)
+        when scanner.scan(/0o/i)     then consume_nondecimal_number(base: 8)
+        when scanner.scan(/0(?=\d)/) then consume_potentially_nondecimal_number(base: 8)
+        else                              consume_decimal_number
         end
       end
 
-      def tokenize_nondecimal_number(base:, pattern: /[0-#{base - 1}]/)
-        digits = []
-
-        loop do
-          case
-          when scanner.scan(/[[:alnum:]]/)
-            if scanner.matched.match?(pattern)
-              digits << scanner.matched
-            else
-              raise "Syntax error!"
-            end
-          when scanner.scan("_")
-            raise "Syntax error!" unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
-          else
-            if digits.none?
-              raise "Syntax error!"
-            else
-              break
-            end
-          end
-        end
-
-        digits.join.to_i(base).to_f
+      def consume_nondecimal_number(base:)
+        consume_integer(pattern: /#{Regexp.union((Array("0".."9") + Array("a".."z"))[0...base]).source}/i).to_i(base)
       end
 
-      def tokenize_potentially_nondecimal_number(base:)
-        decimal = tokenize_decimal_number
+      def consume_potentially_nondecimal_number(base:)
+        decimal = consume_decimal_number
 
         if decimal.to_i == decimal
           Integer(decimal.to_i.to_s, base, exception: false) || decimal
@@ -208,54 +190,44 @@ module Javascript
         end
       end
 
-      def tokenize_decimal_number
-        digits = []
-
-        loop do
-          case
-          when scanner.scan(/\d/)
-            digits << scanner.matched
-          when scanner.scan(".")
-            # TODO: probably won’t need to raise when dot parsing is implemented proper
-            if !digits.include?(".") && scanner.peek(1).match?(/\d/)
-              digits << scanner.matched
-            else
-              raise "Syntax error!"
-            end
-          when scanner.scan("_")
-            raise "Syntax error!" unless digits.last&.match?(/\d/) && scanner.peek(1).match?(/\d/)
-          when scanner.scan(/e/i)
-            case
-            when digits.include?("e") || digits.include?("E")
-              raise "Syntax error!"
-            else
-              digits << scanner.matched
-            end
-          # TODO: probably won’t need this case eventually
-          when scanner.scan(/[a-z]/i)
-            raise "Syntax error!"
-          when scanner.scan(/[+-]/)
-            if digits.last.casecmp?("e")
-              digits << scanner.matched
-            # TODO: probably won’t need this when dot parsing is implemented proper
-            elsif digits.last == "."
-              raise "Syntax error!"
-            else
-              scanner.unscan
-              break
-            end
-          else
-            # TODO: just break when dot parsing is implemented proper
-            case digits.last
-            when ".", /e/i
-              raise "Syntax error!"
-            else
-              break
-            end
-          end
+      def consume_decimal_number
+        if scanner.scan(".")
+          whole      = 0
+          fractional = consume_integer
+        else
+          whole      = consume_integer
+          fractional = scanner.scan(".") ? consume_integer : 0
         end
 
-        digits.join.to_f
+        exponent = scanner.scan(/e/i) ? consume_signed_integer : 0
+
+        "#{whole}.#{fractional}e#{exponent}".to_f
+      end
+
+      def consume_integer(pattern: /\d/)
+        [].tap do |digits|
+          loop do
+            case
+            when scanner.scan(pattern)
+              digits << scanner.matched
+            when scanner.scan("_")
+              raise "Syntax error!" unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
+            else
+              if digits.none?
+                raise "Syntax error!"
+              else
+                break
+              end
+            end
+          end
+        end.join
+      end
+
+      def consume_signed_integer(pattern: /\d/)
+        sign    = scanner.scan(/\+|\-/).to_s
+        integer = consume_integer(pattern: pattern)
+
+        sign + integer
       end
 
       def tokenize_string

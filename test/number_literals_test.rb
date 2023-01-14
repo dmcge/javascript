@@ -64,8 +64,8 @@ class NumberLiteralsTest < Javascript::Test
 
   def test_legacy_octal_literals
     assert_equal 0o77612, evaluate("077612")
-    # assert_equal 0o4, evaluate("04")
-    # assert_equal 0o0000720, evaluate("00000720")
+    assert_equal 0o4, evaluate("04")
+    assert_equal 0o0000720, evaluate("00000720")
 
     assert_equal 0, evaluate("0")
     assert_equal 1.23, evaluate("01.23")
