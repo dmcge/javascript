@@ -5,7 +5,7 @@ module Javascript
   VariableStatement = Struct.new(:declarations, keyword_init: true)
   Return = Struct.new(:expression)
   VariableDeclaration = Struct.new(:name, :value)
-  Reference = Struct.new(:name)
+  Identifier = Struct.new(:name)
   ExpressionStatement = Struct.new(:expression)
   Parenthetical = Struct.new(:expression)
   If = Struct.new(:condition, :consequent, :alternative)
@@ -257,7 +257,7 @@ module Javascript
       end
 
       def parse_identifier
-        Reference.new(tokenizer.current_token.value)
+        Identifier.new(tokenizer.current_token.value)
       end
 
       def parse_string
