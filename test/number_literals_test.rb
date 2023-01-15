@@ -112,6 +112,7 @@ class NumberLiteralsTest < Javascript::Test
     assert_equal 78247, evaluate("+78247")
     assert_equal -2424, evaluate("-2424")
 
+    assert_equal 1, evaluate("-+-1")
     assert_equal 0, evaluate("-1+1")
     assert_equal 0, evaluate("+1-1")
     assert_equal 0, evaluate("1 + -1")
