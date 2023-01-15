@@ -59,6 +59,7 @@ module Javascript
         when FunctionDefinition then evaluate_function_definition(expression)
         when FunctionCall       then evaluate_function_call(expression)
         when Identifier         then evaluate_identifier(expression)
+        when Assignment         then evaluate_assignment(expression)
         when String             then evaluate_string(expression)
         when Number             then evaluate_number(expression)
         when Boolean            then evaluate_boolean(expression)
@@ -90,6 +91,10 @@ module Javascript
 
       def evaluate_identifier(identifier)
         @identifiers[identifier.name]
+      end
+
+      def evaluate_assignment(assignment)
+        @identifiers[assignment.identifier.name] = evaluate_expression(assignment.value)
       end
 
       def evaluate_string(string)

@@ -45,4 +45,12 @@ class VarTest < Javascript::Test
     assert_valid "var elsewhere"
     assert_invalid "var if"
   end
+
+  def test_reassigning_variables
+    assert_equal 2, evaluate(<<~JS)
+      var count = 1
+      count = 2
+      count
+    JS
+  end
 end

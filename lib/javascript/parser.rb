@@ -12,6 +12,7 @@ module Javascript
   Block = Struct.new(:body)
   BinaryOperation = Struct.new(:operator, :left_hand_side, :right_hand_side)
   UnaryOperation = Struct.new(:operator, :operand)
+  Assignment = Struct.new(:identifier, :value)
 
   class Parser
     def initialize(javascript)
@@ -187,13 +188,27 @@ module Javascript
         if tokenizer.consume(:additive_operator)
           parse_unary_operation
         else
-          parse_left_hand_side_expression
+          parse_assignment_expression
         end
       end
 
       def parse_unary_operation
         operator = Operator.for(tokenizer.current_token.value)
         UnaryOperation.new(operator, parse_unary_expression)
+      end
+
+      def parse_assignment_expression
+        expression = parse_left_hand_side_expression
+
+        if tokenizer.consume(:equals)
+          if expression.is_a?(Identifier)
+            Assignment.new(expression, parse_assignment_expression)
+          else
+            raise "Syntax error!"
+          end
+        else
+          expression
+        end
       end
 
       def parse_left_hand_side_expression
