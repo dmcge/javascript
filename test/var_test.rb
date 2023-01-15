@@ -53,4 +53,9 @@ class VarTest < Javascript::Test
       count
     JS
   end
+
+  def test_referencing_a_variable_before_it_is_declared
+    assert_invalid "record"
+    assert_invalid "record = 1"
+  end
 end

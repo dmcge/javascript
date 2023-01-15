@@ -90,11 +90,15 @@ module Javascript
       end
 
       def evaluate_identifier(identifier)
-        @identifiers[identifier.name]
+        @identifiers.fetch(identifier.name)
       end
 
       def evaluate_assignment(assignment)
-        @identifiers[assignment.identifier.name] = evaluate_expression(assignment.value)
+        if @identifiers.include?(assignment.identifier.name)
+          @identifiers[assignment.identifier.name] = evaluate_expression(assignment.value)
+        else
+          raise "Trying to assign variable #{assignment.identifier.name}, but it doesn’t exist"
+        end
       end
 
       def evaluate_string(string)
