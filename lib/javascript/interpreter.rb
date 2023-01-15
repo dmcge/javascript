@@ -1,41 +1,56 @@
 module Javascript
   class Interpreter
     def initialize(script)
-      @statements  = Parser.new(script).parse.statements
-      @identifiers = {} # FIXME
+      @statement_list = Parser.new(script).parse
+      @identifiers    = {} # FIXME
     end
 
-    def evaluate
-      result = nil
-      @statements.each { |statement| result = evaluate_statement(statement) }
-      result
+    def execute
+      execute_statement_list(@statement_list)
     end
 
     private
-      def evaluate_statement(statement)
+      def execute_statement_list(list)
+        result = execute_statement(list.statements.shift) until list.statements.empty?
+        result
+      end
+
+      def execute_statement(statement)
         case statement
-        when VariableStatement   then evaluate_variable_statement(statement)
-        when If                  then evaluate_if_statement(statement)
-        when Block               then evaluate_block(statement)
-        when Return              then evaluate_return(statement)
-        when ExpressionStatement then evaluate_expression_statement(statement)
-        when StatementList       then evaluate_statement_list(statement)
+        when VariableStatement   then execute_variable_statement(statement)
+        when If                  then execute_if_statement(statement)
+        when Block               then execute_block(statement)
+        when Return              then execute_return(statement)
+        when ExpressionStatement then execute_expression_statement(statement)
+        when StatementList       then execute_statement_list(statement)
         end
       end
 
-      def evaluate_variable_statement(statement)
-        statement.declarations.each { |declaration| evaluate_variable_declaration(declaration) }
+      def execute_variable_statement(statement)
+        statement.declarations.each { |declaration| execute_variable_declaration(declaration) }
       end
 
-      def evaluate_variable_declaration(declaration)
+      def execute_variable_declaration(declaration)
         @identifiers[declaration.name] = evaluate_expression(declaration.value)
       end
 
-      def evaluate_return(statement)
+      def execute_if_statement(if_statement)
+        if evaluate_expression(if_statement.condition).truthy?
+          execute_statement(if_statement.consequent)
+        elsif if_statement.alternative
+          execute_statement(if_statement.alternative)
+        end
+      end
+
+      def execute_block(block)
+        execute_statement(block.body)
+      end
+
+      def execute_return(statement)
         throw :return, evaluate_expression(statement.expression)
       end
 
-      def evaluate_expression_statement(statement)
+      def execute_expression_statement(statement)
         evaluate_expression(statement.expression)
       end
 
@@ -66,7 +81,7 @@ module Javascript
         end
 
         catch :return do
-          evaluate_block(function.body)
+          execute_block(function.body)
           nil
         end
       ensure
@@ -87,23 +102,6 @@ module Javascript
 
       def evaluate_boolean(boolean)
         boolean
-      end
-
-      def evaluate_if_statement(if_statement)
-        if evaluate_expression(if_statement.condition).truthy?
-          evaluate_statement(if_statement.consequent)
-        elsif if_statement.alternative
-          evaluate_statement(if_statement.alternative)
-        end
-      end
-
-      def evaluate_block(block)
-        evaluate_statement(block.body)
-      end
-
-      def evaluate_statement_list(list)
-        result = evaluate_statement(list.statements.shift) until list.statements.empty?
-        result
       end
 
       def evaluate_unary_operation(operation)

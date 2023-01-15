@@ -7,7 +7,7 @@ module Javascript
     private
 
     def evaluate(script)
-      Interpreter.new(script).evaluate
+      Interpreter.new(script).execute
     end
 
 
