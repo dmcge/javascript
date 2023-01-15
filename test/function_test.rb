@@ -66,4 +66,17 @@ class FunctionTest < Javascript::Test
       no_op()
     JS
   end
+
+  def test_currying
+    skip
+    assert_equal 11, evaluate(<<~JS)
+      function curry_add(a) {
+        return function(b) {
+          return a + b
+        }
+      }
+
+      curry_add(5)(6)
+    JS
+  end
 end

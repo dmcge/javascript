@@ -58,8 +58,7 @@ module Javascript
       end
 
       def evaluate_function_call(function_call)
-        function = @identifiers[function_call.name]
-
+        function = evaluate_expression(function_call.callee)
         previous_identifiers = @identifiers.dup
 
         arguments = function.parameters.zip(function_call.arguments).map do |parameter, argument|

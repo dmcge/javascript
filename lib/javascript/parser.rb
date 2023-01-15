@@ -1,7 +1,7 @@
 module Javascript
   StatementList = Struct.new(:statements)
   FunctionDefinition = Struct.new(:name, :parameters, :body)
-  FunctionCall = Struct.new(:name, :arguments)
+  FunctionCall = Struct.new(:callee, :arguments)
   VariableStatement = Struct.new(:declarations, keyword_init: true)
   Return = Struct.new(:expression)
   VariableDeclaration = Struct.new(:name, :value)
@@ -171,7 +171,7 @@ module Javascript
 
       def parse_exponentiation_expression
         current_token  = tokenizer.current_token
-        left_hand_side = parse_primary_expression
+        left_hand_side = parse_left_hand_side_expression
 
         if left_hand_side && tokenizer.consume(:exponentiation_operator)
           right_hand_side = parse_exponentiation_expression
@@ -187,13 +187,35 @@ module Javascript
         if tokenizer.consume(:additive_operator)
           parse_unary_operation
         else
-          parse_primary_expression
+          parse_left_hand_side_expression
         end
       end
 
       def parse_unary_operation
         operator = Operator.for(tokenizer.current_token.value)
         UnaryOperation.new(operator, parse_unary_expression)
+      end
+
+      def parse_left_hand_side_expression
+        expression = parse_primary_expression
+
+        while tokenizer.consume(:opening_bracket)
+          expression = FunctionCall.new.tap do |function_call|
+            function_call.callee    = expression
+            function_call.arguments = parse_arguments
+          end
+        end
+
+        expression
+      end
+
+      def parse_arguments
+        [].tap do |arguments|
+          tokenizer.until(:closing_bracket) do
+            arguments << parse_expression
+            tokenizer.consume(:comma)
+          end
+        end
       end
 
       def parse_primary_expression
@@ -235,21 +257,7 @@ module Javascript
       end
 
       def parse_identifier
-        identifier = tokenizer.current_token.value
-
-        if tokenizer.consume(:opening_bracket)
-          FunctionCall.new.tap do |function_call|
-            function_call.name = identifier
-            function_call.arguments = []
-
-            tokenizer.until(:closing_bracket) do
-              function_call.arguments << parse_expression
-              tokenizer.consume(:comma)
-            end
-          end
-        else
-          Reference.new(identifier)
-        end
+        Reference.new(tokenizer.current_token.value)
       end
 
       def parse_string
