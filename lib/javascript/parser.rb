@@ -1,18 +1,18 @@
 module Javascript
-  StatementList = Struct.new(:statements)
-  FunctionDefinition = Struct.new(:name, :parameters, :body)
-  FunctionCall = Struct.new(:callee, :arguments)
-  VariableStatement = Struct.new(:declarations, keyword_init: true)
-  Return = Struct.new(:expression)
-  VariableDeclaration = Struct.new(:name, :value)
-  Identifier = Struct.new(:name)
+  Assignment          = Struct.new(:identifier, :value)
+  BinaryOperation     = Struct.new(:operator, :left_hand_side, :right_hand_side)
+  Block               = Struct.new(:body)
   ExpressionStatement = Struct.new(:expression)
-  Parenthetical = Struct.new(:expression)
-  If = Struct.new(:condition, :consequent, :alternative)
-  Block = Struct.new(:body)
-  BinaryOperation = Struct.new(:operator, :left_hand_side, :right_hand_side)
-  UnaryOperation = Struct.new(:operator, :operand)
-  Assignment = Struct.new(:identifier, :value)
+  FunctionCall        = Struct.new(:callee, :arguments)
+  FunctionDefinition  = Struct.new(:name, :parameters, :body)
+  Identifier          = Struct.new(:name)
+  If                  = Struct.new(:condition, :consequent, :alternative)
+  Parenthetical       = Struct.new(:expression)
+  Return              = Struct.new(:expression)
+  StatementList       = Struct.new(:statements)
+  UnaryOperation      = Struct.new(:operator, :operand)
+  VariableDeclaration = Struct.new(:name, :value)
+  VariableStatement   = Struct.new(:declarations, keyword_init: true)
 
   class Parser
     def initialize(javascript)
@@ -56,7 +56,6 @@ module Javascript
           declaration.value = parse_expression if tokenizer.consume(:equals)
         end
       end
-
 
       def parse_if_statement
         If.new.tap do |if_statement|
