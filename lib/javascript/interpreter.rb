@@ -20,7 +20,7 @@ module Javascript
         when VariableStatement   then execute_variable_statement(statement)
         when If                  then execute_if_statement(statement)
         when Block               then execute_block(statement)
-        when Return              then execute_return(statement)
+        when Return              then execute_return_statement(statement)
         when ExpressionStatement then execute_expression_statement(statement)
         when StatementList       then execute_statement_list(statement)
         end
@@ -46,7 +46,7 @@ module Javascript
         execute_statement(block.body)
       end
 
-      def execute_return(statement)
+      def execute_return_statement(statement)
         throw :return, evaluate_expression(statement.expression)
       end
 

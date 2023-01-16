@@ -33,7 +33,7 @@ module Javascript
         when tokenizer.consume(:var)           then parse_variable_statement
         when tokenizer.consume(:if)            then parse_if_statement
         when tokenizer.consume(:opening_brace) then parse_block
-        when tokenizer.consume(:return)        then parse_return
+        when tokenizer.consume(:return)        then parse_return_statement
         when tokenizer.consume(:semicolon)     then parse_empty_statement
         else
           parse_expression_statement
@@ -86,7 +86,7 @@ module Javascript
         end
       end
 
-      def parse_return
+      def parse_return_statement
         Return.new(parse_expression)
       end
 
@@ -234,17 +234,17 @@ module Javascript
 
       def parse_primary_expression
         case
-        when tokenizer.consume(:function)        then parse_function
+        when tokenizer.consume(:function)        then parse_function_definition
         when tokenizer.consume(:identifier)      then parse_identifier
-        when tokenizer.consume(:string)          then parse_string
-        when tokenizer.consume(:number)          then parse_number
+        when tokenizer.consume(:string)          then parse_string_literal
+        when tokenizer.consume(:number)          then parse_number_literal
         when tokenizer.consume(:true)            then parse_true
         when tokenizer.consume(:false)           then parse_false
         when tokenizer.consume(:opening_bracket) then parse_parenthetical
         end
       end
 
-      def parse_function
+      def parse_function_definition
         FunctionDefinition.new.tap do |function|
           function.name = tokenizer.consume(:identifier)&.value
           function.parameters = parse_parameters
@@ -274,11 +274,11 @@ module Javascript
         Identifier.new(tokenizer.current_token.value)
       end
 
-      def parse_string
+      def parse_string_literal
         String.new(tokenizer.current_token.literal)
       end
 
-      def parse_number
+      def parse_number_literal
         Number.new(tokenizer.current_token.literal)
       end
 
