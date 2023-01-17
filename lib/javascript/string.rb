@@ -16,8 +16,6 @@ module Javascript
         -String.new(delete_prefix("-")).to_number
       when numeric.match?(/\AInfinity\z/)
         Number.new(Float::INFINITY)
-      when numeric.match?(/\s/)
-        Number.new(Float::NAN)
       else
         Number.new(Float(numeric, exception: false) || Integer(numeric, exception: false) || Float::NAN)
       end
