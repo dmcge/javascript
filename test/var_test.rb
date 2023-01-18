@@ -66,4 +66,8 @@ class VarTest < Javascript::Test
     assert_invalid "record"
     assert_invalid "record = 1"
   end
+
+  def test_dangling_equals
+    assert_invalid "var remember ="
+  end
 end
