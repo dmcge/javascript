@@ -94,6 +94,7 @@ module Javascript
         when scanner.scan(/[<>]=?/)            then :relational_operator
         when scanner.scan(/==|!=/)             then :equality_operator
         when scanner.scan("=")                 then :equals
+        when scanner.eos?                      then :semicolon
         else
           raise "Unrecognised character: #{scanner.getch.inspect}"
         end
