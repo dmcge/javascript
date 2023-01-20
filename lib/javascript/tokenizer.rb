@@ -73,11 +73,9 @@ module Javascript
       def advance_to_next_token
         skip_whitespace
         skip_comments
+        skip_whitespace
 
         case
-        # FIXME: this isn’t at all correct
-        when scanner.scan(/;|\R|\z/)           then :semicolon
-
         when scanner.scan(START_OF_IDENTIFIER) then tokenize_identifier
         when scanner.scan(/\d/)                then tokenize_numeric
         when scanner.scan(/"|'/)               then tokenize_string
@@ -94,6 +92,7 @@ module Javascript
         when scanner.scan(/[<>]=?/)            then :relational_operator
         when scanner.scan(/==|!=/)             then :equality_operator
         when scanner.scan("=")                 then :equals
+        when scanner.scan(";")                 then :semicolon
         when scanner.eos?                      then :semicolon
         else
           raise "Unrecognised character: #{scanner.getch.inspect}"
@@ -102,7 +101,7 @@ module Javascript
 
 
       def skip_whitespace
-        scanner.skip(/[[:blank:]]+/)
+        scanner.skip(/\s+/)
       end
 
       def skip_comments

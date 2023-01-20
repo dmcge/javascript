@@ -8,6 +8,10 @@ class SyntaxTest < Javascript::Test
     assert_invalid "5 6"
   end
 
+  def test_multiline_expression
+    assert_equal 5, evaluate("2 +\n 3")
+  end
+
   def test_empty_parentheticals
     assert_invalid "()"
     assert_invalid "() * 7"

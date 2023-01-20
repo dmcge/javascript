@@ -77,7 +77,6 @@ module Javascript
       end
 
       def parse_block
-        tokenizer.consume(:semicolon) # FIXME
         Block.new(parse_statement_list)
       end
 
