@@ -7,7 +7,9 @@ module Javascript
   FunctionDefinition  = Struct.new(:name, :parameters, :body)
   Identifier          = Struct.new(:name)
   If                  = Struct.new(:condition, :consequent, :alternative)
+  ObjectLiteral       = Struct.new(:properties)
   Parenthetical       = Struct.new(:expression)
+  PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)
   Return              = Struct.new(:expression)
   StatementList       = Struct.new(:statements)
   UnaryOperation      = Struct.new(:operator, :operand)
@@ -240,6 +242,7 @@ module Javascript
         when tokenizer.consume(:identifier)      then parse_identifier
         when tokenizer.consume(:string)          then parse_string_literal
         when tokenizer.consume(:number)          then parse_number_literal
+        when tokenizer.consume(:opening_brace)   then parse_object_literal
         when tokenizer.consume(:true)            then parse_true
         when tokenizer.consume(:false)           then parse_false
         when tokenizer.consume(:opening_bracket) then parse_parenthetical
@@ -282,6 +285,38 @@ module Javascript
 
       def parse_number_literal
         Number.new(tokenizer.current_token.literal)
+      end
+
+      def parse_object_literal
+        ObjectLiteral.new(properties: []).tap do |object|
+          loop do
+            if tokenizer.consume(:identifier)
+              object.properties << parse_property_definition
+
+              unless tokenizer.consume(:comma)
+                if tokenizer.consume(:closing_brace)
+                  break
+                else
+                  raise "Syntax error!"
+                end
+              end
+            else
+              if tokenizer.consume(:closing_brace)
+                break
+              else
+                raise "Syntax error!"
+              end
+            end
+          end
+        end
+      end
+
+      def parse_property_definition
+        PropertyDefinition.new.tap do |property|
+          property.name = tokenizer.current_token.value
+          tokenizer.consume(:colon)
+          property.value = parse_assignment_expression or raise "Syntax error!"
+        end
       end
 
       def parse_true

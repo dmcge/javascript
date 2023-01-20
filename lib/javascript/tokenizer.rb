@@ -92,6 +92,7 @@ module Javascript
         when scanner.scan(/[<>]=?/)            then :relational_operator
         when scanner.scan(/==|!=/)             then :equality_operator
         when scanner.scan("=")                 then :equals
+        when scanner.scan(":")                 then :colon
         when scanner.scan(";")                 then :semicolon
         when scanner.eos?                      then :semicolon
         else
