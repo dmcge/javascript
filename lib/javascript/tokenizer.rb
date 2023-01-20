@@ -79,12 +79,12 @@ module Javascript
         when scanner.scan(START_OF_IDENTIFIER) then tokenize_identifier
         when scanner.scan(/\d/)                then tokenize_numeric
         when scanner.scan(/"|'/)               then tokenize_string
+        when scanner.scan(".")                 then tokenize_dot
         when scanner.scan(",")                 then :comma
         when scanner.scan("(")                 then :opening_bracket
         when scanner.scan(")")                 then :closing_bracket
         when scanner.scan("{")                 then :opening_brace
         when scanner.scan("}")                 then :closing_brace
-        when scanner.scan(".")                 then tokenize_dot
         when scanner.scan(/\+|\-/)             then :additive_operator
         when scanner.scan("**")                then :exponentiation_operator
         when scanner.scan(/\*|\/|%/)           then :multiplicative_operator
