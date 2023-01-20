@@ -34,6 +34,10 @@ class ObjectLiteralsTest < Javascript::Test
     JS
   end
 
+  def test_string_keys
+    assert_valid %(var person = { "name": "Samir" })
+  end
+
   def test_trailing_commas
     assert_valid   "var alphabet = { a: 1, b: 2, c: 3, }"
     assert_invalid "var alphabet = { a: 1,, }"

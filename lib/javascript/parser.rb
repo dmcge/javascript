@@ -290,7 +290,7 @@ module Javascript
       def parse_object_literal
         ObjectLiteral.new(properties: []).tap do |object|
           loop do
-            if tokenizer.consume(:identifier)
+            if tokenizer.consume(:identifier) || tokenizer.consume(:string)
               object.properties << parse_property_definition
 
               unless tokenizer.consume(:comma)
@@ -313,7 +313,7 @@ module Javascript
 
       def parse_property_definition
         PropertyDefinition.new.tap do |property|
-          property.name = tokenizer.current_token.value
+          property.name = tokenizer.current_token.to_h.slice(:literal, :value).values.compact.first
           tokenizer.consume(:colon)
           property.value = parse_assignment_expression or raise "Syntax error!"
         end
