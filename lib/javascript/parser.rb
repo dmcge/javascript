@@ -290,7 +290,7 @@ module Javascript
       def parse_object_literal
         ObjectLiteral.new(properties: []).tap do |object|
           loop do
-            if tokenizer.consume(:identifier) || tokenizer.consume(:string)
+            if tokenizer.consume(:identifier) || tokenizer.consume(:string) || tokenizer.consume(:number)
               object.properties << parse_property_definition
 
               unless tokenizer.consume(:comma)
