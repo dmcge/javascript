@@ -66,4 +66,8 @@ class ObjectLiteralsTest < Javascript::Test
     assert_invalid "var fail = { 1: }"
     assert_invalid %(var fail = { start: "good", then:, yet: "we're back now" })
   end
+
+  def test_missing_colons
+    assert_invalid "var fail = { a 1 }"
+  end
 end
