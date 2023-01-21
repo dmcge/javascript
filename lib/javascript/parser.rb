@@ -314,8 +314,12 @@ module Javascript
       def parse_property_definition
         PropertyDefinition.new.tap do |property|
           property.name = tokenizer.current_token.literal || tokenizer.current_token.value
-          tokenizer.consume(:colon)
-          property.value = parse_assignment_expression or raise "Syntax error!"
+
+          if tokenizer.consume(:colon)
+            property.value = parse_assignment_expression or raise "Syntax error!"
+          else
+            property.value = parse_identifier
+          end
         end
       end
 
