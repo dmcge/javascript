@@ -7,6 +7,7 @@ module Javascript
   FunctionDefinition  = Struct.new(:name, :parameters, :body)
   Identifier          = Struct.new(:name)
   If                  = Struct.new(:condition, :consequent, :alternative)
+  NumberLiteral       = Struct.new(:value)
   ObjectLiteral       = Struct.new(:properties)
   Parenthetical       = Struct.new(:expression)
   PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)
@@ -285,7 +286,7 @@ module Javascript
       end
 
       def parse_number_literal
-        Number.new(tokenizer.current_token.literal)
+        NumberLiteral.new(tokenizer.current_token.literal)
       end
 
       def parse_object_literal
