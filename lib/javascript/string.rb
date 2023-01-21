@@ -1,5 +1,9 @@
 module Javascript
   class String < ::String
+    def +(other)
+      String.new(to_s + other.to_s)
+    end
+
     def truthy?
       !empty?
     end
@@ -19,6 +23,10 @@ module Javascript
       else
         Number.new(Float(numeric, exception: false) || Integer(numeric, exception: false) || Float::NAN)
       end
+    end
+
+    def to_string
+      self
     end
   end
 end

@@ -56,7 +56,7 @@ module Javascript
     class Plus < Operator
       def perform_binary(left_hand_side, right_hand_side)
         if left_hand_side.is_a?(String) || right_hand_side.is_a?(String)
-          left_hand_side.to_s + right_hand_side.to_s
+          left_hand_side.to_string + right_hand_side.to_string
         else
           left_hand_side.to_number + right_hand_side.to_number
         end

@@ -56,6 +56,10 @@ module Javascript
       !zero?
     end
 
+    def to_string
+      String.new(to_s)
+    end
+
     def to_number
       self
     end
