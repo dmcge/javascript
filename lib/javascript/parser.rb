@@ -12,6 +12,7 @@ module Javascript
   PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)
   Return              = Struct.new(:expression)
   StatementList       = Struct.new(:statements)
+  StringLiteral       = Struct.new(:value)
   UnaryOperation      = Struct.new(:operator, :operand)
   VariableDeclaration = Struct.new(:name, :value)
   VariableStatement   = Struct.new(:declarations, keyword_init: true)
@@ -280,7 +281,7 @@ module Javascript
       end
 
       def parse_string_literal
-        String.new(tokenizer.current_token.literal)
+        StringLiteral.new(tokenizer.current_token.literal)
       end
 
       def parse_number_literal
