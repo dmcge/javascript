@@ -313,7 +313,7 @@ module Javascript
 
       def parse_property_definition
         PropertyDefinition.new.tap do |property|
-          property.name = tokenizer.current_token.to_h.slice(:literal, :value).values.compact.first
+          property.name = tokenizer.current_token.literal || tokenizer.current_token.value
           tokenizer.consume(:colon)
           property.value = parse_assignment_expression or raise "Syntax error!"
         end
