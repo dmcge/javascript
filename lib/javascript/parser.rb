@@ -2,6 +2,7 @@ module Javascript
   Assignment          = Struct.new(:identifier, :value)
   BinaryOperation     = Struct.new(:operator, :left_hand_side, :right_hand_side)
   Block               = Struct.new(:body)
+  BooleanLiteral      = Struct.new(:value, keyword_init: true)
   ExpressionStatement = Struct.new(:expression)
   FunctionCall        = Struct.new(:callee, :arguments)
   FunctionDefinition  = Struct.new(:name, :parameters, :body)
@@ -326,11 +327,11 @@ module Javascript
       end
 
       def parse_true
-        True.new
+        BooleanLiteral.new(value: true)
       end
 
       def parse_false
-        False.new
+        BooleanLiteral.new(value: false)
       end
 
       def parse_parenthetical

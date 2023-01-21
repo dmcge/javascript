@@ -62,7 +62,7 @@ module Javascript
         when Assignment         then evaluate_assignment(expression)
         when StringLiteral      then evaluate_string_literal(expression)
         when NumberLiteral      then evaluate_number_literal(expression)
-        when Boolean            then evaluate_boolean(expression)
+        when BooleanLiteral     then evaluate_boolean_literal(expression)
         when UnaryOperation     then evaluate_unary_operation(expression)
         when BinaryOperation    then evaluate_binary_operation(expression)
         when Parenthetical      then evaluate_parenthetical(expression)
@@ -109,8 +109,8 @@ module Javascript
         Number.new(literal.value)
       end
 
-      def evaluate_boolean(boolean)
-        boolean
+      def evaluate_boolean_literal(literal)
+        Boolean.wrap(literal.value)
       end
 
       def evaluate_unary_operation(operation)
