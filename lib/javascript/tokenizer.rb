@@ -188,7 +188,7 @@ module Javascript
           fractional = consume_integer
         else
           whole      = consume_integer
-          fractional = scanner.scan(".") ? consume_integer : 0
+          fractional = scanner.scan(".") && scanner.peek(1).match?(/\d/) ? consume_integer : 0
         end
 
         exponent = scanner.scan(/e/i) ? consume_signed_integer : 0

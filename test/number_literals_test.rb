@@ -15,11 +15,17 @@ class NumberLiteralsTest < Javascript::Test
     assert_equal 0.728472, evaluate(".728472")
     assert_equal 0.7, evaluate("00.7000")
 
-    assert_invalid "3.1."
     assert_invalid "3.1.415"
     assert_invalid ".1.415"
     assert_invalid "3.4a2"
   end
+
+  def test_trailing_dots
+    assert_equal 3, evaluate("3.")
+    assert_invalid "3.a"
+    assert_invalid "3.1."
+  end
+
 
   def test_decimal_literals_with_exponents
     assert_equal 3e18, evaluate("3e18")
@@ -121,9 +127,6 @@ class NumberLiteralsTest < Javascript::Test
   def test_signed_float_literals
     assert_equal 782.2424, evaluate("+782.2424")
     assert_equal -2.8092, evaluate("-2.8092")
-
-    assert_invalid "1.+2"
-    assert_invalid "1.-2"
   end
 
   def test_signed_exponents
