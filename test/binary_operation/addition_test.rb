@@ -20,6 +20,11 @@ class BinaryAdditionTest < Javascript::Test
     assert_equal "4d", evaluate(%(4.0 + 'd'))
   end
 
+  def test_adding_strings_and_booleans
+    assert_equal "atrue", evaluate(%("a" + true))
+    assert_equal "falseb", evaluate(%(false + "b"))
+  end
+
   def test_adding_with_negative_numbers
     assert_equal 1, evaluate("-1 + 2")
     assert_equal -1, evaluate("1 + -2")

@@ -18,14 +18,30 @@ module Javascript
       true?
     end
 
+    def to_string
+      String.new(to_s)
+    end
+
     def to_number
       Number.new(to_i)
+    end
+
+    def to_s
+      raise NotImplementedError
+    end
+
+    def to_i
+      raise NotImplementedError
     end
   end
 
   class True < Boolean
     def true?
       true
+    end
+
+    def to_s
+      "true"
     end
 
     def to_i
@@ -36,6 +52,10 @@ module Javascript
   class False < Boolean
     def true?
       false
+    end
+
+    def to_s
+      "false"
     end
 
     def to_i
