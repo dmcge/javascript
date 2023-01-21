@@ -60,9 +60,9 @@ module Javascript
         when FunctionCall       then evaluate_function_call(expression)
         when Identifier         then evaluate_identifier(expression)
         when Assignment         then evaluate_assignment(expression)
-        when String             then evaluate_string(expression)
-        when Number             then evaluate_number(expression)
-        when Boolean            then evaluate_boolean(expression)
+        when StringLiteral      then evaluate_string_literal(expression)
+        when NumberLiteral      then evaluate_number_literal(expression)
+        when BooleanLiteral     then evaluate_boolean_literal(expression)
         when UnaryOperation     then evaluate_unary_operation(expression)
         when BinaryOperation    then evaluate_binary_operation(expression)
         when Parenthetical      then evaluate_parenthetical(expression)
@@ -101,16 +101,16 @@ module Javascript
         end
       end
 
-      def evaluate_string(string)
-        string
+      def evaluate_string_literal(literal)
+        String.new(literal.value)
       end
 
-      def evaluate_number(number)
-        number
+      def evaluate_number_literal(literal)
+        Number.new(literal.value)
       end
 
-      def evaluate_boolean(boolean)
-        boolean
+      def evaluate_boolean_literal(literal)
+        Boolean.wrap(literal.value)
       end
 
       def evaluate_unary_operation(operation)

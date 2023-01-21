@@ -2,16 +2,19 @@ module Javascript
   Assignment          = Struct.new(:identifier, :value)
   BinaryOperation     = Struct.new(:operator, :left_hand_side, :right_hand_side)
   Block               = Struct.new(:body)
+  BooleanLiteral      = Struct.new(:value, keyword_init: true)
   ExpressionStatement = Struct.new(:expression)
   FunctionCall        = Struct.new(:callee, :arguments)
   FunctionDefinition  = Struct.new(:name, :parameters, :body)
   Identifier          = Struct.new(:name)
   If                  = Struct.new(:condition, :consequent, :alternative)
+  NumberLiteral       = Struct.new(:value)
   ObjectLiteral       = Struct.new(:properties)
   Parenthetical       = Struct.new(:expression)
   PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)
   Return              = Struct.new(:expression)
   StatementList       = Struct.new(:statements)
+  StringLiteral       = Struct.new(:value)
   UnaryOperation      = Struct.new(:operator, :operand)
   VariableDeclaration = Struct.new(:name, :value)
   VariableStatement   = Struct.new(:declarations, keyword_init: true)
@@ -280,11 +283,11 @@ module Javascript
       end
 
       def parse_string_literal
-        String.new(tokenizer.current_token.literal)
+        StringLiteral.new(tokenizer.current_token.literal)
       end
 
       def parse_number_literal
-        Number.new(tokenizer.current_token.literal)
+        NumberLiteral.new(tokenizer.current_token.literal)
       end
 
       def parse_object_literal
@@ -324,11 +327,11 @@ module Javascript
       end
 
       def parse_true
-        True.new
+        BooleanLiteral.new(value: true)
       end
 
       def parse_false
-        False.new
+        BooleanLiteral.new(value: false)
       end
 
       def parse_parenthetical
