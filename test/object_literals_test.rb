@@ -46,6 +46,10 @@ class ObjectLiteralsTest < Javascript::Test
     assert_valid "var person = { name, age, location }"
   end
 
+  def test_mixing_shorthand_and_longhand
+    assert_valid "var person = { name, age: 53, location }"
+  end
+
   def test_trailing_commas
     assert_valid   "var alphabet = { a: 1, b: 2, c: 3, }"
     assert_invalid "var alphabet = { a: 1,, }"
