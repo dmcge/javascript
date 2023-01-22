@@ -11,8 +11,7 @@ module Javascript
 
     private
       def execute_statement_list(list)
-        result = execute_statement(list.statements.shift) until list.statements.empty?
-        result
+        list.statements.reduce(nil) { |_, statement| execute_statement(statement) }
       end
 
       def execute_statement(statement)
