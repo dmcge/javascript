@@ -63,6 +63,8 @@ module Javascript
         when StringLiteral      then evaluate_string_literal(expression)
         when NumberLiteral      then evaluate_number_literal(expression)
         when BooleanLiteral     then evaluate_boolean_literal(expression)
+        when ObjectLiteral      then evaluate_object_literal(expression)
+        when PropertyAccess     then evaluate_property_access(expression)
         when UnaryOperation     then evaluate_unary_operation(expression)
         when BinaryOperation    then evaluate_binary_operation(expression)
         when Parenthetical      then evaluate_parenthetical(expression)
@@ -111,6 +113,18 @@ module Javascript
 
       def evaluate_boolean_literal(literal)
         Boolean.wrap(literal.value)
+      end
+
+      def evaluate_object_literal(literal)
+        {}.tap do |object|
+          literal.properties.each do |property|
+            object[property.name] = evaluate_expression(property.value)
+          end
+        end
+      end
+
+      def evaluate_property_access(property_access)
+        evaluate_expression(property_access.receiver)[property_access.name]
       end
 
       def evaluate_unary_operation(operation)

@@ -11,6 +11,7 @@ module Javascript
   NumberLiteral       = Struct.new(:value)
   ObjectLiteral       = Struct.new(:properties)
   Parenthetical       = Struct.new(:expression)
+  PropertyAccess      = Struct.new(:receiver, :name)
   PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)
   Return              = Struct.new(:expression)
   StatementList       = Struct.new(:statements)
@@ -219,6 +220,13 @@ module Javascript
 
       def parse_left_hand_side_expression
         expression = parse_primary_expression
+
+        while tokenizer.consume(:dot)
+          expression = PropertyAccess.new.tap do |property_access|
+            property_access.receiver = expression
+            property_access.name     = tokenizer.consume(:identifier).value
+          end
+        end
 
         while tokenizer.consume(:opening_bracket)
           expression = FunctionCall.new.tap do |function_call|
