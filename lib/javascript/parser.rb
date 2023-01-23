@@ -118,15 +118,16 @@ module Javascript
 
       def parse_prefix_expression
         case
-        when tokenizer.consume(:operator)        then parse_unary_operation
-        when tokenizer.consume(:function)        then parse_function_definition
-        when tokenizer.consume(:identifier)      then parse_identifier
-        when tokenizer.consume(:string)          then parse_string_literal
-        when tokenizer.consume(:number)          then parse_number_literal
-        when tokenizer.consume(:opening_brace)   then parse_object_literal
-        when tokenizer.consume(:true)            then parse_true
-        when tokenizer.consume(:false)           then parse_false
-        when tokenizer.consume(:opening_bracket) then parse_parenthetical
+        when tokenizer.consume(:operator)               then parse_unary_operation
+        when tokenizer.consume(:function)               then parse_function_definition
+        when tokenizer.consume(:identifier)             then parse_identifier
+        when tokenizer.consume(:string)                 then parse_string_literal
+        when tokenizer.consume(:number)                 then parse_number_literal
+        when tokenizer.consume(:opening_brace)          then parse_object_literal
+        when tokenizer.consume(:opening_square_bracket) then parse_array_literal
+        when tokenizer.consume(:true)                   then parse_true
+        when tokenizer.consume(:false)                  then parse_false
+        when tokenizer.consume(:opening_bracket)        then parse_parenthetical
         end
       end
 
@@ -196,6 +197,19 @@ module Javascript
               else
                 raise "Syntax error!"
               end
+            end
+          end
+        end
+      end
+
+      def parse_array_literal
+        ArrayLiteral.new(elements: []).tap do |array|
+          tokenizer.until(:closing_square_bracket) do
+            if tokenizer.consume(:comma)
+              array.elements << nil
+            else
+              array.elements << parse_expression
+              tokenizer.consume(:comma)
             end
           end
         end

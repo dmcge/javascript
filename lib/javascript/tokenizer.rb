@@ -90,6 +90,8 @@ module Javascript
         when scanner.scan(")")                 then :closing_bracket
         when scanner.scan("{")                 then :opening_brace
         when scanner.scan("}")                 then :closing_brace
+        when scanner.scan("[")                 then :opening_square_bracket
+        when scanner.scan("]")                 then :closing_square_bracket
         when scanner.scan(OPERATOR)            then :operator
         when scanner.scan("=")                 then :equals
         when scanner.scan(":")                 then :colon

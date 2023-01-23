@@ -63,6 +63,7 @@ module Javascript
         when NumberLiteral      then evaluate_number_literal(expression)
         when BooleanLiteral     then evaluate_boolean_literal(expression)
         when ObjectLiteral      then evaluate_object_literal(expression)
+        when ArrayLiteral       then evaluate_array_literal(expression)
         when PropertyAccess     then evaluate_property_access(expression)
         when UnaryOperation     then evaluate_unary_operation(expression)
         when BinaryOperation    then evaluate_binary_operation(expression)
@@ -120,6 +121,10 @@ module Javascript
             object[property.name] = evaluate_expression(property.value)
           end
         end
+      end
+
+      def evaluate_array_literal(literal)
+        literal.elements.map { |element| evaluate_expression(element) }
       end
 
       def evaluate_property_access(property_access)
