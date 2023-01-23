@@ -125,9 +125,10 @@ module Javascript
         when tokenizer.consume(:number)                 then parse_number_literal
         when tokenizer.consume(:opening_brace)          then parse_object_literal
         when tokenizer.consume(:opening_square_bracket) then parse_array_literal
+        when tokenizer.consume(:opening_bracket)        then parse_parenthetical
         when tokenizer.consume(:true)                   then parse_true
         when tokenizer.consume(:false)                  then parse_false
-        when tokenizer.consume(:opening_bracket)        then parse_parenthetical
+        when tokenizer.consume(:null)                   then parse_null
         end
       end
 
@@ -227,6 +228,14 @@ module Javascript
         end
       end
 
+      def parse_parenthetical
+        raise "Syntax error!" if tokenizer.consume(:closing_bracket)
+
+        Parenthetical.new(parse_expression).tap do
+          raise "Syntax error!" unless tokenizer.consume(:closing_bracket)
+        end
+      end
+
       def parse_true
         BooleanLiteral.new(value: true)
       end
@@ -235,12 +244,8 @@ module Javascript
         BooleanLiteral.new(value: false)
       end
 
-      def parse_parenthetical
-        raise "Syntax error!" if tokenizer.consume(:closing_bracket)
-
-        Parenthetical.new(parse_expression).tap do
-          raise "Syntax error!" unless tokenizer.consume(:closing_bracket)
-        end
+      def parse_null
+        NullLiteral.new
       end
 
 

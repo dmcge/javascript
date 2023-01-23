@@ -10,6 +10,7 @@ module Javascript
   Identifier          = Struct.new(:name)
   If                  = Struct.new(:condition, :consequent, :alternative)
   NumberLiteral       = Struct.new(:value)
+  NullLiteral         = Struct.new(nil)
   ObjectLiteral       = Struct.new(:properties)
   Parenthetical       = Struct.new(:expression)
   PropertyAccess      = Struct.new(:receiver, :name)
