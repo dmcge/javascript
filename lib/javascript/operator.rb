@@ -28,10 +28,18 @@ module Javascript
       raise NotImplementedError
     end
 
+    def right_associative?
+      false
+    end
+
 
     class Exponentiation < Operator
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number ** right_hand_side.to_number
+      end
+
+      def right_associative?
+        true
       end
     end
 

@@ -241,7 +241,7 @@ module Javascript
 
       def parse_binary_operation(left_hand_side, precedence:)
         operator        = Operator.for(tokenizer.current_token.value)
-        right_hand_side = parse_expression(precedence: precedence)
+        right_hand_side = parse_expression(precedence: operator.right_associative? ? precedence - 1 : precedence)
 
         BinaryOperation.new(operator, left_hand_side, right_hand_side)
       end

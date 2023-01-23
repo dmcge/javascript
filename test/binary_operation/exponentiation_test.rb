@@ -7,6 +7,10 @@ class BinaryAdditionTest < Javascript::Test
     assert_equal 0.01, evaluate("100 ** -1")
   end
 
+  def test_associativity
+    assert_equal 2 ** (4 ** 3), evaluate("2 ** 4 ** 3")
+  end
+
   def test_exponentiating_numeric_strings
     assert_equal 243, evaluate(%("3" ** "5"))
     assert_equal 4096, evaluate(%("4" ** 6))

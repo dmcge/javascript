@@ -6,6 +6,10 @@ class BinarySubtractionTest < Javascript::Test
     assert_equal 0.333, evaluate("0.666 - 0.333")
   end
 
+  def test_associativity
+    assert_equal 0, evaluate("5 - 3 - 2")
+  end
+
   def test_subtracting_numeric_strings
     assert_equal 4, evaluate(%("14" - "10"))
     assert_equal 3, evaluate(%("10" - 7))

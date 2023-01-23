@@ -7,6 +7,10 @@ class BinaryDivisionTest < Javascript::Test
     assert_equal 0.3333333333333333, evaluate("1/3")
   end
 
+  def test_associativity
+    assert_equal 2.5, evaluate("15 / 3 / 2")
+  end
+
   def test_dividing_numeric_strings
     assert_equal 3, evaluate(%("15" / "5"))
     assert_equal 4, evaluate(%("24" / 6))
