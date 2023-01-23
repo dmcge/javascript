@@ -40,7 +40,7 @@ module Javascript
           declaration.name  = tokenizer.consume(:identifier).value
 
           if tokenizer.consume(:equals)
-            declaration.value = parse_assignment_expression or raise
+            declaration.value = parse_expression or raise
           end
         end
       end
@@ -87,147 +87,38 @@ module Javascript
         end
       end
 
-      def parse_expression
-        parse_equality_expression # || …
-      end
 
-      def parse_equality_expression
-        left_hand_side = parse_relational_expression
+      def parse_expression(precedence: 0)
+        expression = parse_prefix_expression
 
-        if tokenizer.consume(:equality_operator)
-          operator        = Operator.for(tokenizer.current_token.value)
-          right_hand_side = parse_equality_expression
-
-          BinaryOperation.new(operator, left_hand_side, right_hand_side)
-        else
-          left_hand_side
-        end
-      end
-
-      def parse_relational_expression
-        left_hand_side = parse_shift_expression
-
-        if tokenizer.consume(:relational_operator)
-          operator        = Operator.for(tokenizer.current_token.value)
-          right_hand_side = parse_relational_expression
-
-          BinaryOperation.new(operator, left_hand_side, right_hand_side)
-        else
-          left_hand_side
-        end
-      end
-
-      def parse_shift_expression
-        left_hand_side = parse_additive_expression
-
-        if tokenizer.consume(:shift_operator)
-          operator        = Operator.for(tokenizer.current_token.value)
-          right_hand_side = parse_shift_expression
-
-          BinaryOperation.new(operator, left_hand_side, right_hand_side)
-        else
-          left_hand_side
-        end
-      end
-
-      def parse_additive_expression
-        left_hand_side = parse_multiplicative_expression
-
-        if tokenizer.consume(:additive_operator)
-          operator        = Operator.for(tokenizer.current_token.value)
-          right_hand_side = parse_additive_expression
-
-          BinaryOperation.new(operator, left_hand_side, right_hand_side)
-        else
-          left_hand_side
-        end
-      end
-
-      def parse_multiplicative_expression
-        left_hand_side = parse_exponentiation_expression
-
-        if tokenizer.consume(:multiplicative_operator)
-          operator        = Operator.for(tokenizer.current_token.value)
-          right_hand_side = parse_multiplicative_expression
-
-          BinaryOperation.new(operator, left_hand_side, right_hand_side)
-        else
-          left_hand_side
-        end
-      end
-
-      def parse_exponentiation_expression
-        current_token  = tokenizer.current_token
-        left_hand_side = parse_left_hand_side_expression
-
-        if left_hand_side && tokenizer.consume(:exponentiation_operator)
-          right_hand_side = parse_exponentiation_expression
-
-          BinaryOperation.new(Operator.for("**"), left_hand_side, right_hand_side)
-        else
-          tokenizer.rewind until tokenizer.current_token == current_token
-          parse_unary_expression
-        end
-      end
-
-      def parse_unary_expression
-        if tokenizer.consume(:additive_operator)
-          parse_unary_operation
-        else
-          parse_assignment_expression
-        end
-      end
-
-      def parse_unary_operation
-        operator = Operator.for(tokenizer.current_token.value)
-        UnaryOperation.new(operator, parse_unary_expression)
-      end
-
-      def parse_assignment_expression
-        expression = parse_left_hand_side_expression
-
-        if tokenizer.consume(:equals)
-          if expression.is_a?(Identifier)
-            Assignment.new(expression, parse_assignment_expression)
-          else
-            raise "Syntax error!"
-          end
-        else
-          expression
-        end
-      end
-
-      def parse_left_hand_side_expression
-        expression = parse_primary_expression
-
-        while tokenizer.consume(:dot)
-          expression = PropertyAccess.new.tap do |property_access|
-            property_access.receiver = expression
-            property_access.name     = tokenizer.consume(:identifier).value
-          end
-        end
-
-        while tokenizer.consume(:opening_bracket)
-          expression = FunctionCall.new.tap do |function_call|
-            function_call.callee    = expression
-            function_call.arguments = parse_arguments
+        unless tokenizer.consume(:semicolon)
+          while precedence < (current_precedence = precedence_of(tokenizer.look_ahead))
+            expression = parse_infix_expression(expression, precedence: current_precedence)
           end
         end
 
         expression
       end
 
-      def parse_arguments
-        [].tap do |arguments|
-          tokenizer.until(:closing_bracket) do
-            arguments << parse_expression
-            tokenizer.consume(:comma)
-          end
+      def precedence_of(token)
+        case token.value
+        when "(", "."             then 8
+        when "**"                 then 7
+        when "*", "/", "%"        then 6
+        when "+", "-"             then 5
+        when "<<", ">>", ">>>"    then 4
+        when "<", "<=", ">", ">=" then 3
+        when "==", "!="           then 2
+        when "="                  then 1
+        else
+          0
         end
       end
 
-      def parse_primary_expression
+
+      def parse_prefix_expression
         case
+        when tokenizer.consume(:operator)        then parse_unary_operation
         when tokenizer.consume(:function)        then parse_function_definition
         when tokenizer.consume(:identifier)      then parse_identifier
         when tokenizer.consume(:string)          then parse_string_literal
@@ -236,6 +127,15 @@ module Javascript
         when tokenizer.consume(:true)            then parse_true
         when tokenizer.consume(:false)           then parse_false
         when tokenizer.consume(:opening_bracket) then parse_parenthetical
+        end
+      end
+
+      def parse_unary_operation
+        raise "Syntax error" unless ["+", "-"].include?(tokenizer.current_token.value)
+
+        UnaryOperation.new.tap do |operation|
+          operation.operator = Operator.for(tokenizer.current_token.value)
+          operation.operand  = parse_prefix_expression
         end
       end
 
@@ -306,7 +206,7 @@ module Javascript
           property.name = tokenizer.current_token.literal || tokenizer.current_token.value
 
           if tokenizer.consume(:colon)
-            property.value = parse_assignment_expression or raise "Syntax error!"
+            property.value = parse_expression or raise "Syntax error!"
           else
             property.value = parse_identifier
           end
@@ -326,6 +226,56 @@ module Javascript
 
         Parenthetical.new(parse_expression).tap do
           raise "Syntax error!" unless tokenizer.consume(:closing_bracket)
+        end
+      end
+
+
+      def parse_infix_expression(prefix, precedence:)
+        case
+        when tokenizer.consume(:operator)        then parse_binary_operation(prefix, precedence: precedence)
+        when tokenizer.consume(:equals)          then parse_assignment(prefix, precedence: precedence)
+        when tokenizer.consume(:dot)             then parse_property_access(prefix, precedence: precedence)
+        when tokenizer.consume(:opening_bracket) then parse_function_call(prefix, precedence: precedence)
+        end
+      end
+
+      def parse_binary_operation(left_hand_side, precedence:)
+        operator        = Operator.for(tokenizer.current_token.value)
+        right_hand_side = parse_expression(precedence: precedence)
+
+        BinaryOperation.new(operator, left_hand_side, right_hand_side)
+      end
+
+      def parse_assignment(left_hand_side, precedence:)
+        if left_hand_side.is_a?(Identifier)
+          right_hand_side = parse_expression(precedence: precedence - 1)
+
+          Assignment.new(left_hand_side, right_hand_side)
+        else
+          raise "Syntax error!"
+        end
+      end
+
+      def parse_property_access(receiver, precedence:)
+        PropertyAccess.new.tap do |property_access|
+          property_access.receiver = receiver
+          property_access.name     = tokenizer.consume(:identifier).value
+        end
+      end
+
+      def parse_function_call(callee, precedence:)
+        FunctionCall.new.tap do |function_call|
+          function_call.callee    = callee
+          function_call.arguments = parse_arguments(precedence:)
+        end
+      end
+
+      def parse_arguments(precedence:)
+        [].tap do |arguments|
+          tokenizer.until(:closing_bracket) do
+            arguments << parse_expression(precedence: precedence)
+            tokenizer.consume(:comma)
+          end
         end
       end
   end

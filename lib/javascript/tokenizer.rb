@@ -46,6 +46,10 @@ module Javascript
       end
     end
 
+    def look_ahead
+      next_token.tap { rewind }
+    end
+
     def rewind
       scanner.pos = tokens.pop.starting_position
     end
@@ -69,6 +73,7 @@ module Javascript
       end
 
       START_OF_IDENTIFIER = /\p{L}|_|\$/
+      OPERATOR            = />>>|==|\*\*|>>|<<|<=|>=|!=|>|\-|\+|%|\*|<|\//
 
       def advance_to_next_token
         skip_whitespace
@@ -85,12 +90,7 @@ module Javascript
         when scanner.scan(")")                 then :closing_bracket
         when scanner.scan("{")                 then :opening_brace
         when scanner.scan("}")                 then :closing_brace
-        when scanner.scan(/\+|\-/)             then :additive_operator
-        when scanner.scan("**")                then :exponentiation_operator
-        when scanner.scan(/\*|\/|%/)           then :multiplicative_operator
-        when scanner.scan(/<<|>>>|>>/)         then :shift_operator
-        when scanner.scan(/[<>]=?/)            then :relational_operator
-        when scanner.scan(/==|!=/)             then :equality_operator
+        when scanner.scan(OPERATOR)            then :operator
         when scanner.scan("=")                 then :equals
         when scanner.scan(":")                 then :colon
         when scanner.scan(";")                 then :semicolon
