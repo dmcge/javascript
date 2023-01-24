@@ -6,3 +6,7 @@ require "javascript/boolean"
 require "javascript/number"
 require "javascript/string"
 require "javascript/tokenizer"
+
+module Javascript
+  SyntaxError = Class.new(StandardError)
+end

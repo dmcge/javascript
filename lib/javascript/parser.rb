@@ -55,7 +55,7 @@ module Javascript
         if tokenizer.consume(:opening_bracket)
           parse_parenthetical.expression
         else
-          raise "Syntax error!"
+          raise SyntaxError
         end
       end
 
@@ -129,7 +129,7 @@ module Javascript
       end
 
       def parse_unary_operation
-        raise "Syntax error" unless ["+", "-"].include?(tokenizer.current_token.value)
+        raise SyntaxError unless ["+", "-"].include?(tokenizer.current_token.value)
 
         UnaryOperation.new.tap do |operation|
           operation.operator = Operator.for(tokenizer.current_token.value)
@@ -145,7 +145,7 @@ module Javascript
           if tokenizer.consume(:opening_brace)
             function.body = parse_block
           else
-            raise "Syntax error!"
+            raise SyntaxError
           end
         end
       end
@@ -158,7 +158,7 @@ module Javascript
               tokenizer.consume(:comma)
             end
           else
-            raise "Syntax error!"
+            raise SyntaxError
           end
         end
       end
@@ -185,14 +185,14 @@ module Javascript
                 if tokenizer.consume(:closing_brace)
                   break
                 else
-                  raise "Syntax error!"
+                  raise SyntaxError
                 end
               end
             else
               if tokenizer.consume(:closing_brace)
                 break
               else
-                raise "Syntax error!"
+                raise SyntaxError
               end
             end
           end
@@ -217,7 +217,7 @@ module Javascript
           property.name = tokenizer.current_token.literal || tokenizer.current_token.value
 
           if tokenizer.consume(:colon)
-            property.value = parse_expression or raise "Syntax error!"
+            property.value = parse_expression or raise SyntaxError
           else
             property.value = parse_identifier
           end
@@ -225,10 +225,10 @@ module Javascript
       end
 
       def parse_parenthetical
-        raise "Syntax error!" if tokenizer.consume(:closing_bracket)
+        raise SyntaxError if tokenizer.consume(:closing_bracket)
 
         Parenthetical.new(parse_expression).tap do
-          raise "Syntax error!" unless tokenizer.consume(:closing_bracket)
+          raise SyntaxError unless tokenizer.consume(:closing_bracket)
         end
       end
 
@@ -267,7 +267,7 @@ module Javascript
 
           Assignment.new(left_hand_side, right_hand_side)
         else
-          raise "Syntax error!"
+          raise SyntaxError
         end
       end
 

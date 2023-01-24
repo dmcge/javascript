@@ -41,7 +41,7 @@ module Javascript
         when consume(type)
           break
         when finished?
-          raise "Syntax error!"
+          raise SyntaxError
         else
           yield
         end

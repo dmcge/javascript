@@ -56,7 +56,7 @@ module Javascript
         if comment = scanner.scan_until(/\*\//)
           insert_line_break if comment.match?(/\R/)
         else
-          raise "Syntax error!"
+          raise SyntaxError
         end
       end
 
@@ -88,7 +88,7 @@ module Javascript
         number = consume_number
 
         if scanner.scan(START_OF_IDENTIFIER) || scanner.scan(/\d/) || scanner.scan(".")
-          raise "Syntax error!"
+          raise SyntaxError
         else
           [ :number, number ]
         end
@@ -139,10 +139,10 @@ module Javascript
             when scanner.scan(pattern)
               digits << scanner.matched
             when scanner.scan("_")
-              raise "Syntax error!" unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
+              raise SyntaxError unless digits.last&.match?(pattern) && scanner.peek(1).match?(pattern)
             else
               if digits.none?
-                raise "Syntax error!"
+                raise SyntaxError
               else
                 break
               end
@@ -167,9 +167,9 @@ module Javascript
           when scanner.scan(quotation_mark)
             break
           when scanner.eos?
-            raise "Syntax error!"
+            raise SyntaxError
           when scanner.scan(/\R/)
-            raise "Syntax error!"
+            raise SyntaxError
           when scanner.scan("\\")
             string << consume_escape_sequence unless scanner.scan(/\R/)
           else
@@ -199,7 +199,7 @@ module Javascript
         if scanner.scan(/(\h{4})/) || scanner.scan(/{(\h{1,6})}/)
           scanner.captures[0].to_i(16).chr("UTF-8")
         else
-          raise "Syntax error!"
+          raise SyntaxError
         end
       end
 
@@ -207,7 +207,7 @@ module Javascript
         if scanner.scan(/\h{2}/)
           scanner.matched.to_i(16).chr("UTF-8")
         else
-          raise "Syntax error!"
+          raise SyntaxError
         end
       end
 
