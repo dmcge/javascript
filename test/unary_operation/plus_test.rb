@@ -1,7 +1,7 @@
 require "test_helper"
 
-class StringTest < Javascript::Test
-  def test_converting_to_number
+class UnaryPlusTest < Javascript::Test
+  def test_converting_string_to_number
     assert_equal 0, evaluate(%(+""))
     assert_equal 0, evaluate(%(+"0"))
     assert_equal -12, evaluate(%(-"12"))
