@@ -13,11 +13,11 @@ module Javascript
 
       def parse_statement
         case
-        when tokenizer.consume(:var)           then parse_variable_statement
-        when tokenizer.consume(:if)            then parse_if_statement
-        when tokenizer.consume(:opening_brace) then parse_block
-        when tokenizer.consume(:return)        then parse_return_statement
-        when tokenizer.consume(:semicolon)     then parse_empty_statement
+        when tokenizer.consume(:var)    then parse_variable_statement
+        when tokenizer.consume(:if)     then parse_if_statement
+        when tokenizer.consume("{")     then parse_block
+        when tokenizer.consume(:return) then parse_return_statement
+        when tokenizer.consume(";")     then parse_empty_statement
         else
           parse_expression_statement
         end
@@ -52,7 +52,7 @@ module Javascript
       end
 
       def parse_condition
-        if tokenizer.consume(:opening_bracket)
+        if tokenizer.consume("(")
           parse_parenthetical.expression
         else
           raise SyntaxError
@@ -60,7 +60,7 @@ module Javascript
       end
 
       def parse_block
-        Block.new(parse_statement_list(until: -> { tokenizer.consume(:closing_brace) }))
+        Block.new(parse_statement_list(until: -> { tokenizer.consume("}") }))
       end
 
       def parse_statement_list(until:)
@@ -114,17 +114,17 @@ module Javascript
 
       def parse_prefix_expression
         case
-        when tokenizer.consume(:operator)               then parse_unary_operation
-        when tokenizer.consume(:function)               then parse_function_definition
-        when tokenizer.consume(:identifier)             then parse_identifier
-        when tokenizer.consume(:string)                 then parse_string_literal
-        when tokenizer.consume(:number)                 then parse_number_literal
-        when tokenizer.consume(:opening_brace)          then parse_object_literal
-        when tokenizer.consume(:opening_square_bracket) then parse_array_literal
-        when tokenizer.consume(:opening_bracket)        then parse_parenthetical
-        when tokenizer.consume(:true)                   then parse_true
-        when tokenizer.consume(:false)                  then parse_false
-        when tokenizer.consume(:null)                   then parse_null
+        when tokenizer.consume(:operator)   then parse_unary_operation
+        when tokenizer.consume(:function)   then parse_function_definition
+        when tokenizer.consume(:identifier) then parse_identifier
+        when tokenizer.consume(:string)     then parse_string_literal
+        when tokenizer.consume(:number)     then parse_number_literal
+        when tokenizer.consume("{")         then parse_object_literal
+        when tokenizer.consume("[")         then parse_array_literal
+        when tokenizer.consume("(")         then parse_parenthetical
+        when tokenizer.consume("true")      then parse_true
+        when tokenizer.consume("false")     then parse_false
+        when tokenizer.consume("null")      then parse_null
         end
       end
 
@@ -144,7 +144,7 @@ module Javascript
           function.name = tokenizer.consume(:identifier)&.value
           function.parameters = parse_parameters
 
-          if tokenizer.consume(:opening_brace)
+          if tokenizer.consume("{")
             function.body = parse_block
           else
             raise SyntaxError
@@ -227,10 +227,10 @@ module Javascript
       end
 
       def parse_parenthetical
-        raise SyntaxError if tokenizer.consume(:closing_bracket)
+        raise SyntaxError if tokenizer.consume(")")
 
         Parenthetical.new(parse_expression).tap do
-          raise SyntaxError unless tokenizer.consume(:closing_bracket)
+          raise SyntaxError unless tokenizer.consume(")")
         end
       end
 
@@ -249,10 +249,10 @@ module Javascript
 
       def parse_infix_expression(prefix, precedence:)
         case
-        when tokenizer.consume(:operator)        then parse_binary_operation(prefix, precedence: precedence)
-        when tokenizer.consume(:equals)          then parse_assignment(prefix, precedence: precedence)
-        when tokenizer.consume(:dot)             then parse_property_access(prefix, precedence: precedence)
-        when tokenizer.consume(:opening_bracket) then parse_function_call(prefix, precedence: precedence)
+        when tokenizer.consume(:operator) then parse_binary_operation(prefix, precedence: precedence)
+        when tokenizer.consume(:equals)   then parse_assignment(prefix, precedence: precedence)
+        when tokenizer.consume(:dot)      then parse_property_access(prefix, precedence: precedence)
+        when tokenizer.consume("(")       then parse_function_call(prefix, precedence: precedence)
         end
       end
 

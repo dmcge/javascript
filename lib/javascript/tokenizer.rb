@@ -5,7 +5,7 @@ module Javascript
   class Tokenizer
     Token = Struct.new(:type, :raw, :literal, :starting_position, :ending_position, keyword_init: true) do
       def value
-        raw.strip
+        raw&.strip
       end
     end
 
@@ -27,7 +27,7 @@ module Javascript
     def consume(type)
       token = next_token
 
-      if type === token.type
+      if type === token.type || type == token.value
         token
       else
         rewind
