@@ -64,6 +64,10 @@ module Javascript
       self
     end
 
+    def to_boolean
+      Boolean.wrap(truthy?)
+    end
+
     def to_s
       if integer?
         value.to_i.to_s

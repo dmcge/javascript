@@ -26,6 +26,10 @@ module Javascript
       Number.new(to_i)
     end
 
+    def to_boolean
+      self
+    end
+
     def to_s
       raise NotImplementedError
     end
@@ -40,6 +44,10 @@ module Javascript
       true
     end
 
+    def !@
+      False.new
+    end
+
     def to_s
       "true"
     end
@@ -52,6 +60,10 @@ module Javascript
   class False < Boolean
     def true?
       false
+    end
+
+    def !@
+      True.new
     end
 
     def to_s

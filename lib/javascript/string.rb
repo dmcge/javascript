@@ -28,5 +28,9 @@ module Javascript
     def to_string
       self
     end
+
+    def to_boolean
+      Boolean.wrap(truthy?)
+    end
   end
 end

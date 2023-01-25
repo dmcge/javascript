@@ -17,6 +17,7 @@ module Javascript
       when ">>>" then ShiftRightUnsigned
       when "=="  then Equality
       when "!="  then Inequality
+      when "!"   then Not
       end.new
     end
 
@@ -26,6 +27,10 @@ module Javascript
 
     def perform_unary(operand)
       raise NotImplementedError
+    end
+
+    def unary?
+      method(:perform_unary).unbind != Operator.instance_method(:perform_unary)
     end
 
     def right_associative?
@@ -179,6 +184,12 @@ module Javascript
 
       def equivalent?(left_hand_side, right_hand_side)
         !super
+      end
+    end
+
+    class Not < Operator
+      def perform_unary(operand)
+        !operand.to_boolean
       end
     end
   end

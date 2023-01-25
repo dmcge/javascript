@@ -129,11 +129,13 @@ module Javascript
       end
 
       def parse_unary_operation
-        raise SyntaxError unless ["+", "-"].include?(tokenizer.current_token.value)
-
-        UnaryOperation.new.tap do |operation|
-          operation.operator = Operator.for(tokenizer.current_token.value)
-          operation.operand  = parse_prefix_expression
+        if (operator = Operator.for(tokenizer.current_token.value)).unary?
+          UnaryOperation.new.tap do |operation|
+            operation.operator = operator
+            operation.operand  = parse_prefix_expression
+          end
+        else
+          raise SyntaxError
         end
       end
 
