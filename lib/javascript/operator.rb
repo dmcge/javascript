@@ -17,6 +17,8 @@ module Javascript
       when ">>>" then ShiftRightUnsigned
       when "=="  then Equality
       when "!="  then Inequality
+      when "===" then StrictEquality
+      when "!==" then StrictInequality
       when "!"   then Not
       end.new
     end
@@ -180,6 +182,22 @@ module Javascript
     end
 
     class Inequality < Equality
+      private
+
+      def equivalent?(left_hand_side, right_hand_side)
+        !super
+      end
+    end
+
+    class StrictEquality < Equality
+      private
+
+      def equivalent?(left_hand_side, right_hand_side)
+        left_hand_side.class == right_hand_side.class && left_hand_side == right_hand_side
+      end
+    end
+
+    class StrictInequality < StrictEquality
       private
 
       def equivalent?(left_hand_side, right_hand_side)
