@@ -1,5 +1,5 @@
 module Javascript
-  class Boolean
+  class Boolean < Type
     class << self
       def wrap(value)
         if value
@@ -18,20 +18,12 @@ module Javascript
       true?
     end
 
-    def to_string
-      String.new(to_s)
-    end
-
     def to_number
       Number.new(to_i)
     end
 
     def to_boolean
       self
-    end
-
-    def to_s
-      raise NotImplementedError
     end
 
     def to_i

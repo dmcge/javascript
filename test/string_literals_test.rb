@@ -114,13 +114,13 @@ class StringLiteralsTest < Javascript::Test
     assert_equal "\08", evaluate(%("\\08"))
     assert_equal "\09", evaluate(%('\\09'))
 
-    assert_equal [0], evaluate(%("\\00")).codepoints
-    assert_equal [8], evaluate(%('\\10')).codepoints
-    assert_equal [23], evaluate(%("\\27")).codepoints
-    assert_equal [28], evaluate(%('\\34')).codepoints
-    assert_equal [228], evaluate(%("\\344")).codepoints
-    assert_equal [34], evaluate(%('\\42')).codepoints
-    assert_equal [34, 50], evaluate(%("\\422")).codepoints
+    assert_equal [0], evaluate(%("\\00")).value.codepoints
+    assert_equal [8], evaluate(%('\\10')).value.codepoints
+    assert_equal [23], evaluate(%("\\27")).value.codepoints
+    assert_equal [28], evaluate(%('\\34')).value.codepoints
+    assert_equal [228], evaluate(%("\\344")).value.codepoints
+    assert_equal [34], evaluate(%('\\42')).value.codepoints
+    assert_equal [34, 50], evaluate(%("\\422")).value.codepoints
   end
 
   def test_arbitrary_escapes

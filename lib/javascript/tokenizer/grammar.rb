@@ -212,7 +212,7 @@ module Javascript
       end
 
       def consume_octal_escape
-        String.new.tap do |octal|
+        ::String.new.tap do |octal|
           octal << scanner.matched
 
           case scanner.matched.to_i

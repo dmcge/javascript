@@ -1,5 +1,5 @@
 module Javascript
-  class Number
+  class Number < Type
     def initialize(value)
       @value = value.to_f
     end
@@ -54,10 +54,6 @@ module Javascript
 
     def truthy?
       !zero?
-    end
-
-    def to_string
-      String.new(to_s)
     end
 
     def to_number

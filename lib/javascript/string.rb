@@ -1,23 +1,39 @@
 module Javascript
-  class String < ::String
+  class String < Type
+    include Comparable
+
+    attr_reader :value
+
+    def initialize(value)
+      @value = value
+    end
+
     def +(other)
       String.new(to_s + other.to_s)
+    end
+
+    def <=>(other)
+      value <=> other.to_s
     end
 
     def truthy?
       !empty?
     end
 
+    def empty?
+      value.empty?
+    end
+
     def to_number
-      numeric = strip
+      numeric = value.strip
 
       case
       when numeric.empty?
         Number.new(0)
       when numeric.start_with?("+")
-        String.new(delete_prefix("+")).to_number
+        String.new(numeric.delete_prefix("+")).to_number
       when numeric.start_with?("-")
-        -String.new(delete_prefix("-")).to_number
+        -String.new(numeric.delete_prefix("-")).to_number
       when numeric.match?(/\AInfinity\z/)
         Number.new(Float::INFINITY)
       else
@@ -29,8 +45,12 @@ module Javascript
       self
     end
 
-    def to_boolean
-      Boolean.wrap(truthy?)
+    def to_s
+      value
+    end
+
+    def to_str
+      to_s
     end
   end
 end
