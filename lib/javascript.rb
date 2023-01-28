@@ -6,6 +6,8 @@ require "javascript/type"
 require "javascript/boolean"
 require "javascript/number"
 require "javascript/string"
+require "javascript/object"
+require "javascript/array"
 require "javascript/tokenizer"
 
 module Javascript

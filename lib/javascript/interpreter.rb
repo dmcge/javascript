@@ -116,7 +116,7 @@ module Javascript
       end
 
       def evaluate_object_literal(literal)
-        {}.tap do |object|
+        Object.new.tap do |object|
           literal.properties.each do |property|
             object[property.name] = evaluate_expression(property.value)
           end
@@ -124,11 +124,16 @@ module Javascript
       end
 
       def evaluate_array_literal(literal)
-        literal.elements.map { |element| evaluate_expression(element) }
+        Array.new.tap do |array|
+          literal.elements.each { |element| array << evaluate_expression(element) }
+        end
       end
 
       def evaluate_property_access(property_access)
-        evaluate_expression(property_access.receiver)[property_access.name]
+        receiver = evaluate_expression(property_access.receiver)
+        accessor = property_access.computed ? property_access.accessor : evaluate_expression(property_access.accessor)
+
+        receiver[accessor]
       end
 
       def evaluate_unary_operation(operation)

@@ -98,7 +98,7 @@ module Javascript
 
       def precedence_of(token)
         case token.value
-        when "(", "."                 then 8
+        when ".", "[", "("            then 8
         when "**"                     then 7
         when "*", "/", "%"            then 6
         when "+", "-"                 then 5
@@ -251,7 +251,8 @@ module Javascript
         case
         when tokenizer.consume(:operator) then parse_binary_operation(prefix, precedence: precedence)
         when tokenizer.consume(:equals)   then parse_assignment(prefix, precedence: precedence)
-        when tokenizer.consume(:dot)      then parse_property_access(prefix, precedence: precedence)
+        when tokenizer.consume(:dot)      then parse_property_access_by_name(prefix, precedence: precedence)
+        when tokenizer.consume("[")       then parse_property_access_by_expression(prefix, precedence: precedence)
         when tokenizer.consume("(")       then parse_function_call(prefix, precedence: precedence)
         end
       end
@@ -273,10 +274,21 @@ module Javascript
         end
       end
 
-      def parse_property_access(receiver, precedence:)
-        PropertyAccess.new.tap do |property_access|
-          property_access.receiver = receiver
-          property_access.name     = tokenizer.consume(:identifier).value
+      def parse_property_access_by_name(receiver, precedence:)
+        PropertyAccess.new.tap do |access|
+          access.receiver = receiver
+          access.accessor = tokenizer.consume(:identifier).value
+          access.computed = true
+        end
+      end
+
+      def parse_property_access_by_expression(receiver, precedence:)
+        access = PropertyAccess.new(receiver: receiver, accessor: parse_expression, computed: false)
+
+        if tokenizer.consume("]")
+          access
+        else
+          raise SyntaxError
         end
       end
 

@@ -13,7 +13,7 @@ module Javascript
   NullLiteral         = Struct.new(nil)
   ObjectLiteral       = Struct.new(:properties)
   Parenthetical       = Struct.new(:expression)
-  PropertyAccess      = Struct.new(:receiver, :name)
+  PropertyAccess      = Struct.new(:receiver, :accessor, :computed)
   PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)
   Return              = Struct.new(:expression)
   StatementList       = Struct.new(:statements)
