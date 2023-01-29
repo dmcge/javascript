@@ -87,10 +87,8 @@ module Javascript
       def parse_expression(precedence: 0)
         expression = parse_prefix_expression
 
-        unless tokenizer.consume(:semicolon)
-          while precedence < (current_precedence = precedence_of(tokenizer.look_ahead))
-            expression = parse_infix_expression(expression, precedence: current_precedence)
-          end
+        while precedence < (current_precedence = precedence_of(tokenizer.look_ahead))
+          expression = parse_infix_expression(expression, precedence: current_precedence)
         end
 
         expression
