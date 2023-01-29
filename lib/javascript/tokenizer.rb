@@ -3,7 +3,7 @@ require "javascript/tokenizer/grammar"
 
 module Javascript
   class Tokenizer
-    Token = Struct.new(:type, :value, :literal, :starting_position, :ending_position, keyword_init: true)
+    Token = Struct.new(:type, :value, :literal, :line_number, :column, keyword_init: true)
 
     def initialize(javascript)
       @scanner  = StringScanner.new(javascript)
@@ -55,7 +55,7 @@ module Javascript
     end
 
     def rewind
-      scanner.pos = advances.pop.tokens.last.starting_position
+      scanner.pos -= advances.pop.tokens.last.value&.bytesize || 0
     end
 
     def finished?
@@ -76,12 +76,29 @@ module Javascript
       end
 
       def advance_to_next_token
-        Token.new.tap do |token|
-          token.starting_position   = scanner.pos
-          token.type, token.literal = @grammar.next_token
-          token.ending_position     = scanner.pos
-          token.value               = scanner.string[token.starting_position...token.ending_position]
+        starting_position   = scanner.pos
+        type, literal       = @grammar.next_token
+        ending_position     = scanner.pos
+        value               = scanner.string[starting_position...ending_position] || ""
+        line_number, column = new_location(value)
+
+        Token.new(type: type, literal: literal, value: value, line_number: line_number, column: column)
+      end
+
+      def new_location(value)
+        if (new_lines = Array(value.scan($/))).any?
+          [ current_line_number + new_lines.count, 1 + value.lines.last.length ]
+        else
+          [ current_line_number, current_column + value.length ]
         end
+      end
+
+      def current_line_number
+        advances.last&.tokens&.last&.line_number || 1
+      end
+
+      def current_column
+        advances.last&.tokens&.last&.column || 1
       end
   end
 end
