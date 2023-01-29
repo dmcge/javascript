@@ -10,6 +10,9 @@ module Javascript
     def /(other)  = Number.new(value / other.value)
     def %(other)  = Number.new(value % other.value)
     def **(other) = Number.new(value ** other.value)
+    def &(other)  = Number.new(to_i32 & other.to_i32)
+    def ^(other)  = Number.new(to_i32 ^ other.to_i32)
+    def |(other)  = Number.new(to_i32 | other.to_i32)
 
     def <=>(other) = value <=> other.to_f
     def ==(other)  = (self <=> other)&.zero?
