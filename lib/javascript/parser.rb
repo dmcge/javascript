@@ -11,6 +11,12 @@ module Javascript
     private
       attr_reader :tokenizer
 
+      def parse_statement_list(until:)
+        StatementList.new(statements: []).tap do |list|
+          list.statements << parse_statement until binding.local_variable_get(:until).call
+        end
+      end
+
       def parse_statement
         case
         when tokenizer.consume(:var)    then parse_variable_statement
@@ -61,12 +67,6 @@ module Javascript
 
       def parse_block
         Block.new(parse_statement_list(until: -> { tokenizer.consume("}") }))
-      end
-
-      def parse_statement_list(until:)
-        StatementList.new(statements: []).tap do |list|
-          list.statements << parse_statement until binding.local_variable_get(:until).call
-        end
       end
 
       def parse_return_statement
