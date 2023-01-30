@@ -23,6 +23,8 @@ module Javascript
       when "&"   then BitwiseAnd
       when "^"   then BitwiseXor
       when "|"   then BitwiseOr
+      when "&&"  then And
+      when "||"  then Or
       end.new
     end
 
@@ -230,6 +232,12 @@ module Javascript
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number | right_hand_side.to_number
       end
+    end
+
+    class And < Operator
+    end
+
+    class Or < Operator
     end
   end
 end

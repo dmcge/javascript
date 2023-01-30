@@ -141,10 +141,25 @@ module Javascript
       end
 
       def evaluate_binary_operation(operation)
-        left_hand_side  = evaluate_expression(operation.left_hand_side)
-        right_hand_side = evaluate_expression(operation.right_hand_side)
+        case operation.operator
+        when Operator::And
+          if (left_hand_side = evaluate_expression(operation.left_hand_side)).truthy?
+            evaluate_expression(operation.right_hand_side)
+          else
+            left_hand_side
+          end
+        when Operator::Or
+          if (left_hand_side = evaluate_expression(operation.left_hand_side)).truthy?
+            left_hand_side
+          else
+            evaluate_expression(operation.right_hand_side)
+          end
+        else
+          left_hand_side  = evaluate_expression(operation.left_hand_side)
+          right_hand_side = evaluate_expression(operation.right_hand_side)
 
-        operation.operator.perform_binary(left_hand_side, right_hand_side)
+          operation.operator.perform_binary(left_hand_side, right_hand_side)
+        end
       end
 
       def evaluate_parenthetical(parenthetical)
