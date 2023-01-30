@@ -52,14 +52,27 @@ module Javascript
 
 
     class Increment < Operator
-      def perform_unary(operator)
-        # TODO
+      def perform_unary(operand, position:)
+        old_value = operand.value
+        new_value = operand.value = update_value(operand.value)
+
+        case position
+        when :prefix  then new_value
+        when :postfix then old_value
+        end
       end
+
+      private
+        def update_value(value)
+          value.to_number + Number.new(1)
+        end
     end
 
-    class Decrement < Operator
-      def perform_unary(operator)
-        # TODO
+    class Decrement < Increment
+      private
+
+      def update_value(value)
+        value.to_number - Number.new(1)
       end
     end
 

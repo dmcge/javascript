@@ -150,7 +150,12 @@ module Javascript
       end
 
       def evaluate_unary_operation(operation)
-        operation.operator.perform_unary(evaluate_expression(operation.operand))
+        case operation.operator
+        when Operator::Increment, Operator::Decrement
+          operation.operator.perform_unary(evaluate_expression(operation.operand), position: operation.position)
+        else
+          operation.operator.perform_unary(evaluate_expression_to_value(operation.operand))
+        end
       end
 
       def evaluate_binary_operation(operation)
