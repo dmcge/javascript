@@ -1,8 +1,10 @@
 module Javascript
+  Reference = Struct.new(:value)
+
   class Interpreter
     def initialize(script)
       @statement_list = Parser.new(script).parse
-      @identifiers    = {} # FIXME
+      @references    = {} # FIXME
     end
 
     def execute
@@ -30,11 +32,11 @@ module Javascript
       end
 
       def execute_variable_declaration(declaration)
-        @identifiers[declaration.name] = evaluate_expression(declaration.value)
+        @references[declaration.name] = make_reference(evaluate_expression(declaration.value))
       end
 
       def execute_if_statement(if_statement)
-        if evaluate_expression(if_statement.condition).truthy?
+        if evaluate_expression_to_value(if_statement.condition).truthy?
           execute_statement(if_statement.consequent)
         elsif if_statement.alternative
           execute_statement(if_statement.alternative)
@@ -46,11 +48,22 @@ module Javascript
       end
 
       def execute_return_statement(statement)
-        throw :return, evaluate_expression(statement.expression)
+        throw :return, evaluate_expression_to_value(statement.expression)
       end
 
       def execute_expression_statement(statement)
-        evaluate_expression(statement.expression)
+        evaluate_expression_to_value(statement.expression)
+      end
+
+
+      def evaluate_expression_to_value(expression)
+        evaluate_expression(expression).then do |result|
+          if result.is_a?(Reference)
+            result.value
+          else
+            result
+          end
+        end
       end
 
       def evaluate_expression(expression)
@@ -72,15 +85,15 @@ module Javascript
       end
 
       def evaluate_function_definition(definition)
-        @identifiers[definition.name] = definition
+        @references[definition.name] = Reference.new(definition)
       end
 
       def evaluate_function_call(function_call)
-        function = evaluate_expression(function_call.callee)
-        previous_identifiers = @identifiers.dup
+        function = evaluate_expression_to_value(function_call.callee)
+        previous_identifiers = @references.dup
 
         arguments = function.parameters.zip(function_call.arguments).map do |parameter, argument|
-          @identifiers[parameter] = evaluate_expression(argument) if argument
+          @references[parameter] = make_reference(evaluate_expression_to_value(argument)) if argument
         end
 
         catch :return do
@@ -88,16 +101,16 @@ module Javascript
           nil
         end
       ensure
-        @identifiers = previous_identifiers
+        @references = previous_identifiers
       end
 
       def evaluate_identifier(identifier)
-        @identifiers.fetch(identifier.name)
+        @references.fetch(identifier.name)
       end
 
       def evaluate_assignment(assignment)
-        if @identifiers.include?(assignment.identifier.name)
-          @identifiers[assignment.identifier.name] = evaluate_expression(assignment.value)
+        if @references.include?(assignment.identifier.name)
+          @references[assignment.identifier.name] = evaluate_expression_to_value(assignment.value)
         else
           raise "Trying to assign variable #{assignment.identifier.name}, but it doesn’t exist"
         end
@@ -118,20 +131,20 @@ module Javascript
       def evaluate_object_literal(literal)
         Object.new.tap do |object|
           literal.properties.each do |property|
-            object[property.name] = evaluate_expression(property.value)
+            object[property.name] = evaluate_expression_to_value(property.value)
           end
         end
       end
 
       def evaluate_array_literal(literal)
         Array.new.tap do |array|
-          literal.elements.each { |element| array << evaluate_expression(element) }
+          literal.elements.each { |element| array << evaluate_expression_to_value(element) }
         end
       end
 
       def evaluate_property_access(property_access)
-        receiver = evaluate_expression(property_access.receiver)
-        accessor = property_access.computed ? property_access.accessor : evaluate_expression(property_access.accessor)
+        receiver = evaluate_expression_to_value(property_access.receiver)
+        accessor = property_access.computed ? property_access.accessor : evaluate_expression_to_value(property_access.accessor)
 
         receiver[accessor]
       end
@@ -143,27 +156,36 @@ module Javascript
       def evaluate_binary_operation(operation)
         case operation.operator
         when Operator::And
-          if (left_hand_side = evaluate_expression(operation.left_hand_side)).truthy?
-            evaluate_expression(operation.right_hand_side)
+          if (left_hand_side = evaluate_expression_to_value(operation.left_hand_side)).truthy?
+            evaluate_expression_to_value(operation.right_hand_side)
           else
             left_hand_side
           end
         when Operator::Or
-          if (left_hand_side = evaluate_expression(operation.left_hand_side)).truthy?
+          if (left_hand_side = evaluate_expression_to_value(operation.left_hand_side)).truthy?
             left_hand_side
           else
-            evaluate_expression(operation.right_hand_side)
+            evaluate_expression_to_value(operation.right_hand_side)
           end
         else
-          left_hand_side  = evaluate_expression(operation.left_hand_side)
-          right_hand_side = evaluate_expression(operation.right_hand_side)
+          left_hand_side  = evaluate_expression_to_value(operation.left_hand_side)
+          right_hand_side = evaluate_expression_to_value(operation.right_hand_side)
 
           operation.operator.perform_binary(left_hand_side, right_hand_side)
         end
       end
 
       def evaluate_parenthetical(parenthetical)
-        evaluate_expression(parenthetical.expression)
+        evaluate_expression_to_value(parenthetical.expression)
+      end
+
+
+      def make_reference(value)
+        if value.is_a?(Reference)
+          value
+        else
+          Reference.new(value)
+        end
       end
   end
 end
