@@ -35,6 +35,12 @@ module Javascript
       end
     end
 
+    def consume_line_break
+      if scanner.scan($/)
+        tokens << Token.new(type: :line_break, raw: scanner.matched, starting_position: scanner.pos - scanner.matched.bytesize, ending_position: scanner.pos)
+      end
+    end
+
     def until(type)
       loop do
         case

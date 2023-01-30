@@ -96,7 +96,8 @@ module Javascript
 
       def precedence_of(token)
         case token.value
-        when ".", "[", "("            then 13
+        when ".", "[", "("            then 14
+        when "++", "--"               then 13
         when "**"                     then 12
         when "*", "/", "%"            then 11
         when "+", "-"                 then 10
@@ -117,7 +118,7 @@ module Javascript
 
       def parse_prefix_expression
         case
-        when tokenizer.consume(:operator)   then parse_unary_operation
+        when tokenizer.consume(:operator)   then parse_prefix_unary_operation
         when tokenizer.consume(:function)   then parse_function_definition
         when tokenizer.consume(:identifier) then parse_identifier
         when tokenizer.consume(:string)     then parse_string_literal
@@ -131,11 +132,12 @@ module Javascript
         end
       end
 
-      def parse_unary_operation
+      def parse_prefix_unary_operation
         if (operator = Operator.for(tokenizer.current_token.value)).unary?
           UnaryOperation.new.tap do |operation|
             operation.operator = operator
-            operation.operand  = parse_prefix_expression
+            operation.operand  = validate_unary_operand(operator, parse_prefix_expression)
+            operation.position = :prefix
           end
         else
           raise SyntaxError
@@ -252,7 +254,7 @@ module Javascript
 
       def parse_infix_expression(prefix, precedence:)
         case
-        when tokenizer.consume(:operator) then parse_binary_operation(prefix, precedence: precedence)
+        when tokenizer.consume(:operator) then parse_infix_operation(prefix, precedence: precedence)
         when tokenizer.consume(:equals)   then parse_assignment(prefix, precedence: precedence)
         when tokenizer.consume(:dot)      then parse_property_access_by_name(prefix, precedence: precedence)
         when tokenizer.consume("[")       then parse_property_access_by_expression(prefix, precedence: precedence)
@@ -260,11 +262,24 @@ module Javascript
         end
       end
 
-      def parse_binary_operation(left_hand_side, precedence:)
-        operator        = Operator.for(tokenizer.current_token.value)
+      def parse_infix_operation(left_hand_side, precedence:)
+        operator = Operator.for(tokenizer.current_token.value)
+
+        if operator.binary?
+          parse_binary_operation(left_hand_side, operator: operator, precedence:)
+        else
+          parse_postfix_unary_operation(left_hand_side, operator: operator, precedence:)
+        end
+      end
+
+      def parse_binary_operation(left_hand_side, operator:, precedence:)
         right_hand_side = parse_expression(precedence: operator.right_associative? ? precedence - 1 : precedence)
 
         BinaryOperation.new(operator, left_hand_side, right_hand_side)
+      end
+
+      def parse_postfix_unary_operation(operand, operator:, precedence:)
+        UnaryOperation.new(operand: validate_unary_operand(operator, operand), operator: operator, position: :postfix)
       end
 
       def parse_assignment(left_hand_side, precedence:)
@@ -308,6 +323,20 @@ module Javascript
             arguments << parse_expression(precedence: precedence)
             tokenizer.consume(:comma)
           end
+        end
+      end
+
+
+      def validate_unary_operand(operator, operand)
+        case operator
+        when Operator::Increment, Operator::Decrement
+          if operand.is_a?(Identifier) || operand.is_a?(PropertyAccess)
+            operand
+          else
+            raise SyntaxError
+          end
+        else
+          operand
         end
       end
   end

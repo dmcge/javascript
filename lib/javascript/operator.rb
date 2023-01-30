@@ -2,6 +2,8 @@ module Javascript
   class Operator
     def self.for(symbol)
       case symbol
+      when "++"  then Increment
+      when "--"  then Decrement
       when "**"  then Exponentiation
       when "/"   then Division
       when "*"   then Multiplication
@@ -36,12 +38,29 @@ module Javascript
       raise NotImplementedError
     end
 
+    def binary?
+      method(:perform_binary).unbind != Operator.instance_method(:perform_binary)
+    end
+
     def unary?
       method(:perform_unary).unbind != Operator.instance_method(:perform_unary)
     end
 
     def right_associative?
       false
+    end
+
+
+    class Increment < Operator
+      def perform_unary(operator)
+        # TODO
+      end
+    end
+
+    class Decrement < Operator
+      def perform_unary(operator)
+        # TODO
+      end
     end
 
 
@@ -235,9 +254,13 @@ module Javascript
     end
 
     class And < Operator
+      def perform_binary(left_hand_side, right_hand_side)
+      end
     end
 
     class Or < Operator
+      def perform_binary(left_hand_side, right_hand_side)
+      end
     end
   end
 end
