@@ -110,7 +110,7 @@ module Javascript
 
       def evaluate_assignment(assignment)
         if @references.include?(assignment.identifier.name)
-          @references[assignment.identifier.name] = evaluate_expression_to_value(assignment.value)
+          @references[assignment.identifier.name].value = evaluate_expression_to_value(assignment.value)
         else
           raise "Trying to assign variable #{assignment.identifier.name}, but it doesn’t exist"
         end

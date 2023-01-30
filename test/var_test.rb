@@ -24,6 +24,16 @@ class VarTest < Javascript::Test
     JS
   end
 
+  def test_assigning_to_another_variable
+    assert_equal 1, evaluate(<<~JS.chomp)
+      var a, b
+      a = 1
+      b = a
+      a++
+      b
+    JS
+  end
+
   def test_variable_names
     assert_valid "var $"
     assert_valid "var _"
