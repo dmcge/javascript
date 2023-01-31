@@ -266,11 +266,13 @@ module Javascript
       end
     end
 
+    # FIXME
     class And < Operator
       def perform_binary(left_hand_side, right_hand_side)
       end
     end
 
+    # FIXME
     class Or < Operator
       def perform_binary(left_hand_side, right_hand_side)
       end
