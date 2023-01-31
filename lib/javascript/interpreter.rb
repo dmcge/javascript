@@ -96,6 +96,7 @@ module Javascript
           @references[parameter] = make_reference(evaluate_value(argument)) if argument
         end
 
+        # FIXME
         catch :return do
           execute_block(function.body)
           nil
@@ -150,6 +151,7 @@ module Javascript
       end
 
       def evaluate_unary_operation(operation)
+        # FIXME
         case operation.operator
         when Operator::Increment, Operator::Decrement
           operation.operator.perform_unary(evaluate_expression(operation.operand), position: operation.position)
@@ -159,6 +161,7 @@ module Javascript
       end
 
       def evaluate_binary_operation(operation)
+        # FIXME
         case operation.operator
         when Operator::And
           if (left_hand_side = evaluate_value(operation.left_hand_side)).truthy?

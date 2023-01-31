@@ -87,6 +87,7 @@ module Javascript
         end
 
 
+        # FIXME
         def validate_unary_operand(operator, operand)
           case operator
           when Operator::Increment, Operator::Decrement
