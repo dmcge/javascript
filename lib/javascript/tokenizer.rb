@@ -49,11 +49,11 @@ module Javascript
     end
 
     def rewind
-      scanner.pos = advances.pop.tokens.last.starting_position
+      scanner.pos = advances.pop.tokens.first.starting_position
     end
 
     def finished?
-      scanner.eos?
+      consume(:end_of_file) || scanner.eos?
     end
 
     private
