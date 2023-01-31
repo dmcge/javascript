@@ -37,13 +37,6 @@ module Javascript
     private
       attr_reader :scanner
 
-      def skip_comments
-        case
-        when scanner.scan("//") then skip_single_line_comment
-        when scanner.scan("/*") then skip_multiline_comment
-        end
-      end
-
       def tokenize_inline_comment
         scanner.scan_until(/(?=\R)|\Z/)
         :comment
