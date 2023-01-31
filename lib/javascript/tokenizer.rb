@@ -21,10 +21,10 @@ module Javascript
     end
 
     def consume(type)
-      token = next_token
+      advance(keep_line_breaks: type == :line_break)
 
-      if type === token.type || type == token.value
-        token
+      if type === current_token.type || type == current_token.value
+        current_token
       else
         rewind
         nil
@@ -61,10 +61,10 @@ module Javascript
 
       Advance = Struct.new(:tokens)
 
-      def advance
+      def advance(keep_line_breaks: false)
         tokens = []
         tokens << advance_to_next_token
-        tokens << advance_to_next_token while [:whitespace, :line_break, :comment].include?(tokens.last.type)
+        tokens << advance_to_next_token while [:whitespace, (:line_break unless keep_line_breaks), :comment].include?(tokens.last.type)
 
         advances << Advance.new(tokens)
       end

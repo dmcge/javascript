@@ -87,7 +87,7 @@ module Javascript
 
       def parse_expression_statement
         ExpressionStatement.new(parse_expression).tap do
-          tokenizer.consume(:semicolon)
+          raise SyntaxError unless tokenizer.consume(:semicolon) || tokenizer.consume(:end_of_file) || tokenizer.consume(:line_break)
         end
       end
   end
