@@ -3,20 +3,16 @@ require "javascript/tokenizer/grammar"
 
 module Javascript
   class Tokenizer
-    Token = Struct.new(:type, :raw, :literal, :starting_position, :ending_position, keyword_init: true) do
-      def value
-        raw&.strip
-      end
-    end
+    Token = Struct.new(:type, :value, :literal, :starting_position, :ending_position, keyword_init: true)
 
     def initialize(javascript)
-      @scanner = StringScanner.new(javascript)
-      @grammar = Grammar.new(scanner)
-      @tokens  = []
+      @scanner  = StringScanner.new(javascript)
+      @grammar  = Grammar.new(scanner)
+      @advances = []
     end
 
     def current_token
-      tokens.last
+      advances.last.tokens.last
     end
 
     def next_token
@@ -59,7 +55,7 @@ module Javascript
     end
 
     def rewind
-      scanner.pos = tokens.pop.starting_position
+      scanner.pos = advances.pop.tokens.last.starting_position
     end
 
     def finished?
@@ -67,16 +63,24 @@ module Javascript
     end
 
     private
-      attr_reader :scanner, :tokens
+      attr_reader :scanner, :advances
+
+      Advance = Struct.new(:tokens)
 
       def advance
+        tokens = []
+        tokens << advance_to_next_token
+        tokens << advance_to_next_token while [:whitespace, :line_break, :comment].include?(tokens.last.type)
+
+        advances << Advance.new(tokens)
+      end
+
+      def advance_to_next_token
         Token.new.tap do |token|
           token.starting_position   = scanner.pos
           token.type, token.literal = @grammar.next_token
           token.ending_position     = scanner.pos
-          token.raw                 = scanner.string[token.starting_position...token.ending_position]
-
-          tokens << token
+          token.value               = scanner.string[token.starting_position...token.ending_position]
         end
       end
   end

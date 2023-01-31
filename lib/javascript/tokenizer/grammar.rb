@@ -8,11 +8,9 @@ module Javascript
     end
 
     def next_token
-      skip_whitespace
-      skip_comments
-      skip_whitespace
-
       case
+      when scanner.scan("//")                then tokenize_inline_comment
+      when scanner.scan("/*")                then tokenize_block_comment
       when scanner.scan(START_OF_IDENTIFIER) then tokenize_identifier
       when scanner.scan(/\d/)                then tokenize_numeric
       when scanner.scan(/"|'/)               then tokenize_string
@@ -28,6 +26,8 @@ module Javascript
       when scanner.scan("=")                 then :equals
       when scanner.scan(":")                 then :colon
       when scanner.scan(";")                 then :semicolon
+      when scanner.scan($/)                  then :line_break
+      when scanner.scan(/\s+/)               then :whitespace
       when scanner.eos?                      then :semicolon
       else
         raise "Unrecognised character: #{scanner.getch.inspect}"
@@ -37,10 +37,6 @@ module Javascript
     private
       attr_reader :scanner
 
-      def skip_whitespace
-        scanner.skip(/\s+/)
-      end
-
       def skip_comments
         case
         when scanner.scan("//") then skip_single_line_comment
@@ -48,22 +44,22 @@ module Javascript
         end
       end
 
-      def skip_single_line_comment
-        scanner.skip_until(/(?=\R)|\Z/)
+      def tokenize_inline_comment
+        scanner.scan_until(/(?=\R)|\Z/)
+        :comment
       end
 
-      def skip_multiline_comment
+      def tokenize_block_comment
         if comment = scanner.scan_until(/\*\//)
           insert_line_break if comment.match?(/\R/)
+          :comment
         else
           raise SyntaxError
         end
       end
 
       def insert_line_break
-        unless scanner.eos?
-          scanner.string[scanner.pos] = "\n" + scanner.string[scanner.pos]
-        end
+        scanner.string[scanner.pos] = "\n" + scanner.string[scanner.pos] unless scanner.eos?
       end
 
 
