@@ -44,6 +44,10 @@ module Javascript
       end
     end
 
+    def insert_semicolon
+      scanner.string[scanner.charpos] = ";" + scanner.string[scanner.charpos]
+    end
+
     def look_ahead
       next_token.tap { rewind }
     end

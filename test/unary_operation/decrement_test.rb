@@ -3,7 +3,7 @@ require "test_helper"
 class UnaryDecrementTest < Javascript::Test
   def test_prefix_decrementing
     assert_equal 0, evaluate(<<~JS.chomp)
-      var count = 1; // FIXME: the semicolon should be inserted here automatically
+      var count = 1
       --count
     JS
   end

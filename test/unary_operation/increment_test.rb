@@ -3,7 +3,7 @@ require "test_helper"
 class UnaryIncrementTest < Javascript::Test
   def test_prefix_incrementing
     assert_equal 1, evaluate(<<~JS.chomp)
-      var count = 0; // FIXME: the semicolon should be inserted here automatically
+      var count = 0
       ++count
     JS
   end

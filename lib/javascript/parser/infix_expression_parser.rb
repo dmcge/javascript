@@ -38,7 +38,15 @@ module Javascript
         end
 
         def parse_unary_operation(operator)
-          UnaryOperation.new(operand: validate_unary_operand(operator, prefix), operator: operator, position: :postfix)
+          tokenizer.rewind
+
+          if tokenizer.consume(:line_break)
+            tokenizer.insert_semicolon
+            prefix
+          else
+            tokenizer.next_token
+            UnaryOperation.new(operand: validate_unary_operand(operator, prefix), operator: operator, position: :postfix)
+          end
         end
 
         def parse_assignment
