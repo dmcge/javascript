@@ -17,4 +17,8 @@ class UnaryNotTest < Javascript::Test
     assert evaluate("!!1").true?
     refute evaluate("!!0").true?
   end
+
+  def test_postfix
+    assert_invalid "3!"
+  end
 end
