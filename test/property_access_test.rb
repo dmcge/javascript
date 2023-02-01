@@ -33,7 +33,6 @@ class PropertyAccessTest < Javascript::Test
   end
 
   def test_accessing_array_with_dot
-    skip
     assert_invalid "[0, 1].0"
     assert_invalid "[0, 1]..0"
   end
