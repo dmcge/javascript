@@ -31,10 +31,10 @@ module Javascript
         end
 
         def parse_binary_operation(operator)
-          left_hand_side  = prefix
-          right_hand_side = parser.parse_expression(precedence: operator.right_associative? ? precedence - 1 : precedence)
-
-          BinaryOperation.new(operator, left_hand_side, right_hand_side)
+          BinaryOperation.new \
+            operator: operator,
+            left_hand_side: prefix,
+            right_hand_side: parser.parse_expression(precedence: operator.right_associative? ? precedence - 1 : precedence)
         end
 
         def parse_unary_operation(operator)
@@ -51,21 +51,14 @@ module Javascript
 
         def parse_assignment
           if prefix.is_a?(Identifier)
-            left_hand_side  = prefix
-            right_hand_side = parser.parse_expression(precedence: precedence - 1)
-
-            Assignment.new(left_hand_side, right_hand_side)
+            Assignment.new identifier: prefix, value: parser.parse_expression(precedence: precedence - 1)
           else
             raise SyntaxError
           end
         end
 
         def parse_property_access_by_name
-          PropertyAccess.new.tap do |access|
-            access.receiver = prefix
-            access.accessor = tokenizer.consume(:identifier).value
-            access.computed = true
-          end
+          PropertyAccess.new(receiver: prefix, accessor: tokenizer.consume(:identifier).value, computed: true)
         end
 
         def parse_property_access_by_expression
@@ -79,10 +72,7 @@ module Javascript
         end
 
         def parse_function_call
-          FunctionCall.new.tap do |function_call|
-            function_call.callee    = prefix
-            function_call.arguments = parse_arguments
-          end
+          FunctionCall.new(callee: prefix, arguments: parse_arguments)
         end
 
         def parse_arguments
