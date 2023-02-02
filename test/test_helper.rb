@@ -11,7 +11,7 @@ module Javascript
     end
 
 
-    def assert_invalid(script)
+    def assert_malformed(script)
       assert_raises(SyntaxError) { evaluate(script) }
     end
 

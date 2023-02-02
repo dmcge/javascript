@@ -41,19 +41,19 @@ class VarTest < Javascript::Test
 
     assert_valid "var abc123"
     assert_valid "var bengali_six_৫"
-    assert_invalid "var 1"
-    assert_invalid "var 123456"
-    assert_invalid "var ৫"
+    assert_malformed "var 1"
+    assert_malformed "var 123456"
+    assert_malformed "var ৫"
 
     assert_valid "var well\u200d"
-    assert_invalid "var \u200dd"
+    assert_malformed "var \u200dd"
 
     assert_valid "var fඃd"
-    assert_invalid "var ඃ"
+    assert_malformed "var ඃ"
 
     assert_valid "var iffy"
     assert_valid "var elsewhere"
-    assert_invalid "var if"
+    assert_malformed "var if"
   end
 
   def test_redeclaring_variables
@@ -78,6 +78,6 @@ class VarTest < Javascript::Test
   end
 
   def test_dangling_equals
-    assert_invalid "var remember ="
+    assert_malformed "var remember ="
   end
 end

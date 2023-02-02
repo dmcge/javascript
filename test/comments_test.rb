@@ -24,8 +24,8 @@ class CommentsTest < Javascript::Test
   end
 
   def test_unterminated_multiline_comment
-    assert_invalid "/*"
-    assert_invalid "/*\n\n\nYo"
+    assert_malformed "/*"
+    assert_malformed "/*\n\n\nYo"
   end
 
   def test_only_comments

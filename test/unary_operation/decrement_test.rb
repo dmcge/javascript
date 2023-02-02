@@ -16,10 +16,10 @@ class UnaryDecrementTest < Javascript::Test
   end
 
   def test_decrementing_a_literal
-    assert_invalid "--1"
-    assert_invalid %(--"foo")
+    assert_malformed "--1"
+    assert_malformed %(--"foo")
 
-    assert_invalid "2--"
-    assert_invalid %("bar"--)
+    assert_malformed "2--"
+    assert_malformed %("bar"--)
   end
 end

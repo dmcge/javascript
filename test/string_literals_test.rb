@@ -16,13 +16,13 @@ class StringLiteralsTest < Javascript::Test
   end
 
   def test_never_ending
-    assert_invalid %('to me)
-    assert_invalid %("to you)
+    assert_malformed %('to me)
+    assert_malformed %("to you)
   end
 
   def test_mismatched_quotes
-    assert_invalid %('welp")
-    assert_invalid %("welp')
+    assert_malformed %('welp")
+    assert_malformed %("welp')
   end
 
   def test_empty_string
@@ -47,9 +47,9 @@ class StringLiteralsTest < Javascript::Test
   end
 
   def test_multline_strings
-    assert_invalid %("hello\nworld")
-    assert_invalid %("hello\r\nworld")
-    assert_invalid %("#{<<~STRING}")
+    assert_malformed %("hello\nworld")
+    assert_malformed %("hello\r\nworld")
+    assert_malformed %("#{<<~STRING}")
       hello
       cruel
       world
@@ -71,10 +71,10 @@ class StringLiteralsTest < Javascript::Test
     assert_equal "ò", evaluate(%("\\u00F2"))
     assert_equal "b\ro", evaluate(%('b\\u000do'))
 
-    assert_invalid %("\\u")
-    assert_invalid %("\\ud")
-    assert_invalid %('\\u0d')
-    assert_invalid %("\\u00d")
+    assert_malformed %("\\u")
+    assert_malformed %("\\ud")
+    assert_malformed %('\\u0d')
+    assert_malformed %("\\u00d")
   end
 
   def test_aribtrary_unicode_escapes
@@ -84,9 +84,9 @@ class StringLiteralsTest < Javascript::Test
     assert_equal "􀐏", evaluate(%('\\u{10040F}'))
     assert_equal "abc", evaluate(%("a\\u{62}c"))
 
-    assert_invalid "\\u{}"
-    assert_invalid "\\u{11FFFF}"
-    assert_invalid '\\u{100FFFF}'
+    assert_malformed "\\u{}"
+    assert_malformed "\\u{11FFFF}"
+    assert_malformed '\\u{100FFFF}'
   end
 
   def test_hex_escape
@@ -95,8 +95,8 @@ class StringLiteralsTest < Javascript::Test
     assert_equal "ò", evaluate(%("\\xF2"))
     assert_equal "abc", evaluate(%('a\\x62c'))
 
-    assert_invalid %("\\x")
-    assert_invalid %("\\xd")
+    assert_malformed %("\\x")
+    assert_malformed %("\\xd")
   end
 
   def test_octal_escape
@@ -130,7 +130,7 @@ class StringLiteralsTest < Javascript::Test
 
   def test_dangling_escapes
     assert_equal " ", evaluate(%("\ "))
-    assert_invalid %("\\")
+    assert_malformed %("\\")
   end
 
   def test_maximum_length
@@ -140,6 +140,6 @@ class StringLiteralsTest < Javascript::Test
     maximum_length_string = " " *(2 ** 53 -1)
 
     assert_equal maximum_length_string, evaluate(%("#{maximum_length_string}"))
-    assert_invalid %("#{maximum_length_string + " "}")
+    assert_malformed %("#{maximum_length_string + " "}")
   end
 end

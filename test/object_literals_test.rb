@@ -74,8 +74,8 @@ class ObjectLiteralsTest < Javascript::Test
 
   def test_trailing_commas
     assert_valid   "var alphabet = { a: 1, b: 2, c: 3, }"
-    assert_invalid "var alphabet = { a: 1,, }"
-    assert_invalid "var alphabet = { , }"
+    assert_malformed "var alphabet = { a: 1,, }"
+    assert_malformed "var alphabet = { , }"
   end
 
   def test_duplicate_identifiers
@@ -86,17 +86,17 @@ class ObjectLiteralsTest < Javascript::Test
   end
 
   def test_missing_identifiers
-    assert_invalid "var fail = { : 1 }"
-    assert_invalid %(var fail = { start: "good", : "but then it goes bad" })
-    assert_invalid %(var fail = { start: "good", : "but then it goes bad", then: "it recovers! })
+    assert_malformed "var fail = { : 1 }"
+    assert_malformed %(var fail = { start: "good", : "but then it goes bad" })
+    assert_malformed %(var fail = { start: "good", : "but then it goes bad", then: "it recovers! })
   end
 
   def test_missing_values
-    assert_invalid "var fail = { 1: }"
-    assert_invalid %(var fail = { start: "good", then:, yet: "we're back now" })
+    assert_malformed "var fail = { 1: }"
+    assert_malformed %(var fail = { start: "good", then:, yet: "we're back now" })
   end
 
   def test_missing_colons
-    assert_invalid "var fail = { a 1 }"
+    assert_malformed "var fail = { a 1 }"
   end
 end

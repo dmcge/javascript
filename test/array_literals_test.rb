@@ -34,7 +34,7 @@ class ArrayLiteralsTest < Javascript::Test
   end
 
   def test_unclosed_array
-    assert_invalid "[1, 2"
-    assert_invalid "[1, 2, 3,"
+    assert_malformed "[1, 2"
+    assert_malformed "[1, 2, 3,"
   end
 end

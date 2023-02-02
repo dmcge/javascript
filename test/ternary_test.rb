@@ -23,7 +23,7 @@ class TernaryTest < Javascript::Test
   end
 
   def test_missing_colon
-    assert_invalid %("well?" ? "then")
-    assert_invalid %("well?" ? "then" ? "yes" : "no")
+    assert_malformed %("well?" ? "then")
+    assert_malformed %("well?" ? "then" ? "yes" : "no")
   end
 end

@@ -19,6 +19,6 @@ class UnaryNotTest < Javascript::Test
   end
 
   def test_postfix
-    assert_invalid "3!"
+    assert_malformed "3!"
   end
 end

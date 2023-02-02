@@ -33,8 +33,8 @@ class PropertyAccessTest < Javascript::Test
   end
 
   def test_accessing_array_with_dot
-    assert_invalid "[0, 1].0"
-    assert_invalid "[0, 1]..0"
+    assert_malformed "[0, 1].0"
+    assert_malformed "[0, 1]..0"
   end
 
   def test_accessing_accessing_nonexistent_property
