@@ -80,7 +80,6 @@ module Javascript
         when PropertyAccess     then evaluate_property_access(expression)
         when UnaryOperation     then evaluate_unary_operation(expression)
         when BinaryOperation    then evaluate_binary_operation(expression)
-        when Parenthetical      then evaluate_parenthetical(expression)
         when Ternary            then evaluate_ternary(expression)
         end
       end
@@ -182,10 +181,6 @@ module Javascript
 
           operation.operator.perform_binary(left_hand_side, right_hand_side)
         end
-      end
-
-      def evaluate_parenthetical(parenthetical)
-        evaluate_value(parenthetical.expression)
       end
 
       def evaluate_ternary(ternary)

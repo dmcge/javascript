@@ -126,7 +126,7 @@ module Javascript
         def parse_parenthetical
           raise SyntaxError if tokenizer.consume(")")
 
-          Parenthetical.new(parser.parse_expression).tap do
+          parser.parse_expression.tap do
             raise SyntaxError unless tokenizer.consume(")")
           end
         end
