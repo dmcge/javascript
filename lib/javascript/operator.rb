@@ -27,6 +27,7 @@ module Javascript
       when "|"   then BitwiseOr
       when "&&"  then And
       when "||"  then Or
+      when ","   then Comma
       end.new
     end
 
@@ -275,6 +276,12 @@ module Javascript
     # FIXME
     class Or < Operator
       def perform_binary(left_hand_side, right_hand_side)
+      end
+    end
+
+    class Comma < Operator
+      def perform_binary(left_hand_side, right_hand_side)
+        right_hand_side
       end
     end
   end

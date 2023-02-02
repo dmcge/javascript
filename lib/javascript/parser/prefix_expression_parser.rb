@@ -103,7 +103,7 @@ module Javascript
             property.name = tokenizer.current_token.literal || tokenizer.current_token.value
 
             if tokenizer.consume(:colon)
-              property.value = parser.parse_expression or raise SyntaxError
+              property.value = parser.parse_expression(precedence: 2) or raise SyntaxError
             else
               property.value = parse_identifier
             end
@@ -116,7 +116,7 @@ module Javascript
               if tokenizer.consume(:comma)
                 array.elements << nil
               else
-                array.elements << parser.parse_expression
+                array.elements << parser.parse_expression(precedence: 2)
                 tokenizer.consume(:comma)
               end
             end

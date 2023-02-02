@@ -10,6 +10,7 @@ module Javascript
       def parse_expression
         case
         when tokenizer.consume(:operator) then parse_operation
+        when tokenizer.consume(",")       then parse_operation
         when tokenizer.consume(:equals)   then parse_assignment
         when tokenizer.consume(:dot)      then parse_property_access_by_name
         when tokenizer.consume("[")       then parse_property_access_by_expression

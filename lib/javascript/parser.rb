@@ -54,7 +54,7 @@ module Javascript
           declaration.name  = tokenizer.consume(:identifier).value
 
           if tokenizer.consume(:equals)
-            declaration.value = parse_expression or raise
+            declaration.value = parse_expression(precedence: 2) or raise
           end
         end
       end
