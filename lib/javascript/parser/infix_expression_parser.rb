@@ -14,6 +14,7 @@ module Javascript
         when tokenizer.consume(:dot)      then parse_property_access_by_name
         when tokenizer.consume("[")       then parse_property_access_by_expression
         when tokenizer.consume("(")       then parse_function_call
+        when tokenizer.consume("?")       then parse_ternary
         end
       end
 
@@ -80,6 +81,19 @@ module Javascript
             tokenizer.until(:closing_bracket) do
               arguments << parser.parse_expression(precedence: precedence)
               tokenizer.consume(:comma)
+            end
+          end
+        end
+
+        def parse_ternary
+          Ternary.new.tap do |ternary|
+            ternary.condition  = prefix
+            ternary.consequent = parser.parse_expression
+
+            if tokenizer.consume(":")
+              ternary.alternative = parser.parse_expression
+            else
+              raise SyntaxError
             end
           end
         end

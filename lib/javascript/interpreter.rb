@@ -81,6 +81,7 @@ module Javascript
         when UnaryOperation     then evaluate_unary_operation(expression)
         when BinaryOperation    then evaluate_binary_operation(expression)
         when Parenthetical      then evaluate_parenthetical(expression)
+        when Ternary            then evaluate_ternary(expression)
         end
       end
 
@@ -185,6 +186,14 @@ module Javascript
 
       def evaluate_parenthetical(parenthetical)
         evaluate_value(parenthetical.expression)
+      end
+
+      def evaluate_ternary(ternary)
+        if evaluate_value(ternary.condition).truthy?
+          evaluate_value(ternary.consequent)
+        elsif ternary.alternative
+          evaluate_value(ternary.alternative)
+        end
       end
 
 

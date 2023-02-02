@@ -26,6 +26,7 @@ module Javascript
       when scanner.scan("]")                 then :closing_square_bracket
       when scanner.scan(OPERATOR)            then :operator
       when scanner.scan("=")                 then :equals
+      when scanner.scan("?")                 then :question_mark
       when scanner.scan(":")                 then :colon
       when scanner.scan(";")                 then :semicolon
       when scanner.scan($/)                  then :line_break
