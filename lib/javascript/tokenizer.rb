@@ -31,6 +31,10 @@ module Javascript
       end
     end
 
+    def consume!(type)
+      consume(type) or raise SyntaxError
+    end
+
     def until(type)
       loop do
         case

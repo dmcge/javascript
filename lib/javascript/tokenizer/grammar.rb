@@ -33,7 +33,7 @@ module Javascript
       when scanner.scan(/\s+/)               then :whitespace
       when scanner.eos?                      then :end_of_file
       else
-        raise "Unrecognised character: #{scanner.getch.inspect}"
+        raise SyntaxError, "Unrecognised character: #{scanner.getch.inspect}"
       end
     end
 

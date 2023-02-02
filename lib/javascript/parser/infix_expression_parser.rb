@@ -36,7 +36,7 @@ module Javascript
           BinaryOperation.new \
             operator: operator,
             left_hand_side: prefix,
-            right_hand_side: parser.parse_expression(precedence: operator.right_associative? ? precedence - 1 : precedence)
+            right_hand_side: parser.parse_expression!(precedence: operator.right_associative? ? precedence - 1 : precedence)
         end
 
         def parse_unary_operation(operator)
@@ -53,18 +53,18 @@ module Javascript
 
         def parse_assignment
           if prefix.is_a?(Identifier)
-            Assignment.new identifier: prefix, value: parser.parse_expression(precedence: precedence - 1)
+            Assignment.new identifier: prefix, value: parser.parse_expression!(precedence: precedence - 1)
           else
             raise SyntaxError
           end
         end
 
         def parse_property_access_by_name
-          PropertyAccess.new(receiver: prefix, accessor: tokenizer.consume(:identifier).value, computed: true)
+          PropertyAccess.new(receiver: prefix, accessor: tokenizer.consume!(:identifier).value, computed: true)
         end
 
         def parse_property_access_by_expression
-          access = PropertyAccess.new(receiver: prefix, accessor: parser.parse_expression, computed: false)
+          access = PropertyAccess.new(receiver: prefix, accessor: parser.parse_expression!, computed: false)
 
           if tokenizer.consume("]")
             access
@@ -80,7 +80,7 @@ module Javascript
         def parse_arguments
           [].tap do |arguments|
             tokenizer.until(:closing_bracket) do
-              arguments << parser.parse_expression(precedence: precedence)
+              arguments << parser.parse_expression!(precedence: precedence)
               tokenizer.consume(:comma)
             end
           end
@@ -89,10 +89,10 @@ module Javascript
         def parse_ternary
           Ternary.new.tap do |ternary|
             ternary.condition  = prefix
-            ternary.consequent = parser.parse_expression
+            ternary.consequent = parser.parse_expression!
 
             if tokenizer.consume(":")
-              ternary.alternative = parser.parse_expression
+              ternary.alternative = parser.parse_expression!
             else
               raise SyntaxError
             end

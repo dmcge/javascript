@@ -154,7 +154,7 @@ module Javascript
               raise SyntaxError
             end
           else
-            operand
+            operand or raise SyntaxError
           end
         end
     end

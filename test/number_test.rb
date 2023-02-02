@@ -19,11 +19,4 @@ class NumberTest < Javascript::Test
     assert_equal 1.0000000000000002, evaluate("1.0000000000000002")
     assert_equal 1, evaluate("1.0000000000000001")
   end
-
-
-  def test_dangling_operators
-    assert_invalid "+"
-    assert_invalid "3 *"
-    assert_invalid "/ 2"
-  end
 end

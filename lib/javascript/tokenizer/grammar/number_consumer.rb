@@ -38,7 +38,7 @@ module Javascript
             fractional = consume_digits
           else
             whole      = consume_digits
-            fractional = scanner.scan(".") && scanner.peek(1).match?(/\d/) ? consume_digits : 0
+            fractional = (consume_fractional_digits if scanner.scan(".")) || 0
           end
 
           exponent = scanner.scan(/e/i) ? consume_signed_digits : 0
@@ -63,6 +63,10 @@ module Javascript
               end
             end
           end.join
+        end
+
+        def consume_fractional_digits
+          consume_digits if scanner.peek(1).force_encoding("ASCII-8BIT").match?(/\d/)
         end
 
         def consume_signed_digits(pattern: /\d/)

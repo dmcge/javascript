@@ -36,6 +36,10 @@ module Javascript
       ExpressionParser.new(parser: self, tokenizer: tokenizer, precedence: precedence).parse_expression
     end
 
+    def parse_expression!(...)
+      parse_expression(...) or raise SyntaxError
+    end
+
     private
       attr_reader :tokenizer
 
@@ -51,10 +55,10 @@ module Javascript
 
       def parse_variable_declaration
         VariableDeclaration.new.tap do |declaration|
-          declaration.name  = tokenizer.consume(:identifier).value
+          declaration.name  = tokenizer.consume!(:identifier).value
 
           if tokenizer.consume(:equals)
-            declaration.value = parse_expression(precedence: 2) or raise
+            declaration.value = parse_expression!(precedence: 2)
           end
         end
       end
@@ -69,7 +73,7 @@ module Javascript
 
       def parse_condition
         if tokenizer.consume("(")
-          parse_expression.tap do
+          parse_expression!.tap do
             raise SyntaxError unless tokenizer.consume(")")
           end
         else

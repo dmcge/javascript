@@ -12,7 +12,7 @@ module Javascript
 
 
     def assert_invalid(script)
-      assert_raises { evaluate(script) }
+      assert_raises(SyntaxError) { evaluate(script) }
     end
 
     def assert_valid(script)

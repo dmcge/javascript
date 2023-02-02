@@ -7,6 +7,12 @@ class SyntaxTest < Javascript::Test
     assert_invalid "5 6"
   end
 
+  def test_dangling_operators
+    assert_invalid "+"
+    assert_invalid "3 *"
+    assert_invalid "/ 2"
+  end
+
   def test_multiline_expression
     assert_equal 5, evaluate("2 +\n 3")
   end

@@ -73,8 +73,8 @@ class VarTest < Javascript::Test
   end
 
   def test_referencing_a_variable_before_it_is_declared
-    assert_invalid "record"
-    assert_invalid "record = 1"
+    assert_raises { evaluate("record") }
+    assert_raises { evaluate("record = 1") }
   end
 
   def test_dangling_equals
