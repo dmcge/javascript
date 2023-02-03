@@ -3,7 +3,7 @@ require "javascript/tokenizer/grammar/number_consumer"
 module Javascript
   class Grammar
     START_OF_IDENTIFIER = /\p{L}|_|\$/
-    OPERATOR            = />>>|===|!==|==|\*\*|>>|<<|<=|>=|!=|&&|\+\+|\-\-|\|\||>|\-|\+|%|\*|<|\/|!|&|\^|\|/
+    OPERATOR            = />>>|===|!==|==|\*\*|>>|<<|<=|>=|!=|&&|\+\+|\-\-|\|\||>|\-|\+|%|\*|<|\/|!|&|\^|\||~/
 
     def initialize(scanner)
       @scanner = scanner

@@ -29,9 +29,8 @@ module Javascript
       Number.new(Number.new(to_i32 >> other.to_ui32 % 32).to_i32)
     end
 
-    def -@
-      Number.new(-value)
-    end
+    def -@ = Number.new(-value)
+    def ~@ = Number.new(~to_i32)
 
     def unsigned
       Number.new(to_ui32).tap do |number|

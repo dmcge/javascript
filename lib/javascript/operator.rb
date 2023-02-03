@@ -22,6 +22,7 @@ module Javascript
       when "===" then StrictEquality
       when "!==" then StrictInequality
       when "!"   then Not
+      when "~"   then BitwiseNot
       when "&"   then BitwiseAnd
       when "^"   then BitwiseXor
       when "|"   then BitwiseOr
@@ -246,6 +247,12 @@ module Javascript
     class Not < Operator
       def perform_unary(operand)
         !operand.to_boolean
+      end
+    end
+
+    class BitwiseNot < Operator
+      def perform_unary(operand)
+        ~operand.to_number
       end
     end
 
