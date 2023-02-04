@@ -11,13 +11,15 @@ module Javascript
       end
 
       def parse_expression
-        expression = parse_prefix_expression
+        if expression = parse_prefix_expression
+          while precedence < (current_precedence = precedence_of(tokenizer.look_ahead))
+            expression = parse_infix_expression(expression, precedence: current_precedence)
+          end
 
-        while precedence < (current_precedence = precedence_of(tokenizer.look_ahead))
-          expression = parse_infix_expression(expression, precedence: current_precedence)
+          expression
+        else
+          nil
         end
-
-        expression
       end
 
       private

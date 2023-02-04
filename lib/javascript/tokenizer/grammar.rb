@@ -3,7 +3,6 @@ require "javascript/tokenizer/grammar/number_consumer"
 module Javascript
   class Grammar
     START_OF_IDENTIFIER = /\p{L}|_|\$/
-    OPERATOR            = />>>|===|!==|==|\*\*|>>|<<|<=|>=|!=|&&|\|\||>|\-|\+|%|\*|<|\/|!|&|\^|\||~/
 
     def initialize(scanner)
       @scanner = scanner
@@ -17,17 +16,26 @@ module Javascript
       when scanner.scan(/\d/)                then tokenize_numeric
       when scanner.scan(/"|'/)               then tokenize_string
       when scanner.scan(".")                 then tokenize_dot
+      when scanner.scan("&")                 then tokenize_ampersand
+      when scanner.scan("|")                 then tokenize_pipe
+      when scanner.scan("=")                 then tokenize_equals
+      when scanner.scan("+")                 then tokenize_plus
+      when scanner.scan("-")                 then tokenize_minus
+      when scanner.scan("*")                 then tokenize_star
+      when scanner.scan("!")                 then tokenize_exclamation_mark
+      when scanner.scan("<")                 then tokenize_left_caret
+      when scanner.scan(">")                 then tokenize_right_caret
+      when scanner.scan("^")                 then :up_caret
+      when scanner.scan("/")                 then :forward_slash
       when scanner.scan(",")                 then :comma
+      when scanner.scan("%")                 then :percent
+      when scanner.scan("~")                 then :tilde
       when scanner.scan("(")                 then :opening_bracket
       when scanner.scan(")")                 then :closing_bracket
       when scanner.scan("{")                 then :opening_brace
       when scanner.scan("}")                 then :closing_brace
       when scanner.scan("[")                 then :opening_square_bracket
       when scanner.scan("]")                 then :closing_square_bracket
-      when scanner.scan("++")                then :plus_plus
-      when scanner.scan("--")                then :minus_minus
-      when scanner.scan(OPERATOR)            then :operator
-      when scanner.scan("=")                 then :equals
       when scanner.scan("?")                 then :question_mark
       when scanner.scan(":")                 then :colon
       when scanner.scan(";")                 then :semicolon
@@ -163,6 +171,92 @@ module Javascript
           tokenize_numeric
         else
           :dot
+        end
+      end
+
+      def tokenize_ampersand
+        if scanner.scan("&")
+          :ampersand_ampersand
+        else
+          :ampersand
+        end
+      end
+
+      def tokenize_pipe
+        if scanner.scan("|")
+          :pipe_pipe
+        else
+          :pipe
+        end
+      end
+
+      def tokenize_equals
+        case
+        when scanner.scan("==")
+          :equals_equals_equals
+        when scanner.scan("=")
+          :equals_equals
+        else
+          :equals
+        end
+      end
+
+      def tokenize_plus
+        if scanner.scan("+")
+          :plus_plus
+        else
+          :plus
+        end
+      end
+
+      def tokenize_minus
+        if scanner.scan("-")
+          :minus_minus
+        else
+          :minus
+        end
+      end
+
+      def tokenize_star
+        if scanner.scan("*")
+          :star_star
+        else
+          :star
+        end
+      end
+
+      def tokenize_exclamation_mark
+        case
+        when scanner.scan("==")
+          :exclamation_equals_equals
+        when scanner.scan("=")
+          :exclamation_equals
+        else
+          :exclamation_mark
+        end
+      end
+
+      def tokenize_left_caret
+        case
+        when scanner.scan("<")
+          :left_caret_caret
+        when scanner.scan("=")
+          :left_caret_equals
+        else
+          :left_caret
+        end
+      end
+
+      def tokenize_right_caret
+        case
+        when scanner.scan(">>")
+          :right_caret_caret_caret
+        when scanner.scan(">")
+          :right_caret_caret
+        when scanner.scan("=")
+          :right_caret_equals
+        else
+          :right_caret
         end
       end
   end

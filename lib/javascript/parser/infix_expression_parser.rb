@@ -9,12 +9,34 @@ module Javascript
 
       def parse_expression
         case
-        when tokenizer.consume(:operator) then parse_binary_operation
-        when tokenizer.consume(",")       then parse_binary_operation
+        when tokenizer.consume("**")      then parse_rightward_binary_operation
+        when tokenizer.consume("/")       then parse_leftward_binary_operation
+        when tokenizer.consume("*")       then parse_leftward_binary_operation
+        when tokenizer.consume("+")       then parse_leftward_binary_operation
+        when tokenizer.consume("+")       then parse_leftward_binary_operation
+        when tokenizer.consume("-")       then parse_leftward_binary_operation
+        when tokenizer.consume(",")       then parse_leftward_binary_operation
+        when tokenizer.consume("%")       then parse_leftward_binary_operation
         when tokenizer.consume("++")      then parse_unary_operation
         when tokenizer.consume("--")      then parse_unary_operation
-        when tokenizer.consume(:equals)   then parse_assignment
-        when tokenizer.consume(:dot)      then parse_property_access_by_name
+        when tokenizer.consume("=")       then parse_assignment
+        when tokenizer.consume("==")      then parse_leftward_binary_operation
+        when tokenizer.consume("===")     then parse_leftward_binary_operation
+        when tokenizer.consume("!=")      then parse_leftward_binary_operation
+        when tokenizer.consume("!==")     then parse_leftward_binary_operation
+        when tokenizer.consume("<")       then parse_leftward_binary_operation
+        when tokenizer.consume("<=")      then parse_leftward_binary_operation
+        when tokenizer.consume(">")       then parse_leftward_binary_operation
+        when tokenizer.consume(">=")      then parse_leftward_binary_operation
+        when tokenizer.consume("<<")      then parse_leftward_binary_operation
+        when tokenizer.consume(">>")      then parse_leftward_binary_operation
+        when tokenizer.consume(">>>")     then parse_leftward_binary_operation
+        when tokenizer.consume("&&")      then parse_leftward_binary_operation
+        when tokenizer.consume("||")      then parse_leftward_binary_operation
+        when tokenizer.consume("&")       then parse_leftward_binary_operation
+        when tokenizer.consume("|")       then parse_leftward_binary_operation
+        when tokenizer.consume("^")       then parse_leftward_binary_operation
+        when tokenizer.consume(".")       then parse_property_access_by_name
         when tokenizer.consume("[")       then parse_property_access_by_expression
         when tokenizer.consume("(")       then parse_function_call
         when tokenizer.consume("?")       then parse_ternary
@@ -24,13 +46,19 @@ module Javascript
       private
         attr_reader :parser, :tokenizer
 
-        def parse_binary_operation
-          operator = parse_operator
+        def parse_leftward_binary_operation
+          parse_binary_operation(precedence: precedence)
+        end
 
+        def parse_rightward_binary_operation
+          parse_binary_operation(precedence: precedence - 1)
+        end
+
+        def parse_binary_operation(precedence:)
           BinaryOperation.new \
-            operator:        operator,
+            operator:        parse_operator,
             left_hand_side:  prefix,
-            right_hand_side: parser.parse_expression!(precedence: operator.right_associative? ? precedence - 1 : precedence)
+            right_hand_side: parser.parse_expression!(precedence: precedence)
         end
 
         def parse_unary_operation

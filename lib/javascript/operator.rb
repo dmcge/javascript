@@ -40,18 +40,6 @@ module Javascript
       raise NotImplementedError
     end
 
-    def binary?
-      method(:perform_binary).unbind != Operator.instance_method(:perform_binary)
-    end
-
-    def unary?
-      method(:perform_unary).unbind != Operator.instance_method(:perform_unary)
-    end
-
-    def right_associative?
-      false
-    end
-
 
     class Increment < Operator
       def perform_unary(operand, position:)
@@ -82,10 +70,6 @@ module Javascript
     class Exponentiation < Operator
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number ** right_hand_side.to_number
-      end
-
-      def right_associative?
-        true
       end
     end
 

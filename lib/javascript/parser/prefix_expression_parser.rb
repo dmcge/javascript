@@ -7,7 +7,10 @@ module Javascript
 
       def parse_expression
         case
-        when tokenizer.consume(:operator)   then parse_unary_operation
+        when tokenizer.consume("!")         then parse_unary_operation
+        when tokenizer.consume("~")         then parse_unary_operation
+        when tokenizer.consume("+")         then parse_unary_operation
+        when tokenizer.consume("-")         then parse_unary_operation
         when tokenizer.consume("++")        then parse_update_operation
         when tokenizer.consume("--")        then parse_update_operation
         when tokenizer.consume(:function)   then parse_function_definition
@@ -31,11 +34,7 @@ module Javascript
         attr_reader :parser, :tokenizer
 
         def parse_unary_operation
-          if (operator = parse_operator).unary?
-            UnaryOperation.new operator: operator, operand: parse_expression!, position: :prefix
-          else
-            raise SyntaxError
-          end
+          UnaryOperation.new operator: parse_operator, operand: parse_expression!, position: :prefix
         end
 
         def parse_update_operation
