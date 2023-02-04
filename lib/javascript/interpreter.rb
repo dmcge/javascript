@@ -163,23 +163,22 @@ module Javascript
       end
 
       def evaluate_binary_operation(operation)
-        operator = Operator.for(operation.operator)
-
         # FIXME
-        case operator
-        when Operator::And
+        case operation.operator
+        when "&&"
           if (left_hand_side = evaluate_value(operation.left_hand_side)).truthy?
             evaluate_value(operation.right_hand_side)
           else
             left_hand_side
           end
-        when Operator::Or
+        when "||"
           if (left_hand_side = evaluate_value(operation.left_hand_side)).truthy?
             left_hand_side
           else
             evaluate_value(operation.right_hand_side)
           end
         else
+          operator        = Operator.for(operation.operator)
           left_hand_side  = evaluate_value(operation.left_hand_side)
           right_hand_side = evaluate_value(operation.right_hand_side)
 

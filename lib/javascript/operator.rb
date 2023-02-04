@@ -26,8 +26,6 @@ module Javascript
       when "&"   then BitwiseAnd
       when "^"   then BitwiseXor
       when "|"   then BitwiseOr
-      when "&&"  then And
-      when "||"  then Or
       when ","   then Comma
       end.new
     end
@@ -255,18 +253,6 @@ module Javascript
     class BitwiseOr < Operator
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number | right_hand_side.to_number
-      end
-    end
-
-    # FIXME
-    class And < Operator
-      def perform_binary(left_hand_side, right_hand_side)
-      end
-    end
-
-    # FIXME
-    class Or < Operator
-      def perform_binary(left_hand_side, right_hand_side)
       end
     end
 
