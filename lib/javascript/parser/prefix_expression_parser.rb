@@ -8,6 +8,8 @@ module Javascript
       def parse_expression
         case
         when tokenizer.consume(:operator)   then parse_unary_operation
+        when tokenizer.consume("++")        then parse_update_operation
+        when tokenizer.consume("--")        then parse_update_operation
         when tokenizer.consume(:function)   then parse_function_definition
         when tokenizer.consume(:identifier) then parse_identifier
         when tokenizer.consume(:string)     then parse_string_literal
@@ -21,19 +23,34 @@ module Javascript
         end
       end
 
+      def parse_expression!
+        parse_expression or raise SyntaxError
+      end
+
       private
         attr_reader :parser, :tokenizer
 
         def parse_unary_operation
-          if (operator = Operator.for(tokenizer.current_token.value)).unary?
-            UnaryOperation.new.tap do |operation|
-              operation.operator = operator
-              operation.operand  = validate_unary_operand(operator, parse_expression)
-              operation.position = :prefix
-            end
+          if (operator = parse_operator).unary?
+            UnaryOperation.new operator: operator, operand: parse_expression!, position: :prefix
           else
             raise SyntaxError
           end
+        end
+
+        def parse_update_operation
+          operator = parse_operator
+          operand  = parse_expression!
+
+          if operand.is_a?(Identifier) || operand.is_a?(PropertyAccess)
+            UnaryOperation.new operator: operator, operand: operand, position: :prefix
+          else
+            raise SyntaxError
+          end
+        end
+
+        def parse_operator
+          Operator.for(tokenizer.current_token.value)
         end
 
         def parse_function_definition
@@ -141,21 +158,6 @@ module Javascript
 
         def parse_null
           NullLiteral.new
-        end
-
-
-        # FIXME
-        def validate_unary_operand(operator, operand)
-          case operator
-          when Operator::Increment, Operator::Decrement
-            if operand.is_a?(Identifier) || operand.is_a?(PropertyAccess)
-              operand
-            else
-              raise SyntaxError
-            end
-          else
-            operand or raise SyntaxError
-          end
         end
     end
   end

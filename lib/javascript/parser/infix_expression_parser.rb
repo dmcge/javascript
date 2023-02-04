@@ -9,8 +9,10 @@ module Javascript
 
       def parse_expression
         case
-        when tokenizer.consume(:operator) then parse_operation
-        when tokenizer.consume(",")       then parse_operation
+        when tokenizer.consume(:operator) then parse_binary_operation
+        when tokenizer.consume(",")       then parse_binary_operation
+        when tokenizer.consume("++")      then parse_unary_operation
+        when tokenizer.consume("--")      then parse_unary_operation
         when tokenizer.consume(:equals)   then parse_assignment
         when tokenizer.consume(:dot)      then parse_property_access_by_name
         when tokenizer.consume("[")       then parse_property_access_by_expression
@@ -22,24 +24,16 @@ module Javascript
       private
         attr_reader :parser, :tokenizer
 
-        def parse_operation
-          operator = Operator.for(tokenizer.current_token.value)
+        def parse_binary_operation
+          operator = parse_operator
 
-          if operator.binary?
-            parse_binary_operation(operator)
-          else
-            parse_unary_operation(operator)
-          end
-        end
-
-        def parse_binary_operation(operator)
           BinaryOperation.new \
-            operator: operator,
-            left_hand_side: prefix,
+            operator:        operator,
+            left_hand_side:  prefix,
             right_hand_side: parser.parse_expression!(precedence: operator.right_associative? ? precedence - 1 : precedence)
         end
 
-        def parse_unary_operation(operator)
+        def parse_unary_operation
           tokenizer.rewind
 
           if tokenizer.consume(:line_break)
@@ -47,8 +41,20 @@ module Javascript
             prefix
           else
             tokenizer.next_token
-            UnaryOperation.new(operand: validate_unary_operand(operator, prefix), operator: operator, position: :postfix)
+            parse_update_operation
           end
+        end
+
+        def parse_update_operation
+          if prefix.is_a?(Identifier) || prefix.is_a?(PropertyAccess)
+            UnaryOperation.new operator: parse_operator, operand: prefix, position: :postfix
+          else
+            raise SyntaxError
+          end
+        end
+
+        def parse_operator
+          Operator.for(tokenizer.current_token.value)
         end
 
         def parse_assignment
@@ -96,21 +102,6 @@ module Javascript
             else
               raise SyntaxError
             end
-          end
-        end
-
-
-        # FIXME
-        def validate_unary_operand(operator, operand)
-          case operator
-          when Operator::Increment, Operator::Decrement
-            if operand.is_a?(Identifier) || operand.is_a?(PropertyAccess)
-              operand
-            else
-              raise SyntaxError
-            end
-          else
-            operand
           end
         end
     end
