@@ -64,11 +64,10 @@ module Javascript
       end
 
       def parse_if_statement
-        If.new.tap do |if_statement|
-          if_statement.condition   = parse_condition
-          if_statement.consequent  = parse_statement
-          if_statement.alternative = parse_statement if tokenizer.consume(:else)
-        end
+        If.new \
+          condition:   parse_condition,
+          consequent:  parse_statement,
+          alternative: (parse_statement if tokenizer.consume(:else))
       end
 
       def parse_condition
