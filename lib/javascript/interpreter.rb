@@ -151,18 +151,22 @@ module Javascript
       end
 
       def evaluate_unary_operation(operation)
+        operator = Operator.for(operation.operator)
+
         # FIXME
-        case operation.operator
+        case operator
         when Operator::Increment, Operator::Decrement
-          operation.operator.perform_unary(evaluate_expression(operation.operand), position: operation.position)
+          operator.perform_unary(evaluate_expression(operation.operand), position: operation.position)
         else
-          operation.operator.perform_unary(evaluate_value(operation.operand))
+          operator.perform_unary(evaluate_value(operation.operand))
         end
       end
 
       def evaluate_binary_operation(operation)
+        operator = Operator.for(operation.operator)
+
         # FIXME
-        case operation.operator
+        case operator
         when Operator::And
           if (left_hand_side = evaluate_value(operation.left_hand_side)).truthy?
             evaluate_value(operation.right_hand_side)
@@ -179,7 +183,7 @@ module Javascript
           left_hand_side  = evaluate_value(operation.left_hand_side)
           right_hand_side = evaluate_value(operation.right_hand_side)
 
-          operation.operator.perform_binary(left_hand_side, right_hand_side)
+          operator.perform_binary(left_hand_side, right_hand_side)
         end
       end
 

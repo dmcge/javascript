@@ -56,7 +56,7 @@ module Javascript
 
         def parse_binary_operation(precedence:)
           BinaryOperation.new \
-            operator:        parse_operator,
+            operator:        tokenizer.current_token.value,
             left_hand_side:  prefix,
             right_hand_side: parser.parse_expression!(precedence: precedence)
         end
@@ -75,14 +75,10 @@ module Javascript
 
         def parse_update_operation
           if prefix.is_a?(Identifier) || prefix.is_a?(PropertyAccess)
-            UnaryOperation.new operator: parse_operator, operand: prefix, position: :postfix
+            UnaryOperation.new operator: tokenizer.current_token.value, operand: prefix, position: :postfix
           else
             raise SyntaxError
           end
-        end
-
-        def parse_operator
-          Operator.for(tokenizer.current_token.value)
         end
 
         def parse_assignment

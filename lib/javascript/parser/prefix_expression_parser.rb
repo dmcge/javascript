@@ -34,11 +34,11 @@ module Javascript
         attr_reader :parser, :tokenizer
 
         def parse_unary_operation
-          UnaryOperation.new operator: parse_operator, operand: parse_expression!, position: :prefix
+          UnaryOperation.new operator: tokenizer.current_token.value, operand: parse_expression!, position: :prefix
         end
 
         def parse_update_operation
-          operator = parse_operator
+          operator = tokenizer.current_token.value
           operand  = parse_expression!
 
           if operand.is_a?(Identifier) || operand.is_a?(PropertyAccess)
@@ -46,10 +46,6 @@ module Javascript
           else
             raise SyntaxError
           end
-        end
-
-        def parse_operator
-          Operator.for(tokenizer.current_token.value)
         end
 
         def parse_function_definition
