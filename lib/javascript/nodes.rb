@@ -1,6 +1,6 @@
 module Javascript
   ArrayLiteral        = Struct.new(:elements)
-  Assignment          = Struct.new(:identifier, :value, :operator)
+  Assignment          = Struct.new(:operator, :left_hand_side, :right_hand_side)
   BinaryOperation     = Struct.new(:operator, :left_hand_side, :right_hand_side)
   Block               = Struct.new(:body)
   BooleanLiteral      = Struct.new(:value, keyword_init: true)

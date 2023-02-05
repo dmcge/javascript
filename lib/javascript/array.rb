@@ -9,7 +9,7 @@ module Javascript
     end
 
     def ==(other)
-      elements == other.to_a
+      to_a == other.to_a
     end
 
     def <<(value)
@@ -21,7 +21,7 @@ module Javascript
     end
 
     def to_a
-      elements
+      elements.map(&:value)
     end
 
     def to_ary

@@ -95,8 +95,9 @@ module Javascript
         end
 
         def parse_assignment
-          if prefix.is_a?(Identifier)
-            Assignment.new operator: tokenizer.current_token.value, identifier: prefix, value: parser.parse_expression!(precedence: precedence - 1)
+          case prefix
+          when Identifier, PropertyAccess
+            Assignment.new operator: tokenizer.current_token.value, left_hand_side: prefix, right_hand_side: parser.parse_expression!(precedence: precedence - 1)
           else
             raise SyntaxError
           end

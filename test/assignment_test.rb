@@ -1,6 +1,31 @@
 require "test_helper"
 
 class AssignmentTest < Javascript::Test
+  def test_assigning_properties_by_dot
+    assert_equal "Yes, I'm here!", evaluate(<<~JS.chomp)
+      var object = {}
+      object.presence = "Yes, I'm here!"
+      object.presence
+    JS
+  end
+
+  def test_assigning_properties_by_square_brackets
+    assert_equal "Yes, I'm here!", evaluate(<<~JS.chomp)
+      var object = {}
+      object["presence"] = "Yes, I'm here!"
+      object.presence
+    JS
+  end
+
+  def test_reassigning_properties
+    assert_equal "pass", evaluate(<<~JS.chomp)
+      var object = { result: "fail" }
+      object.result = "pass"
+      object.result
+    JS
+  end
+
+
   def test_addition_assignment
     assert_equal 4, evaluate_assignment(1, "+= 3")
     assert_equal "a3", evaluate_assignment(%("a"), "+= 3")

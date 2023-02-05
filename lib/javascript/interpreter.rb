@@ -110,17 +110,15 @@ module Javascript
       end
 
       def evaluate_assignment(assignment)
-        if @references.include?(assignment.identifier.name)
-          @references[assignment.identifier.name].value = \
-            if assignment.operator == "="
-              evaluate_value(assignment.value)
-            else
-              Operator.for(assignment.operator.delete_suffix("=")).perform_binary \
-                evaluate_value(assignment.identifier), evaluate_value(assignment.value)
-            end
-        else
-          raise "Trying to assign variable #{assignment.identifier.name}, but it doesn’t exist"
-        end
+        reference = evaluate_expression(assignment.left_hand_side)
+        new_value = evaluate_value(assignment.right_hand_side)
+
+        reference.value = \
+          if assignment.operator == "="
+            new_value
+          else
+            Operator.for(assignment.operator.delete_suffix("=")).perform_binary(reference.value, new_value)
+          end
       end
 
       def evaluate_string_literal(literal)
@@ -153,6 +151,7 @@ module Javascript
         receiver = evaluate_value(property_access.receiver)
         accessor = property_access.computed ? property_access.accessor : evaluate_value(property_access.accessor)
 
+        receiver[accessor] ||= nil
         receiver[accessor]
       end
 

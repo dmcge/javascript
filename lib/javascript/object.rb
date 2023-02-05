@@ -11,7 +11,7 @@ module Javascript
     end
 
     def []=(name, value)
-      properties[name.to_s] = value
+      properties[name.to_s] = Reference.new(value)
     end
   end
 end
