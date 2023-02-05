@@ -17,22 +17,6 @@ module Javascript
         when tokenizer.consume("-")       then parse_leftward_binary_operation
         when tokenizer.consume(",")       then parse_leftward_binary_operation
         when tokenizer.consume("%")       then parse_leftward_binary_operation
-        when tokenizer.consume("++")      then parse_unary_operation
-        when tokenizer.consume("--")      then parse_unary_operation
-        when tokenizer.consume("=")       then parse_assignment
-        when tokenizer.consume("+=")      then parse_assignment
-        when tokenizer.consume("-=")      then parse_assignment
-        when tokenizer.consume("*=")      then parse_assignment
-        when tokenizer.consume("/=")      then parse_assignment
-        when tokenizer.consume("**=")     then parse_assignment
-        when tokenizer.consume("*=")      then parse_assignment
-        when tokenizer.consume("%=")      then parse_assignment
-        when tokenizer.consume("<<=")     then parse_assignment
-        when tokenizer.consume(">>=")     then parse_assignment
-        when tokenizer.consume(">>>=")    then parse_assignment
-        when tokenizer.consume("&=")      then parse_assignment
-        when tokenizer.consume("|=")      then parse_assignment
-        when tokenizer.consume("^=")      then parse_assignment
         when tokenizer.consume("==")      then parse_leftward_binary_operation
         when tokenizer.consume("===")     then parse_leftward_binary_operation
         when tokenizer.consume("!=")      then parse_leftward_binary_operation
@@ -49,6 +33,22 @@ module Javascript
         when tokenizer.consume("&")       then parse_leftward_binary_operation
         when tokenizer.consume("|")       then parse_leftward_binary_operation
         when tokenizer.consume("^")       then parse_leftward_binary_operation
+        when tokenizer.consume("++")      then parse_unary_operation
+        when tokenizer.consume("--")      then parse_unary_operation
+        when tokenizer.consume("=")       then parse_assignment
+        when tokenizer.consume("+=")      then parse_assignment
+        when tokenizer.consume("-=")      then parse_assignment
+        when tokenizer.consume("*=")      then parse_assignment
+        when tokenizer.consume("/=")      then parse_assignment
+        when tokenizer.consume("**=")     then parse_assignment
+        when tokenizer.consume("*=")      then parse_assignment
+        when tokenizer.consume("%=")      then parse_assignment
+        when tokenizer.consume("<<=")     then parse_assignment
+        when tokenizer.consume(">>=")     then parse_assignment
+        when tokenizer.consume(">>>=")    then parse_assignment
+        when tokenizer.consume("&=")      then parse_assignment
+        when tokenizer.consume("|=")      then parse_assignment
+        when tokenizer.consume("^=")      then parse_assignment
         when tokenizer.consume(".")       then parse_property_access_by_name
         when tokenizer.consume("[")       then parse_property_access_by_expression
         when tokenizer.consume("(")       then parse_function_call
