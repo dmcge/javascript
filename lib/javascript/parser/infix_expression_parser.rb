@@ -49,8 +49,8 @@ module Javascript
         when tokenizer.consume("&=")      then parse_assignment
         when tokenizer.consume("|=")      then parse_assignment
         when tokenizer.consume("^=")      then parse_assignment
-        when tokenizer.consume(".")       then parse_property_access_by_name
-        when tokenizer.consume("[")       then parse_property_access_by_expression
+        when tokenizer.consume(".")       then parse_property_access_with_dot
+        when tokenizer.consume("[")       then parse_property_access_with_square_brackets
         when tokenizer.consume("(")       then parse_function_call
         when tokenizer.consume("?")       then parse_ternary
         end
@@ -103,11 +103,11 @@ module Javascript
           end
         end
 
-        def parse_property_access_by_name
+        def parse_property_access_with_dot
           PropertyAccess.new(receiver: prefix, accessor: tokenizer.consume!(:identifier).value, computed: true)
         end
 
-        def parse_property_access_by_expression
+        def parse_property_access_with_square_brackets
           access = PropertyAccess.new(receiver: prefix, accessor: parser.parse_expression!, computed: false)
 
           if tokenizer.consume("]")
