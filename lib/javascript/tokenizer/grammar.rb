@@ -22,13 +22,13 @@ module Javascript
       when scanner.scan("+")                 then tokenize_plus
       when scanner.scan("-")                 then tokenize_minus
       when scanner.scan("*")                 then tokenize_star
+      when scanner.scan("/")                 then tokenize_forward_slash
       when scanner.scan("!")                 then tokenize_exclamation_mark
       when scanner.scan("<")                 then tokenize_left_caret
       when scanner.scan(">")                 then tokenize_right_caret
-      when scanner.scan("^")                 then :up_caret
-      when scanner.scan("/")                 then :forward_slash
+      when scanner.scan("^")                 then tokenize_up_caret
+      when scanner.scan("%")                 then tokenize_percent
       when scanner.scan(",")                 then :comma
-      when scanner.scan("%")                 then :percent
       when scanner.scan("~")                 then :tilde
       when scanner.scan("(")                 then :opening_bracket
       when scanner.scan(")")                 then :closing_bracket
@@ -176,17 +176,17 @@ module Javascript
 
       def tokenize_ampersand
         if scanner.scan("&")
-          :ampersand_ampersand
+          tokenize_optional_equals(:ampersand_ampersand)
         else
-          :ampersand
+          tokenize_optional_equals(:ampersand)
         end
       end
 
       def tokenize_pipe
         if scanner.scan("|")
-          :pipe_pipe
+          tokenize_optional_equals(:pipe_pipe)
         else
-          :pipe
+          tokenize_optional_equals(:pipe)
         end
       end
 
@@ -205,7 +205,7 @@ module Javascript
         if scanner.scan("+")
           :plus_plus
         else
-          :plus
+          tokenize_optional_equals(:plus)
         end
       end
 
@@ -213,16 +213,20 @@ module Javascript
         if scanner.scan("-")
           :minus_minus
         else
-          :minus
+          tokenize_optional_equals(:minus)
         end
       end
 
       def tokenize_star
         if scanner.scan("*")
-          :star_star
+          tokenize_optional_equals(:star_star)
         else
-          :star
+          tokenize_optional_equals(:star)
         end
+      end
+
+      def tokenize_forward_slash
+        tokenize_optional_equals(:forward_slash)
       end
 
       def tokenize_exclamation_mark
@@ -237,26 +241,38 @@ module Javascript
       end
 
       def tokenize_left_caret
-        case
-        when scanner.scan("<")
-          :left_caret_caret
-        when scanner.scan("=")
-          :left_caret_equals
+        if scanner.scan("<")
+          tokenize_optional_equals(:left_caret_caret)
         else
-          :left_caret
+          tokenize_optional_equals(:left_caret)
         end
       end
 
       def tokenize_right_caret
         case
         when scanner.scan(">>")
-          :right_caret_caret_caret
+          tokenize_optional_equals(:right_caret_caret_caret)
         when scanner.scan(">")
-          :right_caret_caret
-        when scanner.scan("=")
-          :right_caret_equals
+          tokenize_optional_equals(:right_caret_caret)
         else
-          :right_caret
+          tokenize_optional_equals(:right_caret)
+        end
+      end
+
+      def tokenize_up_caret
+        tokenize_optional_equals(:up_caret)
+      end
+
+      def tokenize_percent
+        tokenize_optional_equals(:percent)
+      end
+
+
+      def tokenize_optional_equals(type)
+        if scanner.scan("=")
+          :"#{type}_equals"
+        else
+          type
         end
       end
   end

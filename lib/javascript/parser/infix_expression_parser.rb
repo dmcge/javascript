@@ -20,6 +20,19 @@ module Javascript
         when tokenizer.consume("++")      then parse_unary_operation
         when tokenizer.consume("--")      then parse_unary_operation
         when tokenizer.consume("=")       then parse_assignment
+        when tokenizer.consume("+=")      then parse_assignment
+        when tokenizer.consume("-=")      then parse_assignment
+        when tokenizer.consume("*=")      then parse_assignment
+        when tokenizer.consume("/=")      then parse_assignment
+        when tokenizer.consume("**=")     then parse_assignment
+        when tokenizer.consume("*=")      then parse_assignment
+        when tokenizer.consume("%=")      then parse_assignment
+        when tokenizer.consume("<<=")     then parse_assignment
+        when tokenizer.consume(">>=")     then parse_assignment
+        when tokenizer.consume(">>>=")    then parse_assignment
+        when tokenizer.consume("&=")      then parse_assignment
+        when tokenizer.consume("|=")      then parse_assignment
+        when tokenizer.consume("^=")      then parse_assignment
         when tokenizer.consume("==")      then parse_leftward_binary_operation
         when tokenizer.consume("===")     then parse_leftward_binary_operation
         when tokenizer.consume("!=")      then parse_leftward_binary_operation
@@ -83,7 +96,7 @@ module Javascript
 
         def parse_assignment
           if prefix.is_a?(Identifier)
-            Assignment.new identifier: prefix, value: parser.parse_expression!(precedence: precedence - 1)
+            Assignment.new operator: tokenizer.current_token.value, identifier: prefix, value: parser.parse_expression!(precedence: precedence - 1)
           else
             raise SyntaxError
           end

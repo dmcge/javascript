@@ -16,6 +16,10 @@ module Javascript
       self[length] = value
     end
 
+    def to_number
+      Number.new(0)
+    end
+
     def to_a
       elements
     end
