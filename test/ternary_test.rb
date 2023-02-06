@@ -26,4 +26,10 @@ class TernaryTest < Javascript::Test
     assert_malformed %("well?" ? "then")
     assert_malformed %("well?" ? "then" ? "yes" : "no")
   end
+
+  def test_comma_operators
+    assert_equal 3, evaluate("false ? 1 : 2, 3")
+    assert_equal 4, evaluate("true ? 2 : 3, 4")
+    assert_malformed "1 ? 2, 3 : 4"
+  end
 end

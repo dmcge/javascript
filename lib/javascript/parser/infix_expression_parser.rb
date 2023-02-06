@@ -140,10 +140,10 @@ module Javascript
         def parse_ternary
           Ternary.new.tap do |ternary|
             ternary.condition  = prefix
-            ternary.consequent = parser.parse_expression!
+            ternary.consequent = parser.parse_expression!(precedence: 2)
 
             if tokenizer.consume(":")
-              ternary.alternative = parser.parse_expression!
+              ternary.alternative = parser.parse_expression!(precedence: 2)
             else
               raise SyntaxError
             end
