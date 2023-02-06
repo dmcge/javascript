@@ -14,6 +14,7 @@ module Javascript
         if expression = parse_prefix_expression
           while precedence < (current_precedence = precedence_of(tokenizer.look_ahead))
             expression = parse_infix_expression(expression, precedence: current_precedence)
+            break unless expression
           end
 
           expression
