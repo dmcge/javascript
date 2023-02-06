@@ -112,11 +112,13 @@ class AssignmentTest < Javascript::Test
   end
 
   def test_and_assignment
-    skip
+    assert_equal 2, evaluate_assignment(1, "&&= 2")
+    assert_equal 0, evaluate_assignment(0, "&&= 1")
   end
 
   def test_or_assignment
-    skip
+    assert_equal 1, evaluate_assignment(1, "||= 2")
+    assert_equal 2, evaluate_assignment(0, "||= 2")
   end
 
   private

@@ -111,13 +111,12 @@ module Javascript
 
       def evaluate_assignment(assignment)
         reference = evaluate_expression(assignment.left_hand_side)
-        new_value = evaluate_value(assignment.right_hand_side)
 
         reference.value = \
-          if assignment.operator == "="
-            new_value
+          if assignment.operator
+            evaluate_binary_operation(assignment)
           else
-            Operator.for(assignment.operator.delete_suffix("=")).perform_binary(reference.value, new_value)
+            evaluate_value(assignment.right_hand_side)
           end
       end
 

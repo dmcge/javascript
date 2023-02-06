@@ -49,6 +49,8 @@ module Javascript
         when tokenizer.consume("&=")      then parse_assignment
         when tokenizer.consume("|=")      then parse_assignment
         when tokenizer.consume("^=")      then parse_assignment
+        when tokenizer.consume("&&=")     then parse_assignment
+        when tokenizer.consume("||=")     then parse_assignment
         when tokenizer.consume(".")       then parse_property_access_with_dot
         when tokenizer.consume("[")       then parse_property_access_with_square_brackets
         when tokenizer.consume("(")       then parse_function_call
@@ -97,7 +99,12 @@ module Javascript
         def parse_assignment
           case prefix
           when Identifier, PropertyAccess
-            Assignment.new operator: tokenizer.current_token.value, left_hand_side: prefix, right_hand_side: parser.parse_expression!(precedence: precedence - 1)
+            operator = tokenizer.current_token.value.delete_suffix("=")
+
+            Assignment.new \
+              operator: operator.empty? ? nil : operator,
+              left_hand_side: prefix,
+              right_hand_side: parser.parse_expression!(precedence: precedence - 1)
           else
             raise SyntaxError
           end
