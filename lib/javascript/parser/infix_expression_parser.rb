@@ -7,6 +7,7 @@ module Javascript
         @parser, @tokenizer, @prefix, @precedence = parser, tokenizer, prefix, precedence
       end
 
+      # FIXME
       def parse_expression
         case
         when tokenizer.consume("**")      then parse_rightward_binary_operation
