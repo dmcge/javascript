@@ -66,12 +66,19 @@ module Javascript
           [].tap do |parameters|
             if tokenizer.consume(:opening_bracket)
               tokenizer.until(:closing_bracket) do
-                parameters << tokenizer.consume(:identifier).value
+                parameters << parse_parameter
                 tokenizer.consume(:comma)
               end
             else
               raise SyntaxError
             end
+          end
+        end
+
+        def parse_parameter
+          Parameter.new.tap do |parameter|
+            parameter.name    = tokenizer.consume!(:identifier).value
+            parameter.default = parser.parse_expression!(precedence: 2) if tokenizer.consume(:equals)
           end
         end
 

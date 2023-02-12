@@ -36,6 +36,43 @@ class FunctionTest < Javascript::Test
   end
 
 
+  def test_default_values
+    assert 4, evaluate(<<~JS)
+      function double(n = 2) {
+        return n * 2
+      }
+
+      double()
+    JS
+
+    assert 2, evaluate(<<~JS)
+      function add(a, b = 1) {
+        return a + b
+      }
+
+      add(1)
+    JS
+  end
+
+  def test_overriding_default_values
+    assert 3, evaluate(<<~JS)
+      function add(a, b = 1) {
+        return a + b
+      }
+
+      add(1, 2)
+    JS
+  end
+
+  def test_unspecified_default_value
+    assert_malformed(<<~JS)
+      function add(a, b =) {
+        return a + b
+      }
+    JS
+  end
+
+
   def test_no_return
     assert_nil evaluate(<<~JS)
       function double(n) {

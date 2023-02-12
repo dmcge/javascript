@@ -93,7 +93,7 @@ module Javascript
         previous_identifiers = @references.dup
 
         arguments = function.parameters.zip(function_call.arguments).map do |parameter, argument|
-          @references[parameter] = make_reference(evaluate_value(argument)) if argument
+          @references[parameter.name] = make_reference(evaluate_value(argument || parameter.default))
         end
 
         # FIXME
