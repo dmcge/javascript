@@ -56,10 +56,7 @@ module Javascript
       def parse_variable_declaration
         VariableDeclaration.new.tap do |declaration|
           declaration.name  = tokenizer.consume!(:identifier).value
-
-          if tokenizer.consume(:equals)
-            declaration.value = parse_expression!(precedence: 2)
-          end
+          declaration.value = parse_expression!(precedence: 2) if tokenizer.consume(:equals)
         end
       end
 
