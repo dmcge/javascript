@@ -50,36 +50,7 @@ module Javascript
         end
 
         def parse_function_definition
-          FunctionDefinition.new.tap do |function|
-            function.name = tokenizer.consume(:identifier)&.value
-            function.parameters = parse_parameters
-
-            if tokenizer.consume("{")
-              function.body = parser.parse_block
-            else
-              raise SyntaxError
-            end
-          end
-        end
-
-        def parse_parameters
-          [].tap do |parameters|
-            if tokenizer.consume(:opening_bracket)
-              tokenizer.until(:closing_bracket) do
-                parameters << parse_parameter
-                tokenizer.consume(:comma)
-              end
-            else
-              raise SyntaxError
-            end
-          end
-        end
-
-        def parse_parameter
-          Parameter.new.tap do |parameter|
-            parameter.name    = tokenizer.consume!(:identifier).value
-            parameter.default = parser.parse_expression!(precedence: 2) if tokenizer.consume(:equals)
-          end
+          FunctionParser.new(parser: parser, tokenizer: tokenizer).parse_function
         end
 
         def parse_identifier

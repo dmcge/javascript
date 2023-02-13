@@ -6,6 +6,7 @@ module Javascript
   BooleanLiteral      = Struct.new(:value, keyword_init: true)
   ExpressionStatement = Struct.new(:expression)
   FunctionCall        = Struct.new(:callee, :arguments)
+  FunctionDeclaration = Struct.new(:definition)
   FunctionDefinition  = Struct.new(:name, :parameters, :body)
   Identifier          = Struct.new(:name)
   If                  = Struct.new(:condition, :consequent, :alternative)

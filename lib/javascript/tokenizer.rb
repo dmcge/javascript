@@ -35,6 +35,15 @@ module Javascript
       consume(type) or raise SyntaxError
     end
 
+    def peek(type)
+      if consume(type)
+        rewind
+        true
+      else
+        false
+      end
+    end
+
     def until(type)
       loop do
         case

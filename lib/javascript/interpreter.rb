@@ -20,6 +20,7 @@ module Javascript
         case statement
         when VariableStatement   then execute_variable_statement(statement)
         when If                  then execute_if_statement(statement)
+        when FunctionDeclaration then execute_function_declaration(statement)
         when Block               then execute_block(statement)
         when Return              then execute_return_statement(statement)
         when ExpressionStatement then execute_expression_statement(statement)
@@ -41,6 +42,10 @@ module Javascript
         elsif if_statement.alternative
           execute_statement(if_statement.alternative)
         end
+      end
+
+      def execute_function_declaration(declaration)
+        evaluate_expression(declaration.definition)
       end
 
       def execute_block(block)

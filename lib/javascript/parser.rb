@@ -1,4 +1,5 @@
 require_relative "parser/expression_parser"
+require_relative "parser/function_parser"
 
 module Javascript
   class Parser
@@ -18,11 +19,12 @@ module Javascript
 
     def parse_statement
       case
-      when tokenizer.consume(:var)    then parse_variable_statement
-      when tokenizer.consume(:if)     then parse_if_statement
-      when tokenizer.consume("{")     then parse_block
-      when tokenizer.consume(:return) then parse_return_statement
-      when tokenizer.consume(";")     then parse_empty_statement
+      when tokenizer.consume(:var)      then parse_variable_statement
+      when tokenizer.consume(:if)       then parse_if_statement
+      when tokenizer.consume(:function) then parse_function_declaration
+      when tokenizer.consume("{")       then parse_block
+      when tokenizer.consume(:return)   then parse_return_statement
+      when tokenizer.consume(";")       then parse_empty_statement
       else
         parse_expression_statement
       end
@@ -75,6 +77,19 @@ module Javascript
         else
           raise SyntaxError
         end
+      end
+
+      def parse_function_declaration
+        if tokenizer.peek(:identifier)
+          FunctionDeclaration.new(parse_function)
+        else
+          tokenizer.rewind
+          parse_expression
+        end
+      end
+
+      def parse_function
+        FunctionParser.new(parser: self, tokenizer: tokenizer).parse_function
       end
 
       def parse_return_statement
