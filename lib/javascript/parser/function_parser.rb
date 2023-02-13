@@ -10,8 +10,8 @@ module Javascript
           function.name = tokenizer.consume(:identifier)&.value
           function.parameters = parse_parameters
 
-          if tokenizer.consume("{")
-            function.body = parser.parse_block
+          if tokenizer.peek("{")
+            function.body = parser.parse_statement
           else
             raise SyntaxError
           end

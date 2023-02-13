@@ -30,10 +30,6 @@ module Javascript
       end
     end
 
-    def parse_block
-      Block.new(parse_statement_list(until: -> { tokenizer.consume("}") }))
-    end
-
     def parse_expression(precedence: 0)
       ExpressionParser.new(parser: self, tokenizer: tokenizer, precedence: precedence).parse_expression
     end
@@ -90,6 +86,10 @@ module Javascript
 
       def parse_function
         FunctionParser.new(parser: self, tokenizer: tokenizer).parse_function
+      end
+
+      def parse_block
+        Block.new(parse_statement_list(until: -> { tokenizer.consume("}") }))
       end
 
       def parse_return_statement
