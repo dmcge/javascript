@@ -6,20 +6,18 @@ module Javascript
       end
 
       def parse_function
-        FunctionDefinition.new.tap do |function|
-          function.name = tokenizer.consume(:identifier)&.value
-          function.parameters = parse_parameters
-
-          if tokenizer.peek("{")
-            function.body = parser.parse_statement
-          else
-            raise SyntaxError
-          end
-        end
+        FunctionDefinition.new \
+          name:       parse_identifier,
+          parameters: parse_parameters,
+          body:       parse_block
       end
 
       private
         attr_reader :parser, :tokenizer
+
+        def parse_identifier
+          tokenizer.consume(:identifier)&.value
+        end
 
         def parse_parameters
           [].tap do |parameters|
@@ -38,6 +36,14 @@ module Javascript
           Parameter.new.tap do |parameter|
             parameter.name    = tokenizer.consume!(:identifier).value
             parameter.default = parser.parse_expression!(precedence: 2) if tokenizer.consume(:equals)
+          end
+        end
+
+        def parse_block
+          if tokenizer.peek("{")
+            parser.parse_statement
+          else
+            raise SyntaxError
           end
         end
     end
