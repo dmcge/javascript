@@ -1,10 +1,13 @@
+require_relative "interpreter/context"
+require_relative "interpreter/environment"
+
 module Javascript
   Reference = Struct.new(:value)
 
   class Interpreter
     def initialize(script)
       @statement_list = Parser.new(script).parse
-      @references    = {} # FIXME
+      @context = Context.new
     end
 
     def execute
@@ -12,6 +15,8 @@ module Javascript
     end
 
     private
+      attr_reader :context
+
       def execute_statement_list(list)
         list.statements.reduce(nil) { |_, statement| execute_statement(statement) }
       end
@@ -33,7 +38,7 @@ module Javascript
       end
 
       def execute_variable_declaration(declaration)
-        @references[declaration.name] = make_reference(evaluate_expression(declaration.value))
+        context.environment[declaration.name] = evaluate_expression(declaration.value)
       end
 
       def execute_if_statement(if_statement)
@@ -90,28 +95,27 @@ module Javascript
       end
 
       def evaluate_function_definition(definition)
-        @references[definition.name] = Reference.new(definition)
+        context.environment[definition.name] = definition
       end
 
       def evaluate_function_call(function_call)
         function = evaluate_value(function_call.callee)
-        previous_identifiers = @references.dup
 
-        arguments = function.parameters.zip(function_call.arguments).map do |parameter, argument|
-          @references[parameter.name] = make_reference(evaluate_value(argument || parameter.default))
-        end
+        context.enter_new_environment do
+          arguments = function.parameters.zip(function_call.arguments).map do |parameter, argument|
+            context.environment[parameter.name] = evaluate_value(argument || parameter.default)
+          end
 
-        # FIXME
-        catch :return do
-          execute_block(function.body)
-          nil
+          # FIXME
+          catch :return do
+            execute_block(function.body)
+            nil
+          end
         end
-      ensure
-        @references = previous_identifiers
       end
 
       def evaluate_identifier(identifier)
-        @references.fetch(identifier.name)
+        context.environment[identifier.name]
       end
 
       def evaluate_assignment(assignment)
@@ -200,15 +204,6 @@ module Javascript
           evaluate_value(ternary.consequent)
         elsif ternary.alternative
           evaluate_value(ternary.alternative)
-        end
-      end
-
-
-      def make_reference(value)
-        if value.is_a?(Reference)
-          value
-        else
-          Reference.new(value)
         end
       end
   end
