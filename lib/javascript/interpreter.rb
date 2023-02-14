@@ -99,11 +99,14 @@ module Javascript
       end
 
       def evaluate_function_call(function_call)
-        function = evaluate_value(function_call.callee)
+        function  = evaluate_value(function_call.callee)
+        arguments = function.definition.parameters.zip(function_call.arguments).each_with_object({}) do |(parameter, argument), arguments|
+          arguments[parameter.name] = evaluate_value(argument || parameter.default)
+        end
 
         context.in_environment(function.environment) do
-          arguments = function.definition.parameters.zip(function_call.arguments).map do |parameter, argument|
-            context.environment[parameter.name] = evaluate_value(argument || parameter.default)
+          arguments.each do |name, value|
+            context.environment[name] = value
           end
 
           # FIXME
