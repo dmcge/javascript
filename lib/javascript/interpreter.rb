@@ -104,7 +104,7 @@ module Javascript
           arguments[parameter.name] = evaluate_value(argument || parameter.default)
         end
 
-        context.in_environment(function.environment) do
+        context.in_new_environment(parent: function.environment) do
           arguments.each do |name, value|
             context.environment[name] = value
           end

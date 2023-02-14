@@ -115,4 +115,34 @@ class FunctionTest < Javascript::Test
       curry_add(5)(6)
     JS
   end
+
+  def test_variables_are_confined_to_the_function
+    assert_raises do
+      evaluate <<~JS
+        function leaky() {
+          var leak
+        }
+
+        leaky()
+        leak
+      JS
+    end
+  end
+
+  def test_variables_are_unique_to_each_function_call
+    assert_raises do
+      evaluate <<~JS
+        function leaky(define) {
+          if (define) {
+            var leak = "a"
+          } else {
+            return leak
+          }
+        }
+
+        leaky(true)
+        leaky(false)
+      JS
+    end
+  end
 end

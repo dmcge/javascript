@@ -3,13 +3,13 @@ module Javascript
     class Environment
       attr_reader :parent, :bindings
 
-      def initialize(parent = nil)
+      def initialize(parent: nil)
         @parent   = parent
         @bindings = {}
       end
 
       def [](name)
-        bindings[name] or parent&.[](name) or raise
+        bindings[name] or parent&.[](name) or raise("Couldn’t find #{name}")
       end
 
       def []=(name, value)

@@ -14,6 +14,10 @@ module Javascript
       ensure
         self.environment = previous_environment
       end
+
+      def in_new_environment(parent:, &)
+        in_environment(Environment.new(parent: parent), &)
+      end
     end
   end
 end
