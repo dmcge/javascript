@@ -145,4 +145,17 @@ class FunctionTest < Javascript::Test
       JS
     end
   end
+
+  def test_updating_global_variables
+    assert_equal "hijacked!", evaluate(<<~JS)
+      var value
+
+      function hijack() {
+        value = "hijacked!"
+      }
+
+      hijack()
+      value
+    JS
+  end
 end
