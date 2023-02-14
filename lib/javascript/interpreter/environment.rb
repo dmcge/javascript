@@ -16,6 +16,12 @@ module Javascript
         bindings[name] = make_reference(value)
       end
 
+      def define(variables)
+        Array(variables).each do |variable|
+          self[variable] = nil
+        end
+      end
+
       private
         def make_reference(value)
           if value.is_a?(Reference)

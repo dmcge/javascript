@@ -164,20 +164,18 @@ class FunctionTest < Javascript::Test
   end
 
   def test_variables_are_unique_to_each_function_call
-    assert_raises do
-      evaluate <<~JS
-        function leaky(define) {
-          if (define) {
-            var leak = "a"
-          } else {
-            return leak
-          }
+    assert_nil evaluate(<<~JS)
+      function leaky(define) {
+        if (define) {
+          var leak = "a"
+        } else {
+          return leak
         }
+      }
 
-        leaky(true)
-        leaky(false)
-      JS
-    end
+      leaky(true)
+      leaky(false)
+    JS
   end
 
   def test_updating_global_variables
@@ -215,6 +213,20 @@ class FunctionTest < Javascript::Test
       }
 
       [ shadow("ssshh"), value ]
+    JS
+  end
+
+  def test_variables_are_scoped_to_an_entire_function
+    assert_equal "it works!", evaluate(<<~JS)
+      function test(value) {
+        if (true) {
+          var value = "it works!"
+        }
+
+        return value
+      }
+
+      test()
     JS
   end
 end

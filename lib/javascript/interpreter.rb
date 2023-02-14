@@ -6,16 +6,21 @@ module Javascript
 
   class Interpreter
     def initialize(script)
-      @statement_list = Parser.new(script).parse
+      @script  = Parser.new(script).parse
       @context = Context.new
     end
 
     def execute
-      execute_statement_list(@statement_list)
+      define_variables(@script.variables)
+      execute_statement_list(@script.statement_list)
     end
 
     private
       attr_reader :context
+
+      def define_variables(variables)
+        context.environment.define variables
+      end
 
       def execute_statement_list(list)
         list.statements.reduce(nil) { |_, statement| execute_statement(statement) }
@@ -38,7 +43,7 @@ module Javascript
       end
 
       def execute_variable_declaration(declaration)
-        context.environment[declaration.name] = evaluate_expression(declaration.value)
+        context.environment[declaration.name].value = evaluate_value(declaration.value) if declaration.value
       end
 
       def execute_if_statement(if_statement)
@@ -105,6 +110,8 @@ module Javascript
         end
 
         context.in_new_environment(parent: function.environment) do
+          define_variables(function.definition.variables)
+
           function.definition.parameters.each do |parameter|
             context.environment[parameter.name] = arguments[parameter.name] || evaluate_value(parameter.default)
           end

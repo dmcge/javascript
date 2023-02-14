@@ -72,9 +72,17 @@ class VarTest < Javascript::Test
     JS
   end
 
-  def test_referencing_a_variable_before_it_is_declared
+  def test_referencing_a_variable_that_is_never_declared
     assert_raises { evaluate("record") }
     assert_raises { evaluate("record = 1") }
+  end
+
+  def test_referencing_a_variable_before_it_is_declared
+    assert_equal "beat you!", evaluate(<<~JS)
+      string = "beat you!"
+      var string
+      string
+    JS
   end
 
   def test_dangling_equals
