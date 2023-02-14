@@ -7,11 +7,12 @@ module Javascript
         self.environment = Environment.new
       end
 
-      def enter_new_environment
-        self.environment = Environment.new(environment)
+      def in_environment(environment)
+        previous_environment = self.environment
+        self.environment = environment
         yield
       ensure
-        self.environment = environment.parent
+        self.environment = previous_environment
       end
     end
   end

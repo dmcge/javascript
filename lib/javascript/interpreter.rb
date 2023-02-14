@@ -95,20 +95,20 @@ module Javascript
       end
 
       def evaluate_function_definition(definition)
-        context.environment[definition.name] = definition
+        context.environment[definition.name] = Function.new(definition: definition, environment: context.environment)
       end
 
       def evaluate_function_call(function_call)
         function = evaluate_value(function_call.callee)
 
-        context.enter_new_environment do
-          arguments = function.parameters.zip(function_call.arguments).map do |parameter, argument|
+        context.in_environment(function.environment) do
+          arguments = function.definition.parameters.zip(function_call.arguments).map do |parameter, argument|
             context.environment[parameter.name] = evaluate_value(argument || parameter.default)
           end
 
           # FIXME
           catch :return do
-            execute_block(function.body)
+            execute_block(function.definition.body)
             nil
           end
         end

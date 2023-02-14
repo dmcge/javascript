@@ -105,7 +105,6 @@ class FunctionTest < Javascript::Test
   end
 
   def test_currying
-    skip
     assert_equal 11, evaluate(<<~JS)
       function curry_add(a) {
         return function(b) {

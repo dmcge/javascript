@@ -8,6 +8,7 @@ require "javascript/number"
 require "javascript/string"
 require "javascript/object"
 require "javascript/array"
+require "javascript/function"
 require "javascript/tokenizer"
 
 module Javascript
