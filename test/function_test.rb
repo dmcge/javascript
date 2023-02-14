@@ -158,4 +158,29 @@ class FunctionTest < Javascript::Test
       value
     JS
   end
+
+  def test_shadowing_outer_variables
+    assert_equal ["ssshh", "don't change me"], evaluate(<<~JS)
+      var value = "don't change me"
+
+      function shadow() {
+        var value = "ssshh"
+        return value
+      }
+
+      [ shadow(), value ]
+    JS
+  end
+
+  def test_shadowing_outer_variables_with_a_parameter
+    assert_equal ["ssshh", "don't change me"], evaluate(<<~JS)
+      var value = "don't change me"
+
+      function shadow(value) {
+        return value
+      }
+
+      [ shadow("ssshh"), value ]
+    JS
+  end
 end
