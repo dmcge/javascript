@@ -100,13 +100,13 @@ module Javascript
 
       def evaluate_function_call(function_call)
         function  = evaluate_value(function_call.callee)
-        arguments = function.definition.parameters.zip(function_call.arguments).each_with_object({}) do |(parameter, argument), arguments|
-          arguments[parameter.name] = evaluate_value(argument || parameter.default)
+        arguments = function_call.arguments.zip(function.definition.parameters).each_with_object({}) do |(argument, parameter), arguments|
+          arguments[parameter.name] = evaluate_value(argument)
         end
 
         context.in_new_environment(parent: function.environment) do
-          arguments.each do |name, value|
-            context.environment[name] = value
+          function.definition.parameters.each do |parameter|
+            context.environment[parameter.name] = arguments[parameter.name] || evaluate_value(parameter.default)
           end
 
           # FIXME

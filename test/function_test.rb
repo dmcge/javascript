@@ -64,6 +64,40 @@ class FunctionTest < Javascript::Test
     JS
   end
 
+  def test_default_value_referring_to_a_previous_argument
+    assert 8, evaluate(<<~JS)
+      function add(a, b = a) {
+        return a + b
+      }
+
+      add(4)
+    JS
+  end
+
+  def test_default_value_referring_to_a_subsequent_argument
+    assert_raises do
+      evaluate(<<~JS)
+        function add(a = b, b) {
+          return a + b
+        }
+
+        add(null, 4)
+      JS
+    end
+  end
+
+  def test_default_value_referring_to_itself
+    assert_raises do
+      evaluate(<<~JS)
+        function pathological(a = a) {
+          return a
+        }
+
+        pathological()
+      JS
+    end
+  end
+
   def test_unspecified_default_value
     assert_malformed(<<~JS)
       function add(a, b =) {
