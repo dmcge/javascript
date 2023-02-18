@@ -1,6 +1,6 @@
 module Javascript
   class Operator
-    def self.for(symbol)
+    def self.for(symbol, interpreter:)
       case symbol
       when "++"  then Increment
       when "--"  then Decrement
@@ -26,25 +26,46 @@ module Javascript
       when "&"   then BitwiseAnd
       when "^"   then BitwiseXor
       when "|"   then BitwiseOr
+      when "&&"  then And
+      when "||"  then Or
       when ","   then Comma
-      end.new
+      end.new(interpreter)
     end
 
-    def perform_binary(left_hand_side, right_hand_side)
-      raise NotImplementedError
+    def initialize(interpreter)
+      @interpreter = interpreter
     end
 
-    def perform_unary(operand)
-      raise NotImplementedError
+    def binary(operation)
+      left_hand_side  = interpreter.evaluate_value(operation.left_hand_side)
+      right_hand_side = interpreter.evaluate_value(operation.right_hand_side)
+
+      perform_binary(left_hand_side, right_hand_side)
     end
+
+    def unary(operation)
+      perform_unary(interpreter.evaluate_value(operation.operand), position: operation.position)
+    end
+
+    private
+      attr_reader :interpreter
+
+      def perform_binary(left_hand_side, right_hand_side)
+        raise NotImplementedError
+      end
+
+      def perform_unary(operand, position:)
+        raise NotImplementedError
+      end
 
 
     class Increment < Operator
-      def perform_unary(operand, position:)
+      def unary(operation)
+        operand   = interpreter.evaluate_expression(operation.operand)
         old_value = operand.value
         new_value = operand.value = update_value(operand.value)
 
-        case position
+        case operation.position
         when :prefix  then new_value
         when :postfix then old_value
         end
@@ -64,32 +85,41 @@ module Javascript
       end
     end
 
-
     class Exponentiation < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number ** right_hand_side.to_number
       end
     end
 
     class Division < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number / right_hand_side.to_number
       end
     end
 
     class Multiplication < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number * right_hand_side.to_number
       end
     end
 
     class Modulo < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number % right_hand_side.to_number
       end
     end
 
     class Plus < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         if left_hand_side.is_a?(String) || right_hand_side.is_a?(String)
           left_hand_side.to_string + right_hand_side.to_string
@@ -98,22 +128,26 @@ module Javascript
         end
       end
 
-      def perform_unary(operand)
+      def perform_unary(operand, position:)
         operand.to_number
       end
     end
 
     class Minus < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number - right_hand_side.to_number
       end
 
-      def perform_unary(operand)
+      def perform_unary(operand, position:)
         -operand.to_number
       end
     end
 
     class Comparison < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         if left_hand_side.is_a?(String) && right_hand_side.is_a?(String)
           Boolean.wrap(compare(left_hand_side, right_hand_side))
@@ -122,10 +156,9 @@ module Javascript
         end
       end
 
-      private
-        def compare(left_hand_side, right_hand_side)
-          raise NotImplementedError
-        end
+      def compare(left_hand_side, right_hand_side)
+        raise NotImplementedError
+      end
     end
 
     class GreaterThan < Comparison
@@ -161,45 +194,52 @@ module Javascript
     end
 
     class ShiftLeft < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number << right_hand_side.to_number
       end
     end
 
     class ShiftRight < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number >> right_hand_side.to_number
       end
     end
 
     class ShiftRightUnsigned < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number.unsigned >> right_hand_side.to_number
       end
     end
 
     class Equality < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         Boolean.wrap(equivalent?(left_hand_side, right_hand_side))
       end
 
-      private
-        def equivalent?(left_hand_side, right_hand_side)
-          case
-          when left_hand_side.class == right_hand_side.class
-            left_hand_side == right_hand_side
-          when left_hand_side.is_a?(Number) && right_hand_side.is_a?(String)
-            left_hand_side == right_hand_side.to_number
-          when left_hand_side.is_a?(String) && right_hand_side.is_a?(Number)
-            left_hand_side.to_number == right_hand_side
-          when left_hand_side.is_a?(Boolean)
-            left_hand_side.to_number == right_hand_side
-          when right_hand_side.is_a?(Boolean)
-            left_hand_side == right_hand_side.to_number
-          else
-            false
-          end
+      def equivalent?(left_hand_side, right_hand_side)
+        case
+        when left_hand_side.class == right_hand_side.class
+          left_hand_side == right_hand_side
+        when left_hand_side.is_a?(Number) && right_hand_side.is_a?(String)
+          left_hand_side == right_hand_side.to_number
+        when left_hand_side.is_a?(String) && right_hand_side.is_a?(Number)
+          left_hand_side.to_number == right_hand_side
+        when left_hand_side.is_a?(Boolean)
+          left_hand_side.to_number == right_hand_side
+        when right_hand_side.is_a?(Boolean)
+          left_hand_side == right_hand_side.to_number
+        else
+          false
         end
+      end
     end
 
     class Inequality < Equality
@@ -227,36 +267,68 @@ module Javascript
     end
 
     class Not < Operator
-      def perform_unary(operand)
+      private
+
+      def perform_unary(operand, position:)
         !operand.to_boolean
       end
     end
 
     class BitwiseNot < Operator
-      def perform_unary(operand)
+      private
+
+      def perform_unary(operand, position:)
         ~operand.to_number
       end
     end
 
     class BitwiseAnd < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number & right_hand_side.to_number
       end
     end
 
     class BitwiseXor < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number ^ right_hand_side.to_number
       end
     end
 
     class BitwiseOr < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         left_hand_side.to_number | right_hand_side.to_number
       end
     end
 
+    class And < Operator
+      def binary(operation)
+        if (left_hand_side = interpreter.evaluate_value(operation.left_hand_side)).truthy?
+          interpreter.evaluate_value(operation.right_hand_side)
+        else
+          left_hand_side
+        end
+      end
+    end
+
+    class Or < Operator
+      def binary(operation)
+        if (left_hand_side = interpreter.evaluate_value(operation.left_hand_side)).truthy?
+          left_hand_side
+        else
+          interpreter.evaluate_value(operation.right_hand_side)
+        end
+      end
+    end
+
     class Comma < Operator
+      private
+
       def perform_binary(left_hand_side, right_hand_side)
         right_hand_side
       end

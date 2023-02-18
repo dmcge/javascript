@@ -14,6 +14,34 @@ module Javascript
       execute_statement_list(@statement_list)
     end
 
+    def evaluate_value(expression)
+      evaluate_expression(expression).then do |result|
+        if result.is_a?(Reference)
+          result.value
+        else
+          result
+        end
+      end
+    end
+
+    def evaluate_expression(expression)
+      case expression
+      when FunctionDefinition then evaluate_function_definition(expression)
+      when FunctionCall       then evaluate_function_call(expression)
+      when Identifier         then evaluate_identifier(expression)
+      when Assignment         then evaluate_assignment(expression)
+      when StringLiteral      then evaluate_string_literal(expression)
+      when NumberLiteral      then evaluate_number_literal(expression)
+      when BooleanLiteral     then evaluate_boolean_literal(expression)
+      when ObjectLiteral      then evaluate_object_literal(expression)
+      when ArrayLiteral       then evaluate_array_literal(expression)
+      when PropertyAccess     then evaluate_property_access(expression)
+      when UnaryOperation     then evaluate_unary_operation(expression)
+      when BinaryOperation    then evaluate_binary_operation(expression)
+      when Ternary            then evaluate_ternary(expression)
+      end
+    end
+
     private
       attr_reader :context
 
@@ -65,34 +93,6 @@ module Javascript
         evaluate_value(statement.expression)
       end
 
-
-      def evaluate_value(expression)
-        evaluate_expression(expression).then do |result|
-          if result.is_a?(Reference)
-            result.value
-          else
-            result
-          end
-        end
-      end
-
-      def evaluate_expression(expression)
-        case expression
-        when FunctionDefinition then evaluate_function_definition(expression)
-        when FunctionCall       then evaluate_function_call(expression)
-        when Identifier         then evaluate_identifier(expression)
-        when Assignment         then evaluate_assignment(expression)
-        when StringLiteral      then evaluate_string_literal(expression)
-        when NumberLiteral      then evaluate_number_literal(expression)
-        when BooleanLiteral     then evaluate_boolean_literal(expression)
-        when ObjectLiteral      then evaluate_object_literal(expression)
-        when ArrayLiteral       then evaluate_array_literal(expression)
-        when PropertyAccess     then evaluate_property_access(expression)
-        when UnaryOperation     then evaluate_unary_operation(expression)
-        when BinaryOperation    then evaluate_binary_operation(expression)
-        when Ternary            then evaluate_ternary(expression)
-        end
-      end
 
       def evaluate_function_definition(definition)
         if definition.name
@@ -181,39 +181,11 @@ module Javascript
       end
 
       def evaluate_unary_operation(operation)
-        operator = Operator.for(operation.operator)
-
-        # FIXME
-        case operator
-        when Operator::Increment, Operator::Decrement
-          operator.perform_unary(evaluate_expression(operation.operand), position: operation.position)
-        else
-          operator.perform_unary(evaluate_value(operation.operand))
-        end
+        Operator.for(operation.operator, interpreter: self).unary(operation)
       end
 
       def evaluate_binary_operation(operation)
-        # FIXME
-        case operation.operator
-        when "&&"
-          if (left_hand_side = evaluate_value(operation.left_hand_side)).truthy?
-            evaluate_value(operation.right_hand_side)
-          else
-            left_hand_side
-          end
-        when "||"
-          if (left_hand_side = evaluate_value(operation.left_hand_side)).truthy?
-            left_hand_side
-          else
-            evaluate_value(operation.right_hand_side)
-          end
-        else
-          operator        = Operator.for(operation.operator)
-          left_hand_side  = evaluate_value(operation.left_hand_side)
-          right_hand_side = evaluate_value(operation.right_hand_side)
-
-          operator.perform_binary(left_hand_side, right_hand_side)
-        end
+        Operator.for(operation.operator, interpreter: self).binary(operation)
       end
 
       def evaluate_ternary(ternary)
