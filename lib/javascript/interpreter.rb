@@ -55,7 +55,7 @@ module Javascript
       end
 
       def execute_function_declaration(declaration)
-        evaluate_expression(declaration.definition)
+        context.environment[declaration.definition.name] = Function.new(definition: declaration.definition, environment: context.environment)
       end
 
       def execute_block(block)
@@ -100,11 +100,25 @@ module Javascript
       end
 
       def evaluate_function_definition(definition)
-        context.environment[definition.name] = Function.new(definition: definition, environment: context.environment)
+        if definition.name
+          evaluate_named_function_definition(definition)
+        else
+          evaluate_anonymous_function_definition(definition)
+        end
+      end
+
+      def evaluate_named_function_definition(definition)
+        environment = Environment.new(parent: context.environment)
+        environment[definition.name] = Function.new(definition: definition, environment: environment)
+      end
+
+      def evaluate_anonymous_function_definition(definition)
+        Function.new(definition: definition, environment: context.environment)
       end
 
       def evaluate_function_call(function_call)
         function  = evaluate_value(function_call.callee)
+
         arguments = function_call.arguments.zip(function.definition.parameters).each_with_object({}) do |(argument, parameter), arguments|
           arguments[parameter.name] = evaluate_value(argument)
         end
