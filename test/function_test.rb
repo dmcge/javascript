@@ -231,4 +231,32 @@ class FunctionTest < Javascript::Test
       factorial(3)
     JS
   end
+
+  def test_calling_named_function_expressions
+    assert_equal 6, evaluate(<<~JS)
+      (function factorial (n) {
+        if (n == 0) {
+          return 1
+        } else {
+          return n * factorial(n - 1)
+        }
+      })(3)
+    JS
+  end
+
+  def test_calling_named_function_expressions_from_outside_the_function
+    assert_raises do
+      evaluate(<<~JS)
+        (function factorial (n) {
+          if (n == 0) {
+            return 1
+          } else {
+            return n * factorial(n - 1)
+          }
+        })
+
+        factorial(3)
+      JS
+    end
+  end
 end
