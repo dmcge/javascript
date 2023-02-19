@@ -39,6 +39,9 @@ module Javascript
       when UnaryOperation     then evaluate_unary_operation(expression)
       when BinaryOperation    then evaluate_binary_operation(expression)
       when Ternary            then evaluate_ternary(expression)
+      when NullLiteral        then evaluate_null_literal(expression)
+      else
+        raise "Couldn’t evaluate #{expression.inspect}"
       end
     end
 
@@ -58,6 +61,8 @@ module Javascript
         when Return              then execute_return_statement(statement)
         when ExpressionStatement then execute_expression_statement(statement)
         when StatementList       then execute_statement_list(statement)
+        else
+          raise "Couldn’t execute #{statement.inspect}"
         end
       end
 
@@ -66,7 +71,7 @@ module Javascript
       end
 
       def execute_variable_declaration(declaration)
-        context.environment[declaration.name] = evaluate_expression(declaration.value)
+        context.environment[declaration.name] = declaration.value ? evaluate_expression(declaration.value) : nil
       end
 
       def execute_if_statement(if_statement)
@@ -86,7 +91,7 @@ module Javascript
       end
 
       def execute_return_statement(statement)
-        throw :return, evaluate_value(statement.expression)
+        throw :return, statement.expression ? evaluate_value(statement.expression) : nil
       end
 
       def execute_expression_statement(statement)
@@ -168,7 +173,7 @@ module Javascript
 
       def evaluate_array_literal(literal)
         Array.new.tap do |array|
-          literal.elements.each { |element| array << evaluate_value(element) }
+          literal.elements.each { |element| array << (element ? evaluate_value(element) : nil) }
         end
       end
 
@@ -194,6 +199,11 @@ module Javascript
         elsif ternary.alternative
           evaluate_value(ternary.alternative)
         end
+      end
+
+      # TODO
+      def evaluate_null_literal(null)
+        nil
       end
   end
 end
