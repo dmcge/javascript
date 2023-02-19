@@ -6,10 +6,13 @@ module Javascript
       end
 
       def parse_function
-        FunctionDefinition.new \
-          name:       parse_identifier,
-          parameters: parse_parameters,
-          body:       parse_block
+        parser.in_new_scope do
+          FunctionDefinition.new \
+            name:       parse_identifier,
+            parameters: parse_parameters,
+            body:       parse_block,
+            variables:  parser.variables
+        end
       end
 
       private

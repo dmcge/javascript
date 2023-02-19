@@ -4,12 +4,18 @@ require_relative "parser/function_parser"
 
 module Javascript
   class Parser
+    attr_reader :variables
+
     def initialize(javascript)
       @tokenizer = Tokenizer.new(javascript)
+      @variables = Set.new
     end
 
     def parse
-      parse_statement_list until: -> { tokenizer.finished? }
+      Script.new.tap do |script|
+        script.statement_list = parse_statement_list until: -> { tokenizer.finished? }
+        script.variables      = variables
+      end
     end
 
     def parse_statement_list(until:)
@@ -28,6 +34,15 @@ module Javascript
 
     def parse_expression!(...)
       parse_expression(...) or raise SyntaxError
+    end
+
+
+    def in_new_scope
+      previous_variables = @variables
+      @variables = Set.new
+      yield
+    ensure
+      @variables = previous_variables
     end
 
     private
