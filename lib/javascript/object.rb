@@ -1,5 +1,7 @@
 module Javascript
   class Object < Type
+    Property = Struct.new(:value)
+
     attr_reader :properties
 
     def initialize
@@ -11,7 +13,7 @@ module Javascript
     end
 
     def []=(name, value)
-      properties[name.to_s] = Reference.new(value)
+      properties[name.to_s] = Property.new(value)
     end
   end
 end

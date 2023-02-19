@@ -15,7 +15,7 @@ module Javascript
         self.environment = previous_environment
       end
 
-      def in_new_environment(parent:, &)
+      def in_new_environment(parent: environment, &)
         in_environment(Environment.new(parent: parent), &)
       end
     end

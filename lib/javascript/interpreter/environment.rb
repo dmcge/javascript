@@ -1,3 +1,5 @@
+require_relative "environment/binding"
+
 module Javascript
   class Interpreter
     class Environment
@@ -13,23 +15,14 @@ module Javascript
       end
 
       def []=(name, value)
-        bindings[name] = make_reference(value)
+        bindings[name] = Binding.new(value)
       end
 
-      def define(variables)
-        Array(variables).each do |variable|
-          self[variable] = nil
+      def define(names)
+        Array(names).map do |name|
+          bindings[name] = Binding.allocate
         end
       end
-
-      private
-        def make_reference(value)
-          if value.is_a?(Reference)
-            value
-          else
-            Reference.new(value)
-          end
-        end
     end
   end
 end

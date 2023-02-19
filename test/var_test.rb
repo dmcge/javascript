@@ -85,6 +85,18 @@ class VarTest < Javascript::Test
     JS
   end
 
+  def test_scoping
+    assert_equal "true", evaluate(<<~JS)
+      if (true) {
+        var value = "true"
+      } else {
+        var value = "false"
+      }
+
+      value
+    JS
+  end
+
   def test_dangling_equals
     assert_malformed "var remember ="
   end

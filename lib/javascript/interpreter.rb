@@ -2,8 +2,6 @@ require_relative "interpreter/context"
 require_relative "interpreter/environment"
 
 module Javascript
-  Reference = Struct.new(:value)
-
   class Interpreter
     def initialize(script)
       @script  = Parser.new(script).parse
@@ -11,13 +9,15 @@ module Javascript
     end
 
     def execute
-      define_variables(@script.variables)
+      define_vars(@script.vars)
+      define_lets(@script.lets)
       execute_statement(@script.body)
     end
 
     def evaluate_value(expression)
       evaluate_expression(expression).then do |result|
-        if result.is_a?(Reference)
+        case result
+        when Environment::Binding, Object::Property
           result.value
         else
           result
@@ -49,8 +49,12 @@ module Javascript
     private
       attr_reader :context
 
-      def define_variables(variables)
-        context.environment.define variables
+      def define_vars(variables)
+        context.environment.define(variables).each(&:initialize)
+      end
+
+      def define_lets(variables)
+        context.environment.define(variables)
       end
 
       def execute_statement_list(list)
@@ -59,7 +63,8 @@ module Javascript
 
       def execute_statement(statement)
         case statement
-        when VariableStatement   then execute_variable_statement(statement)
+        when VarStatement        then execute_var_statement(statement)
+        when LetStatement        then execute_let_statement(statement)
         when If                  then execute_if_statement(statement)
         when FunctionDeclaration then execute_function_declaration(statement)
         when Block               then execute_block(statement)
@@ -71,12 +76,16 @@ module Javascript
         end
       end
 
-      def execute_variable_statement(statement)
-        statement.declarations.each { |declaration| execute_variable_declaration(declaration) }
+      def execute_var_statement(statement)
+        statement.declarations.each do |declaration|
+          context.environment[declaration.name].value = evaluate_value(declaration.value) if declaration.value
+        end
       end
 
-      def execute_variable_declaration(declaration)
-        context.environment[declaration.name].value = evaluate_value(declaration.value) if declaration.value
+      def execute_let_statement(statement)
+        statement.declarations.each do |declaration|
+          context.environment[declaration.name].initialize(declaration.value ? evaluate_value(declaration.value) : nil)
+        end
       end
 
       def execute_if_statement(if_statement)
@@ -92,7 +101,10 @@ module Javascript
       end
 
       def execute_block(block)
-        execute_statement(block.body)
+        context.in_new_environment do
+          define_lets(block.lets)
+          execute_statement(block.body)
+        end
       end
 
       def execute_return_statement(statement)
@@ -129,7 +141,8 @@ module Javascript
         end
 
         context.in_new_environment(parent: function.environment) do
-          define_variables(function.definition.variables)
+          define_vars(function.definition.vars)
+          define_lets(function.definition.lets)
 
           function.definition.parameters.each do |parameter|
             context.environment[parameter.name] = arguments[parameter.name] || (evaluate_value(parameter.default) if parameter.default)

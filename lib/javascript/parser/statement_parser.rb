@@ -7,7 +7,8 @@ module Javascript
 
       def parse_statement
         case
-        when tokenizer.consume(:var)      then parse_variable_statement
+        when tokenizer.consume(:var)      then parse_var_statement
+        when tokenizer.consume("let")     then parse_let_statement_or_expression
         when tokenizer.consume(:if)       then parse_if_statement
         when tokenizer.consume(:function) then parse_function_declaration
         when tokenizer.consume("{")       then parse_block
@@ -21,22 +22,50 @@ module Javascript
       private
         attr_reader :parser, :tokenizer
 
-        def parse_variable_statement
-          VariableStatement.new(declarations: []).tap do |statement|
-            tokenizer.until(:semicolon) do
-              statement.declarations << parse_variable_declaration
+        def parse_var_statement
+          parse_variable_declarations(VarStatement.new(declarations: [])) do |declaration|
+            parser.vars << declaration.name
+          end
+        end
 
-              break unless tokenizer.consume(:comma)
+        def parse_let_statement_or_expression
+          if tokenizer.peek(:identifier)
+            parse_let_statement
+          else
+            tokenizer.rewind
+            parse_expression_statement
+          end
+        end
+
+        def parse_let_statement
+          parse_variable_declarations(LetStatement.new(declarations: [])) do |declaration|
+            case
+            when declaration.name == "let"
+              raise SyntaxError
+            when parser.lets.include?(declaration.name)
+              raise SyntaxError
+            else
+              parser.lets << declaration.name
             end
           end
+        end
+
+        def parse_variable_declarations(statement)
+          tokenizer.until(:semicolon) do
+            declaration = parse_variable_declaration
+            yield declaration
+            statement.declarations << declaration
+
+            break unless tokenizer.consume(:comma)
+          end
+
+          statement
         end
 
         def parse_variable_declaration
           VariableDeclaration.new.tap do |declaration|
             declaration.name  = tokenizer.consume!(:identifier).value
             declaration.value = parser.parse_expression!(precedence: 2) if tokenizer.consume(:equals)
-
-            parser.variables << declaration.name
           end
         end
 
@@ -71,7 +100,12 @@ module Javascript
         end
 
         def parse_block
-          Block.new(parser.parse_statement_list(until: -> { tokenizer.consume("}") }))
+          parser.in_new_lexical_scope do
+            Block.new.tap do |block|
+              block.body = parser.parse_statement_list(until: -> { tokenizer.consume("}") })
+              block.lets = parser.lets
+            end
+          end
         end
 
         def parse_return_statement

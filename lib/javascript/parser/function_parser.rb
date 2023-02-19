@@ -11,7 +11,8 @@ module Javascript
             name:       parse_identifier,
             parameters: parse_parameters,
             body:       parse_block,
-            variables:  parser.variables
+            vars:       parser.vars,
+            lets:       parser.lets
         end
       end
 
