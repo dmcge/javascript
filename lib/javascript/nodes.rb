@@ -17,7 +17,7 @@ module Javascript
   PropertyAccess      = Struct.new(:receiver, :accessor, :computed)
   PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)
   Return              = Struct.new(:expression)
-  Script              = Struct.new(:statement_list, :variables)
+  Script              = Struct.new(:body, :variables)
   StatementList       = Struct.new(:statements)
   StringLiteral       = Struct.new(:value)
   Ternary             = Struct.new(:condition, :consequent, :alternative)

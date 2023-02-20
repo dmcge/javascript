@@ -12,7 +12,7 @@ module Javascript
 
     def execute
       define_variables(@script.variables)
-      execute_statement_list(@script.statement_list)
+      execute_statement(@script.body)
     end
 
     def evaluate_value(expression)

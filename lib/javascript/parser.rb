@@ -13,8 +13,8 @@ module Javascript
 
     def parse
       Script.new.tap do |script|
-        script.statement_list = parse_statement_list until: -> { tokenizer.finished? }
-        script.variables      = variables
+        script.body      = parse_statement_list until: -> { tokenizer.finished? }
+        script.variables = variables
       end
     end
 
