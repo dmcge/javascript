@@ -91,7 +91,7 @@ module Javascript
           token.starting_position   = scanner.pos
           token.type, token.literal = @grammar.next_token
           token.ending_position     = scanner.pos
-          token.value               = scanner.string[token.starting_position...token.ending_position]
+          token.value               = scanner.string.byteslice(token.starting_position...token.ending_position)
         end
       end
   end
