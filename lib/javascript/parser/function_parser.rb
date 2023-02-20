@@ -6,14 +6,14 @@ module Javascript
       end
 
       def parse_function
-        parser.in_new_scope do
+        parser.in_new_scope do |scope|
           FunctionDefinition.new \
             name:       parse_identifier,
             parameters: parse_parameters,
             body:       parse_block,
-            vars:       parser.vars,
-            lets:       parser.lets,
-            consts:     parser.consts
+            vars:       scope.vars,
+            lets:       scope.lets,
+            consts:     scope.consts
         end
       end
 

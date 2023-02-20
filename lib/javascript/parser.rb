@@ -4,21 +4,25 @@ require_relative "parser/function_parser"
 
 module Javascript
   class Parser
-    attr_reader :vars, :lets, :consts
+    Scope = Struct.new(:vars, :lets, :consts) do
+      def initialize(vars: Set.new, lets: Set.new, consts: Set.new)
+        super
+      end
+    end
+
+    attr_reader :scope
 
     def initialize(javascript)
       @tokenizer = Tokenizer.new(javascript)
-      @vars      = Set.new
-      @lets      = Set.new
-      @consts    = Set.new
+      @scope     = Scope.new
     end
 
     def parse
       Script.new.tap do |script|
         script.body   = parse_statement_list until: -> { tokenizer.finished? }
-        script.vars   = vars
-        script.lets   = lets
-        script.consts = consts
+        script.vars   = scope.vars
+        script.lets   = scope.lets
+        script.consts = scope.consts
       end
     end
 
@@ -42,19 +46,19 @@ module Javascript
 
 
     def in_new_scope
-      previous_vars, previous_lets, previous_consts = @vars, @lets, @consts
-      @vars, @lets, @consts = Set.new, Set.new, Set.new
-      yield
+      previous_scope = @scope
+      @scope = Scope.new
+      yield @scope
     ensure
-      @vars, @lets, @consts = previous_vars, previous_lets, previous_consts
+      @scope = previous_scope
     end
 
     def in_new_lexical_scope
-      previous_lets, previous_consts = @lets, @consts
-      @lets, @consts = Set.new, Set.new
-      yield
+      previous_scope = @scope
+      @scope = Scope.new(vars: previous_scope.vars)
+      yield @scope
     ensure
-      @lets, @consts = previous_lets, previous_consts
+      @scope = previous_scope
     end
 
     private

@@ -25,7 +25,7 @@ module Javascript
 
         def parse_var_statement
           parse_variable_declarations(VarStatement.new(declarations: [])) do |declaration|
-            parser.vars << declaration.name
+            parser.scope.vars << declaration.name
           end
         end
 
@@ -43,10 +43,10 @@ module Javascript
             case
             when declaration.name == "let"
               raise SyntaxError
-            when parser.lets.include?(declaration.name)
+            when parser.scope.lets.include?(declaration.name)
               raise SyntaxError
             else
-              parser.lets << declaration.name
+              parser.scope.lets << declaration.name
             end
           end
         end
@@ -67,10 +67,10 @@ module Javascript
               raise SyntaxError
             when declaration.value.nil?
               raise SyntaxError
-            when parser.consts.include?(declaration.name)
+            when parser.scope.consts.include?(declaration.name)
               raise SyntaxError
             else
-              parser.consts << declaration.name
+              parser.scope.consts << declaration.name
             end
           end
         end
@@ -125,11 +125,11 @@ module Javascript
         end
 
         def parse_block
-          parser.in_new_lexical_scope do
+          parser.in_new_lexical_scope do |scope|
             Block.new.tap do |block|
               block.body   = parser.parse_statement_list(until: -> { tokenizer.consume("}") })
-              block.lets   = parser.lets
-              block.consts = parser.consts
+              block.lets   = scope.lets
+              block.consts = scope.consts
             end
           end
         end
