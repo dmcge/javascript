@@ -9,6 +9,7 @@ module Javascript
         case
         when tokenizer.consume(:var)      then parse_var_statement
         when tokenizer.consume("let")     then parse_let_statement_or_expression
+        when tokenizer.consume("const")   then parse_const_statement_or_expression
         when tokenizer.consume(:if)       then parse_if_statement
         when tokenizer.consume(:function) then parse_function_declaration
         when tokenizer.consume("{")       then parse_block
@@ -46,6 +47,30 @@ module Javascript
               raise SyntaxError
             else
               parser.lets << declaration.name
+            end
+          end
+        end
+
+        def parse_const_statement_or_expression
+          if tokenizer.peek(:identifier)
+            parse_const_statement
+          else
+            tokenizer.rewind
+            parse_expression_statement
+          end
+        end
+
+        def parse_const_statement
+          parse_variable_declarations(ConstStatement.new(declarations: [])) do |declaration|
+            case
+            when declaration.name == "const"
+              raise SyntaxError
+            when declaration.value.nil?
+              raise SyntaxError
+            when parser.consts.include?(declaration.name)
+              raise SyntaxError
+            else
+              parser.consts << declaration.name
             end
           end
         end
@@ -102,8 +127,9 @@ module Javascript
         def parse_block
           parser.in_new_lexical_scope do
             Block.new.tap do |block|
-              block.body = parser.parse_statement_list(until: -> { tokenizer.consume("}") })
-              block.lets = parser.lets
+              block.body   = parser.parse_statement_list(until: -> { tokenizer.consume("}") })
+              block.lets   = parser.lets
+              block.consts = parser.consts
             end
           end
         end

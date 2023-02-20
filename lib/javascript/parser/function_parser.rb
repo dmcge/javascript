@@ -12,7 +12,8 @@ module Javascript
             parameters: parse_parameters,
             body:       parse_block,
             vars:       parser.vars,
-            lets:       parser.lets
+            lets:       parser.lets,
+            consts:     parser.consts
         end
       end
 

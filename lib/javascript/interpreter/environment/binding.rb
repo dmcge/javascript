@@ -2,6 +2,8 @@ module Javascript
   class Interpreter
     class Environment
       class Binding
+        attr_accessor :read_only
+
         public def initialize(value = nil)
           if initialized?
             raise
@@ -24,7 +26,7 @@ module Javascript
         end
 
         def value=(value)
-          if initialized?
+          if initialized? && !read_only
             @value = value
           else
             raise

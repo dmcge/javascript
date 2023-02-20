@@ -11,6 +11,7 @@ module Javascript
     def execute
       define_vars(@script.vars)
       define_lets(@script.lets)
+      define_consts(@script.consts)
       execute_statement(@script.body)
     end
 
@@ -57,6 +58,10 @@ module Javascript
         context.environment.define(variables)
       end
 
+      def define_consts(variables)
+        context.environment.define(variables).each { |binding| binding.read_only = true }
+      end
+
       def execute_statement_list(list)
         list.statements.reduce(nil) { |_, statement| execute_statement(statement) }
       end
@@ -64,7 +69,8 @@ module Javascript
       def execute_statement(statement)
         case statement
         when VarStatement        then execute_var_statement(statement)
-        when LetStatement        then execute_let_statement(statement)
+        when LetStatement        then execute_let_or_const_statement(statement)
+        when ConstStatement      then execute_let_or_const_statement(statement)
         when If                  then execute_if_statement(statement)
         when FunctionDeclaration then execute_function_declaration(statement)
         when Block               then execute_block(statement)
@@ -82,7 +88,7 @@ module Javascript
         end
       end
 
-      def execute_let_statement(statement)
+      def execute_let_or_const_statement(statement)
         statement.declarations.each do |declaration|
           context.environment[declaration.name].initialize(declaration.value ? evaluate_value(declaration.value) : nil)
         end
@@ -103,6 +109,7 @@ module Javascript
       def execute_block(block)
         context.in_new_environment do
           define_lets(block.lets)
+          define_consts(block.consts)
           execute_statement(block.body)
         end
       end
@@ -143,6 +150,7 @@ module Javascript
         context.in_new_environment(parent: function.environment) do
           define_vars(function.definition.vars)
           define_lets(function.definition.lets)
+          define_consts(function.definition.consts)
 
           function.definition.parameters.each do |parameter|
             context.environment[parameter.name] = arguments[parameter.name] || (evaluate_value(parameter.default) if parameter.default)
