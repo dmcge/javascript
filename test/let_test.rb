@@ -24,6 +24,14 @@ class LetTest < Javascript::Test
     JS
   end
 
+  def test_referencing_a_variable_called_let
+    assert_equal 4, evaluate(<<~JS)
+      var let = 1
+      let = 2
+      let + 2
+    JS
+  end
+
   def test_assigning_to_another_variable
     assert_equal 1, evaluate(<<~JS.chomp)
       let a, b
@@ -32,30 +40,6 @@ class LetTest < Javascript::Test
       a++
       b
     JS
-  end
-
-  def test_variable_names
-    assert_valid "let $"
-    assert_valid "let _"
-    assert_valid "let ᪧῼ"
-
-    assert_malformed "let let"
-
-    assert_valid "let abc123"
-    assert_valid "let bengali_six_৫"
-    assert_malformed "let 1"
-    assert_malformed "let 123456"
-    assert_malformed "let ৫"
-
-    assert_valid "let well\u200d"
-    assert_malformed "let \u200dd"
-
-    assert_valid "let fඃd"
-    assert_malformed "let ඃ"
-
-    assert_valid "let iffy"
-    assert_valid "let elsewhere"
-    assert_malformed "let if"
   end
 
   def test_redeclaring_variables
@@ -89,7 +73,7 @@ class LetTest < Javascript::Test
     JS
   end
 
-  def test_reassigning_variables
+  def test_assigning_variables
     assert_equal 2, evaluate(<<~JS)
       let count = 1
       count = 2

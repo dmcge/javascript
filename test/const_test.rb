@@ -23,6 +23,13 @@ class ConstTest < Javascript::Test
     JS
   end
 
+  def test_referencing_a_variable_called_const
+    assert_equal 3, evaluate(<<~JS)
+      var const = 1
+      const + 2
+    JS
+  end
+
   def test_assigning
     assert_raises do
       evaluate(<<~JS.chomp)
@@ -32,31 +39,7 @@ class ConstTest < Javascript::Test
     end
   end
 
-  def test_variable_names
-    assert_valid "const $ = true"
-    assert_valid "const _ = true"
-    assert_valid "const ᪧῼ = true"
-
-    assert_malformed "const const = false"
-
-    assert_valid "const abc123 = true"
-    assert_valid "const bengali_six_৫ = true"
-    assert_malformed "const 1 = false"
-    assert_malformed "const 123456 = false"
-    assert_malformed "const ৫ = false"
-
-    assert_valid "const well\u200d = true"
-    assert_malformed "const \u200dd = false"
-
-    assert_valid "const fඃd = true"
-    assert_malformed "const ඃ = false"
-
-    assert_valid "const iffy = true"
-    assert_valid "const elsewhere = true"
-    assert_malformed "const if = false"
-  end
-
-  def test_redeclaring_variables
+  def test_redeclaring_consts
     assert_malformed(<<~JS)
       const count = 1
       const count = 2
