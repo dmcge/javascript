@@ -1,33 +1,10 @@
+require_relative "parser/scope"
 require_relative "parser/statement_parser"
 require_relative "parser/expression_parser"
 require_relative "parser/function_parser"
 
 module Javascript
   class Parser
-    class Scope
-      attr_reader :vars, :lets, :consts
-
-      def initialize(vars: Set.new, lets: Set.new, consts: Set.new)
-        @vars, @lets, @consts = vars, lets, consts
-      end
-
-      def include?(name)
-        var?(name) || let?(name) || const?(name)
-      end
-
-      def var?(name)
-        vars.include?(name)
-      end
-
-      def let?(name)
-        lets.include?(name)
-      end
-
-      def const?(name)
-        consts.include?(name)
-      end
-    end
-
     attr_reader :scope
 
     def initialize(javascript)
