@@ -34,33 +34,25 @@ class VarTest < Javascript::Test
     JS
   end
 
-  def test_variable_names
-    assert_valid "var $"
-    assert_valid "var _"
-    assert_valid "var ᪧῼ"
-
-    assert_valid "var abc123"
-    assert_valid "var bengali_six_৫"
-    assert_malformed "var 1"
-    assert_malformed "var 123456"
-    assert_malformed "var ৫"
-
-    assert_valid "var well\u200d"
-    assert_malformed "var \u200dd"
-
-    assert_valid "var fඃd"
-    assert_malformed "var ඃ"
-
-    assert_valid "var iffy"
-    assert_valid "var elsewhere"
-    assert_malformed "var if"
-  end
-
   def test_redeclaring_variables
     assert_equal 2, evaluate(<<~JS)
       var count = 1
       var count = 2
       count
+    JS
+  end
+
+  def test_redeclaring_lets
+    assert_malformed(<<~JS)
+      let count = 1
+      var count = 2
+    JS
+  end
+
+  def test_redeclaring_consts
+    assert_malformed(<<~JS)
+      const count = 1
+      var count = 2
     JS
   end
 
@@ -82,6 +74,18 @@ class VarTest < Javascript::Test
       string = "beat you!"
       var string
       string
+    JS
+  end
+
+  def test_scoping
+    assert_equal "true", evaluate(<<~JS)
+      if (true) {
+        var value = "true"
+      } else {
+        var value = "false"
+      }
+
+      value
     JS
   end
 

@@ -1,20 +1,21 @@
+require_relative "parser/scope"
 require_relative "parser/statement_parser"
 require_relative "parser/expression_parser"
 require_relative "parser/function_parser"
 
 module Javascript
   class Parser
-    attr_reader :variables
+    attr_reader :scope
 
     def initialize(javascript)
       @tokenizer = Tokenizer.new(javascript)
-      @variables = Set.new
+      @scope     = Scope.new
     end
 
     def parse
       Script.new.tap do |script|
-        script.body      = parse_statement_list until: -> { tokenizer.finished? }
-        script.variables = variables
+        script.body   = parse_statement_list until: -> { tokenizer.finished? }
+        script.scope  = scope
       end
     end
 
@@ -38,11 +39,19 @@ module Javascript
 
 
     def in_new_scope
-      previous_variables = @variables
-      @variables = Set.new
-      yield
+      previous_scope = @scope
+      @scope = Scope.new
+      yield @scope
     ensure
-      @variables = previous_variables
+      @scope = previous_scope
+    end
+
+    def in_new_lexical_scope
+      previous_scope = @scope
+      @scope = Scope.new(vars: previous_scope.vars)
+      yield @scope
+    ensure
+      @scope = previous_scope
     end
 
     private
