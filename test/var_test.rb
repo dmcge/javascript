@@ -64,6 +64,20 @@ class VarTest < Javascript::Test
     JS
   end
 
+  def test_redeclaring_lets
+    assert_malformed(<<~JS)
+      let count = 1
+      var count = 2
+    JS
+  end
+
+  def test_redeclaring_consts
+    assert_malformed(<<~JS)
+      const count = 1
+      var count = 2
+    JS
+  end
+
   def test_reassigning_variables
     assert_equal 2, evaluate(<<~JS)
       var count = 1

@@ -25,7 +25,11 @@ module Javascript
 
         def parse_var_statement
           parse_variable_declarations(VarStatement.new(declarations: [])) do |declaration|
-            parser.scope.vars << declaration.name
+            if parser.scope.var?(declaration.name) || !parser.scope.include?(declaration.name)
+              parser.scope.vars << declaration.name
+            else
+              raise SyntaxError
+            end
           end
         end
 
@@ -43,7 +47,7 @@ module Javascript
             case
             when declaration.name == "let"
               raise SyntaxError
-            when parser.scope.lets.include?(declaration.name)
+            when parser.scope.include?(declaration.name)
               raise SyntaxError
             else
               parser.scope.lets << declaration.name
@@ -67,7 +71,7 @@ module Javascript
               raise SyntaxError
             when declaration.value.nil?
               raise SyntaxError
-            when parser.scope.consts.include?(declaration.name)
+            when parser.scope.include?(declaration.name)
               raise SyntaxError
             else
               parser.scope.consts << declaration.name
