@@ -11,9 +11,7 @@ module Javascript
             name:       parse_identifier,
             parameters: parse_parameters,
             body:       parse_block,
-            vars:       scope.vars,
-            lets:       scope.lets,
-            consts:     scope.consts
+            scope:      scope
         end
       end
 

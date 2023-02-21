@@ -132,8 +132,7 @@ module Javascript
           parser.in_new_lexical_scope do |scope|
             Block.new.tap do |block|
               block.body   = parser.parse_statement_list(until: -> { tokenizer.consume("}") })
-              block.lets   = scope.lets
-              block.consts = scope.consts
+              block.scope  = scope
             end
           end
         end

@@ -15,9 +15,7 @@ module Javascript
     def parse
       Script.new.tap do |script|
         script.body   = parse_statement_list until: -> { tokenizer.finished? }
-        script.vars   = scope.vars
-        script.lets   = scope.lets
-        script.consts = scope.consts
+        script.scope  = scope
       end
     end
 

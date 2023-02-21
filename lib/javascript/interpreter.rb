@@ -9,9 +9,7 @@ module Javascript
     end
 
     def execute
-      define_vars(@script.vars)
-      define_lets(@script.lets)
-      define_consts(@script.consts)
+      define_scope(@script.scope)
       execute_statement(@script.body)
     end
 
@@ -49,6 +47,12 @@ module Javascript
 
     private
       attr_reader :context
+
+      def define_scope(scope)
+        define_vars(scope.vars)
+        define_lets(scope.lets)
+        define_consts(scope.consts)
+      end
 
       def define_vars(variables)
         context.environment.define(variables).each(&:initialize)
@@ -108,8 +112,8 @@ module Javascript
 
       def execute_block(block)
         context.in_new_environment do
-          define_lets(block.lets)
-          define_consts(block.consts)
+          define_lets(block.scope.lets)
+          define_consts(block.scope.consts)
           execute_statement(block.body)
         end
       end
@@ -148,9 +152,7 @@ module Javascript
         end
 
         context.in_new_environment(parent: function.environment) do
-          define_vars(function.definition.vars)
-          define_lets(function.definition.lets)
-          define_consts(function.definition.consts)
+          define_scope(function.definition.scope)
 
           function.definition.parameters.each do |parameter|
             context.environment[parameter.name] = arguments[parameter.name] || (evaluate_value(parameter.default) if parameter.default)
