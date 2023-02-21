@@ -48,22 +48,8 @@ module Javascript
     private
       attr_reader :context
 
-      def define_scope(scope)
-        define_vars(scope.vars)
-        define_lets(scope.lets)
-        define_consts(scope.consts)
-      end
-
-      def define_vars(variables)
-        context.environment.define(variables).each(&:initialize)
-      end
-
-      def define_lets(variables)
-        context.environment.define(variables)
-      end
-
-      def define_consts(variables)
-        context.environment.define(variables).each { |binding| binding.read_only = true }
+      def define_scope(scope, except: nil)
+        scope.define_within context.environment, except: except
       end
 
       def execute_statement_list(list)
@@ -112,8 +98,7 @@ module Javascript
 
       def execute_block(block)
         context.in_new_environment do
-          define_lets(block.scope.lets)
-          define_consts(block.scope.consts)
+          define_scope(block.scope, except: :vars)
           execute_statement(block.body)
         end
       end

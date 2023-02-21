@@ -22,6 +22,26 @@ module Javascript
       def const?(name)
         consts.include?(name)
       end
+
+
+      def define_within(environment, except: nil)
+        define_vars(environment: environment)   unless except == :vars
+        define_lets(environment: environment)   unless except == :lets
+        define_consts(environment: environment) unless except == :consts
+      end
+
+      private
+        def define_vars(environment:)
+          environment.define(vars).each(&:initialize)
+        end
+
+        def define_lets(environment:)
+          environment.define(lets)
+        end
+
+        def define_consts(environment:)
+          environment.define(consts).each { |binding| binding.read_only = true }
+        end
     end
   end
 end
