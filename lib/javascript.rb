@@ -1,15 +1,7 @@
-require "javascript/parser"
+require "zeitwerk"
 require "javascript/nodes"
-require "javascript/operator"
-require "javascript/interpreter"
-require "javascript/type"
-require "javascript/boolean"
-require "javascript/number"
-require "javascript/string"
-require "javascript/object"
-require "javascript/array"
-require "javascript/function"
-require "javascript/tokenizer"
+
+Zeitwerk::Loader.for_gem.setup
 
 module Javascript
   SyntaxError = Class.new(StandardError)

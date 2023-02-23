@@ -1,6 +1,3 @@
-require_relative "interpreter/context"
-require_relative "interpreter/environment"
-
 module Javascript
   class Interpreter
     def initialize(script)
