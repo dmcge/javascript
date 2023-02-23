@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Execute your Javascript in Ruby"
 
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 3.0"
 
   spec.add_dependency "zeitwerk"
 
