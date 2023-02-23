@@ -1,5 +1,3 @@
-require_relative "environment/binding"
-
 module Javascript
   class Interpreter
     class Environment

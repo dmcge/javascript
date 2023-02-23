@@ -1,5 +1,4 @@
 require "strscan"
-require "javascript/tokenizer/grammar"
 
 module Javascript
   class Tokenizer

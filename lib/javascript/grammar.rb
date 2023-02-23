@@ -1,5 +1,3 @@
-require "javascript/tokenizer/grammar/number_consumer"
-
 module Javascript
   class Grammar
     START_OF_IDENTIFIER = /\p{L}|_|\$/

@@ -1,6 +1,3 @@
-require_relative "prefix_expression_parser"
-require_relative "infix_expression_parser"
-
 module Javascript
   class Parser
     class ExpressionParser

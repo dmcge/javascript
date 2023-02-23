@@ -1,8 +1,3 @@
-require_relative "parser/scope"
-require_relative "parser/statement_parser"
-require_relative "parser/expression_parser"
-require_relative "parser/function_parser"
-
 module Javascript
   class Parser
     attr_reader :scope
