@@ -76,7 +76,7 @@ module Javascript
         identifier = scanner.scan_until(/.(?!#{IDENTIFIER_CHARACTER})/)
 
         if KEYWORDS.include?(identifier)
-          identifier.to_sym
+          :keyword
         else
           :identifier
         end

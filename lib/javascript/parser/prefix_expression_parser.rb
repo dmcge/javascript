@@ -13,7 +13,7 @@ module Javascript
       when tokenizer.consume("-")         then parse_unary_operation
       when tokenizer.consume("++")        then parse_update_operation
       when tokenizer.consume("--")        then parse_update_operation
-      when tokenizer.consume(:function)   then parse_function_definition
+      when tokenizer.consume("function")  then parse_function_definition
       when tokenizer.consume(:identifier) then parse_identifier
       when tokenizer.consume(:string)     then parse_string_literal
       when tokenizer.consume(:number)     then parse_number_literal

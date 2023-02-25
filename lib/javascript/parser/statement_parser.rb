@@ -6,14 +6,14 @@ module Javascript
 
     def parse_statement
       case
-      when tokenizer.consume(:var)      then parse_var_statement
-      when tokenizer.consume("let")     then parse_let_statement_or_expression
-      when tokenizer.consume("const")   then parse_const_statement_or_expression
-      when tokenizer.consume(:if)       then parse_if_statement
-      when tokenizer.consume(:function) then parse_function_declaration
-      when tokenizer.consume("{")       then parse_block
-      when tokenizer.consume(:return)   then parse_return_statement
-      when tokenizer.consume(";")       then parse_empty_statement
+      when tokenizer.consume("var")      then parse_var_statement
+      when tokenizer.consume("let")      then parse_let_statement_or_expression
+      when tokenizer.consume("const")    then parse_const_statement_or_expression
+      when tokenizer.consume("if")       then parse_if_statement
+      when tokenizer.consume("function") then parse_function_declaration
+      when tokenizer.consume("{")        then parse_block
+      when tokenizer.consume("return")   then parse_return_statement
+      when tokenizer.consume(";")        then parse_empty_statement
       else
         parse_expression_statement
       end
@@ -101,7 +101,7 @@ module Javascript
         If.new \
           condition:   parse_condition,
           consequent:  parse_statement,
-          alternative: (parse_statement if tokenizer.consume(:else))
+          alternative: (parse_statement if tokenizer.consume("else"))
       end
 
       def parse_condition
