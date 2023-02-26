@@ -1,7 +1,7 @@
 module Javascript
   class Parser::ExpressionParser::PrefixParser
-    def initialize(parser:, tokenizer:)
-      @parser, @tokenizer = parser, tokenizer
+    def initialize(parser:)
+      @parser = parser
     end
 
     # FIXME
@@ -29,7 +29,9 @@ module Javascript
     end
 
     private
-      attr_reader :parser, :tokenizer
+      attr_reader :parser
+
+      def tokenizer = parser.tokenizer
 
       def parse_unary_operation
         UnaryOperation.new operator: tokenizer.current_token.value, operand: parse_expression, position: :prefix

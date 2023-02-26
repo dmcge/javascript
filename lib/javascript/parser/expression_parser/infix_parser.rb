@@ -2,8 +2,8 @@ module Javascript
   class Parser::ExpressionParser::InfixParser
     attr_reader :prefix, :precedence
 
-    def initialize(parser:, tokenizer:, prefix:, precedence:)
-      @parser, @tokenizer, @prefix, @precedence = parser, tokenizer, prefix, precedence
+    def initialize(parser:, prefix:, precedence:)
+      @parser, @prefix, @precedence = parser, prefix, precedence
     end
 
     # FIXME
@@ -59,7 +59,9 @@ module Javascript
     end
 
     private
-      attr_reader :parser, :tokenizer
+      attr_reader :parser
+
+      def tokenizer = parser.tokenizer
 
       def parse_leftward_binary_operation
         parse_binary_operation(precedence: precedence)

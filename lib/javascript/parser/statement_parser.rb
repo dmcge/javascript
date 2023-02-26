@@ -1,7 +1,7 @@
 module Javascript
   class Parser::StatementParser
-    def initialize(parser:, tokenizer:)
-      @parser, @tokenizer = parser, tokenizer
+    def initialize(parser:)
+      @parser = parser
     end
 
     def parse_statement
@@ -20,7 +20,9 @@ module Javascript
     end
 
     private
-      attr_reader :parser, :tokenizer
+      attr_reader :parser
+
+      def tokenizer = parser.tokenizer
 
       def parse_var_statement
         parse_variable_declarations(VarStatement.new(declarations: [])) do |declaration|

@@ -1,6 +1,6 @@
 module Javascript
   class Parser
-    attr_reader :scope
+    attr_reader :tokenizer, :scope
 
     def initialize(javascript)
       @tokenizer = Tokenizer.new(javascript)
@@ -21,11 +21,11 @@ module Javascript
     end
 
     def parse_statement
-      StatementParser.new(parser: self, tokenizer: tokenizer).parse_statement
+      StatementParser.new(parser: self).parse_statement
     end
 
     def parse_expression(precedence: 0)
-      ExpressionParser.new(parser: self, tokenizer: tokenizer, precedence: precedence).parse_expression or raise SyntaxError
+      ExpressionParser.new(parser: self, precedence: precedence).parse_expression or raise SyntaxError
     end
 
 
@@ -44,8 +44,5 @@ module Javascript
     ensure
       @scope = previous_scope
     end
-
-    private
-      attr_reader :tokenizer
   end
 end
