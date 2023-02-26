@@ -1,5 +1,5 @@
 module Javascript
-  class Parser::PrefixExpressionParser
+  class Parser::ExpressionParser::PrefixParser
     def initialize(parser:, tokenizer:)
       @parser, @tokenizer = parser, tokenizer
     end

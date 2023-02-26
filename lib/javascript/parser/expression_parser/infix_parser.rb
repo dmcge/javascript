@@ -1,5 +1,5 @@
 module Javascript
-  class Parser::InfixExpressionParser
+  class Parser::ExpressionParser::InfixParser
     attr_reader :prefix, :precedence
 
     def initialize(parser:, tokenizer:, prefix:, precedence:)

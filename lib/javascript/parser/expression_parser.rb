@@ -7,10 +7,10 @@ module Javascript
     end
 
     def parse_expression
-      expression = parse_prefix_expression
+      expression = parse_prefix
 
       while precedence < (current_precedence = precedence_of(tokenizer.look_ahead))
-        expression = parse_infix_expression(expression, precedence: current_precedence)
+        expression = parse_infix(expression, precedence: current_precedence)
       end
 
       expression
@@ -19,12 +19,12 @@ module Javascript
     private
       attr_reader :parser, :tokenizer
 
-      def parse_prefix_expression
-        Parser::PrefixExpressionParser.new(parser: parser, tokenizer: tokenizer).parse_expression
+      def parse_prefix
+        PrefixParser.new(parser: parser, tokenizer: tokenizer).parse_expression
       end
 
-      def parse_infix_expression(prefix, precedence:)
-        Parser::InfixExpressionParser.new(parser: parser, tokenizer: tokenizer, prefix: prefix, precedence: precedence).parse_expression
+      def parse_infix(prefix, precedence:)
+        InfixParser.new(parser: parser, tokenizer: tokenizer, prefix: prefix, precedence: precedence).parse_expression
       end
 
       def precedence_of(token)
