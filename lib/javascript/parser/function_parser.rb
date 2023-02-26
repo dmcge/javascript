@@ -37,7 +37,7 @@ module Javascript
       def parse_parameter
         Parameter.new.tap do |parameter|
           parameter.name    = tokenizer.consume!(:identifier).value
-          parameter.default = parser.parse_expression!(precedence: 2) if tokenizer.consume(:equals)
+          parameter.default = parser.parse_expression(precedence: 2) if tokenizer.consume(:equals)
         end
       end
 

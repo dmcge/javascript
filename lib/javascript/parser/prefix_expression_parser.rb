@@ -23,23 +23,21 @@ module Javascript
       when tokenizer.consume("true")      then parse_true
       when tokenizer.consume("false")     then parse_false
       when tokenizer.consume("null")      then parse_null
+      else
+        raise SyntaxError
       end
-    end
-
-    def parse_expression!
-      parse_expression or raise SyntaxError
     end
 
     private
       attr_reader :parser, :tokenizer
 
       def parse_unary_operation
-        UnaryOperation.new operator: tokenizer.current_token.value, operand: parse_expression!, position: :prefix
+        UnaryOperation.new operator: tokenizer.current_token.value, operand: parse_expression, position: :prefix
       end
 
       def parse_update_operation
         operator = tokenizer.current_token.value
-        operand  = parse_expression!
+        operand  = parse_expression
 
         if operand.is_a?(Identifier) || operand.is_a?(PropertyAccess)
           UnaryOperation.new operator: operator, operand: operand, position: :prefix
@@ -93,7 +91,7 @@ module Javascript
           property.name = tokenizer.current_token.literal || tokenizer.current_token.value
 
           if tokenizer.consume(:colon)
-            property.value = parser.parse_expression(precedence: 2) or raise SyntaxError
+            property.value = parser.parse_expression(precedence: 2)
           else
             property.value = parse_identifier
           end

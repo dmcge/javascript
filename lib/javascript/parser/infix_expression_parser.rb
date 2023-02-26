@@ -73,7 +73,7 @@ module Javascript
         BinaryOperation.new \
           operator:        tokenizer.current_token.value,
           left_hand_side:  prefix,
-          right_hand_side: parser.parse_expression!(precedence: precedence)
+          right_hand_side: parser.parse_expression(precedence: precedence)
       end
 
       def parse_unary_operation
@@ -104,7 +104,7 @@ module Javascript
           Assignment.new \
             operator: operator.empty? ? nil : operator,
             left_hand_side: prefix,
-            right_hand_side: parser.parse_expression!(precedence: precedence - 1)
+            right_hand_side: parser.parse_expression(precedence: precedence - 1)
         else
           raise SyntaxError
         end
@@ -115,7 +115,7 @@ module Javascript
       end
 
       def parse_property_access_with_square_brackets
-        access = PropertyAccess.new(receiver: prefix, accessor: parser.parse_expression!, computed: false)
+        access = PropertyAccess.new(receiver: prefix, accessor: parser.parse_expression, computed: false)
 
         if tokenizer.consume("]")
           access
@@ -131,7 +131,7 @@ module Javascript
       def parse_arguments
         [].tap do |arguments|
           tokenizer.until(:closing_bracket) do
-            arguments << parser.parse_expression!(precedence: 2)
+            arguments << parser.parse_expression(precedence: 2)
             tokenizer.consume(:comma)
           end
         end
@@ -140,10 +140,10 @@ module Javascript
       def parse_ternary
         Ternary.new.tap do |ternary|
           ternary.condition  = prefix
-          ternary.consequent = parser.parse_expression!(precedence: 2)
+          ternary.consequent = parser.parse_expression(precedence: 2)
 
           if tokenizer.consume(":")
-            ternary.alternative = parser.parse_expression!(precedence: 2)
+            ternary.alternative = parser.parse_expression(precedence: 2)
           else
             raise SyntaxError
           end

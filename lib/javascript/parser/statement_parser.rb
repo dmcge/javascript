@@ -93,7 +93,7 @@ module Javascript
       def parse_variable_declaration
         VariableDeclaration.new.tap do |declaration|
           declaration.name  = tokenizer.consume!(:identifier).value
-          declaration.value = parser.parse_expression!(precedence: 2) if tokenizer.consume(:equals)
+          declaration.value = parser.parse_expression(precedence: 2) if tokenizer.consume(:equals)
         end
       end
 
@@ -106,7 +106,7 @@ module Javascript
 
       def parse_condition
         if tokenizer.consume("(")
-          parser.parse_expression!.tap do
+          parser.parse_expression.tap do
             raise SyntaxError unless tokenizer.consume(")")
           end
         else
@@ -137,7 +137,11 @@ module Javascript
       end
 
       def parse_return_statement
-        Return.new(parser.parse_expression)
+        if tokenizer.consume(";") || tokenizer.consume(:line_break)
+          Return.new
+        else
+          Return.new(parser.parse_expression)
+        end
       end
 
       def parse_empty_statement

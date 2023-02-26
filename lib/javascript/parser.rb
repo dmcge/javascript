@@ -25,11 +25,7 @@ module Javascript
     end
 
     def parse_expression(precedence: 0)
-      ExpressionParser.new(parser: self, tokenizer: tokenizer, precedence: precedence).parse_expression
-    end
-
-    def parse_expression!(...)
-      parse_expression(...) or raise SyntaxError
+      ExpressionParser.new(parser: self, tokenizer: tokenizer, precedence: precedence).parse_expression or raise SyntaxError
     end
 
 
