@@ -11,13 +11,21 @@ class FunctionTest < Javascript::Test
     JS
   end
 
-  def test_anonymous_functions
+  def test_anonymous_function_expressions
     assert_equal 20, evaluate(<<~JS)
       var multiply = function(a, b) {
         return a * b
       }
 
       multiply(4, 5)
+    JS
+  end
+
+  def test_anonymous_function_statements
+    assert_malformed <<~JS
+      function(a, b) {
+        return a * b
+      }
     JS
   end
 

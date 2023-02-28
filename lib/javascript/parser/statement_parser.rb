@@ -120,8 +120,7 @@ module Javascript
         if tokenizer.peek(:identifier)
           FunctionDeclaration.new(parse_function)
         else
-          tokenizer.rewind
-          parser.parse_expression
+          raise SyntaxError
         end
       end
 
