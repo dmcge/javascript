@@ -49,7 +49,7 @@ module Javascript
       end
 
       def parse_function_definition
-        Parser::FunctionParser.new(parser: parser, tokenizer: tokenizer).parse_function
+        Parser::FunctionParser.new(parser: parser).parse_function
       end
 
       def parse_identifier

@@ -1,7 +1,7 @@
 module Javascript
   class Parser::FunctionParser
-    def initialize(parser:, tokenizer:)
-      @parser, @tokenizer = parser, tokenizer
+    def initialize(parser:)
+      @parser = parser
     end
 
     def parse_function
@@ -15,7 +15,9 @@ module Javascript
     end
 
     private
-      attr_reader :parser, :tokenizer
+      attr_reader :parser
+
+      def tokenizer = parser.tokenizer
 
       def parse_identifier
         tokenizer.consume(:identifier)&.value
