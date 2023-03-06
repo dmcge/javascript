@@ -116,6 +116,16 @@ module Javascript
         While.new condition: parse_condition, body: parse_statement
       end
 
+      def parse_condition
+        if tokenizer.consume("(")
+          parser.parse_expression.tap do
+            raise SyntaxError unless tokenizer.consume(")")
+          end
+        else
+          raise SyntaxError
+        end
+      end
+
       def parse_break_statement
         Break.new
       end
@@ -129,16 +139,6 @@ module Javascript
           raise SyntaxError
         else
           Throw.new(parser.parse_expression)
-        end
-      end
-
-      def parse_condition
-        if tokenizer.consume("(")
-          parser.parse_expression.tap do
-            raise SyntaxError unless tokenizer.consume(")")
-          end
-        else
-          raise SyntaxError
         end
       end
 
