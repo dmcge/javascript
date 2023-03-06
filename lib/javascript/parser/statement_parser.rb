@@ -13,6 +13,7 @@ module Javascript
       when tokenizer.consume("while")    then parse_while_loop
       when tokenizer.consume("break")    then parse_break_statement
       when tokenizer.consume("continue") then parse_continue_statement
+      when tokenizer.consume("throw")    then parse_throw_statement
       when tokenizer.consume("function") then parse_function_declaration
       when tokenizer.consume("{")        then parse_block
       when tokenizer.consume("return")   then parse_return_statement
@@ -119,6 +120,14 @@ module Javascript
 
       def parse_continue_statement
         Continue.new
+      end
+
+      def parse_throw_statement
+        if tokenizer.consume(:line_break)
+          raise SyntaxError
+        else
+          Throw.new(parser.parse_expression)
+        end
       end
 
       def parse_condition

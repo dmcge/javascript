@@ -25,6 +25,7 @@ module Javascript
   StatementList       = Struct.new(:statements)
   StringLiteral       = Struct.new(:value)
   Ternary             = Struct.new(:condition, :consequent, :alternative)
+  Throw               = Struct.new(:expression)
   UnaryOperation      = Struct.new(:operator, :operand, :position)
   VariableDeclaration = Struct.new(:name, :value)
   VarStatement        = Struct.new(:declarations, keyword_init: true)
