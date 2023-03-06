@@ -10,6 +10,7 @@ module Javascript
       when tokenizer.consume("let")      then parse_let_statement_or_expression
       when tokenizer.consume("const")    then parse_const_statement_or_expression
       when tokenizer.consume("if")       then parse_if_statement
+      when tokenizer.consume("while")    then parse_while_loop
       when tokenizer.consume("function") then parse_function_declaration
       when tokenizer.consume("{")        then parse_block
       when tokenizer.consume("return")   then parse_return_statement
@@ -104,6 +105,10 @@ module Javascript
           condition:   parse_condition,
           consequent:  parse_statement,
           alternative: (parse_statement if tokenizer.consume("else"))
+      end
+
+      def parse_while_loop
+        While.new condition: parse_condition, body: parse_statement
       end
 
       def parse_condition
