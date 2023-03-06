@@ -7,6 +7,7 @@ module Javascript
   Break               = Struct.new(nil)
   ConstStatement      = Struct.new(:declarations, keyword_init: true)
   Continue            = Struct.new(nil)
+  DebuggerStatement   = Struct.new(nil)
   ExpressionStatement = Struct.new(:expression)
   FunctionCall        = Struct.new(:callee, :arguments)
   FunctionDeclaration = Struct.new(:definition)
