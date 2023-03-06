@@ -31,4 +31,5 @@ module Javascript
   VariableDeclaration = Struct.new(:name, :value)
   VarStatement        = Struct.new(:declarations, keyword_init: true)
   While               = Struct.new(:condition, :body)
+  With                = Struct.new(:expression, :body)
 end

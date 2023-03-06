@@ -17,6 +17,7 @@ module Javascript
       when tokenizer.consume("function") then parse_function_declaration
       when tokenizer.consume("{")        then parse_block
       when tokenizer.consume("return")   then parse_return_statement
+      when tokenizer.consume("with")     then parse_with_statement
       when tokenizer.consume("debugger") then parse_debugger_statement
       when tokenizer.consume(";")        then parse_empty_statement
       else
@@ -168,6 +169,10 @@ module Javascript
         else
           Return.new(parser.parse_expression)
         end
+      end
+
+      def parse_with_statement
+        With.new expression: parse_condition, body: parse_statement
       end
 
       def parse_debugger_statement
