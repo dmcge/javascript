@@ -15,6 +15,7 @@ module Javascript
   Identifier          = Struct.new(:name)
   If                  = Struct.new(:condition, :consequent, :alternative)
   LetStatement        = Struct.new(:declarations, keyword_init: true)
+  New                 = Struct.new(:initializer)
   NumberLiteral       = Struct.new(:value)
   NullLiteral         = Struct.new(nil)
   ObjectLiteral       = Struct.new(:properties)

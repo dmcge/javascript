@@ -14,6 +14,7 @@ module Javascript
       when tokenizer.consume("++")        then parse_update_operation
       when tokenizer.consume("--")        then parse_update_operation
       when tokenizer.consume("function")  then parse_function_definition
+      when tokenizer.consume("new")       then parse_new
       when tokenizer.consume(:identifier) then parse_identifier
       when tokenizer.consume(:string)     then parse_string_literal
       when tokenizer.consume(:number)     then parse_number_literal
@@ -50,6 +51,10 @@ module Javascript
 
       def parse_function_definition
         Parser::FunctionParser.new(parser: parser).parse_function
+      end
+
+      def parse_new
+        New.new(parser.parse_expression)
       end
 
       def parse_identifier
