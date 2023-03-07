@@ -57,7 +57,17 @@ module Javascript
       end
 
       def parse_new
-        New.new(parser.parse_expression)
+        constructor = parser.parse_expression(precedence: 16)
+
+        if tokenizer.peek("(")
+          New.new(parse_function_call(callee: constructor))
+        else
+          New.new(constructor)
+        end
+      end
+
+      def parse_function_call(callee:)
+        Parser::ExpressionParser::InfixParser.new(parser: parser, prefix: callee, precedence: 0).parse_infix
       end
 
       def parse_identifier

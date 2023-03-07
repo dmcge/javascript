@@ -29,7 +29,8 @@ module Javascript
 
       def precedence_of(token)
         case token.value
-        when ".", "[", "("                                                                                  then 16
+        when ".", "["                                                                                       then 17
+        when "("                                                                                            then 16
         when "++", "--"                                                                                     then 15
         when "**"                                                                                           then 14
         when "*", "/", "%"                                                                                  then 13
