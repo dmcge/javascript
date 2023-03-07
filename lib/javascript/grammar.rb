@@ -68,7 +68,7 @@ module Javascript
 
 
       IDENTIFIER_CHARACTER = /#{START_OF_IDENTIFIER}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|\u200c|\u200d/
-      KEYWORDS = %w( var if else true false function return null while break continue throw debugger with new )
+      KEYWORDS = %w( break continue debugger else false function if new null return throw true var while with )
 
       def tokenize_identifier
         scanner.unscan
