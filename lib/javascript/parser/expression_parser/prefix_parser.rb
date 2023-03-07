@@ -5,7 +5,7 @@ module Javascript
     end
 
     # FIXME
-    def parse_expression
+    def parse_prefix
       case
       when tokenizer.consume("!")         then parse_unary_operation
       when tokenizer.consume("~")         then parse_unary_operation
@@ -35,12 +35,12 @@ module Javascript
       def tokenizer = parser.tokenizer
 
       def parse_unary_operation
-        UnaryOperation.new operator: tokenizer.current_token.value, operand: parse_expression, position: :prefix
+        UnaryOperation.new operator: tokenizer.current_token.value, operand: parse_prefix, position: :prefix
       end
 
       def parse_update_operation
         operator = tokenizer.current_token.value
-        operand  = parse_expression
+        operand  = parse_prefix
 
         if operand.is_a?(Identifier) || operand.is_a?(PropertyAccess)
           UnaryOperation.new operator: operator, operand: operand, position: :prefix

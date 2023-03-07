@@ -20,11 +20,11 @@ module Javascript
       attr_reader :parser
 
       def parse_prefix
-        PrefixParser.new(parser: parser).parse_expression
+        PrefixParser.new(parser: parser).parse_prefix
       end
 
       def parse_infix(prefix, precedence:)
-        InfixParser.new(parser: parser, prefix: prefix, precedence: precedence).parse_expression
+        InfixParser.new(parser: parser, prefix: prefix, precedence: precedence).parse_infix
       end
 
       def precedence_of(token)

@@ -7,7 +7,7 @@ module Javascript
     end
 
     # FIXME
-    def parse_expression
+    def parse_infix
       case
       when tokenizer.consume("**")      then parse_rightward_binary_operation
       when tokenizer.consume("/")       then parse_leftward_binary_operation
