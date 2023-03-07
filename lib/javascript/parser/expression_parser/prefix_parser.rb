@@ -12,6 +12,7 @@ module Javascript
       when tokenizer.consume("+")         then parse_unary_operation
       when tokenizer.consume("-")         then parse_unary_operation
       when tokenizer.consume("void")      then parse_unary_operation
+      when tokenizer.consume("typeof")    then parse_unary_operation
       when tokenizer.consume("++")        then parse_update_operation
       when tokenizer.consume("--")        then parse_update_operation
       when tokenizer.consume("function")  then parse_function_definition

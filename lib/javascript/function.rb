@@ -5,5 +5,9 @@ module Javascript
     def initialize(definition:, environment:)
       @definition, @environment = definition, environment
     end
+
+    def type
+      "function"
+    end
   end
 end

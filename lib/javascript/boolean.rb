@@ -18,6 +18,10 @@ module Javascript
       true?
     end
 
+    def type
+      "boolean"
+    end
+
     def to_number
       Number.new(to_i)
     end

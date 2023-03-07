@@ -1,5 +1,7 @@
 module Javascript
   class Interpreter
+    UnresolvedReference = Struct.new(:name)
+
     def initialize(script)
       @script  = Parser.new(script).parse
       @context = Context.new
@@ -15,6 +17,8 @@ module Javascript
         case result
         when Environment::Binding, Object::Property
           result.value
+        when UnresolvedReference
+          raise "Couldn’t find #{result.name}"
         else
           result
         end
@@ -156,7 +160,7 @@ module Javascript
       end
 
       def evaluate_identifier(identifier)
-        context.environment[identifier.name]
+        context.environment[identifier.name] || UnresolvedReference.new(identifier.name)
       end
 
       def evaluate_assignment(assignment)
@@ -220,9 +224,8 @@ module Javascript
         end
       end
 
-      # TODO
       def evaluate_null_literal(null)
-        nil
+        Null.new
       end
   end
 end

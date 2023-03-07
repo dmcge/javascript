@@ -15,5 +15,9 @@ module Javascript
     def []=(name, value)
       properties[name.to_s] = Property.new(value)
     end
+
+    def type
+      "object"
+    end
   end
 end

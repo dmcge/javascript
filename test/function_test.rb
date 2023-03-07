@@ -172,7 +172,7 @@ class FunctionTest < Javascript::Test
   end
 
   def test_variables_are_unique_to_each_function_call
-    assert_nil evaluate(<<~JS)
+    assert evaluate(<<~JS).is_a?(Javascript::Undefined)
       function leaky(define) {
         if (define) {
           var leak = "a"

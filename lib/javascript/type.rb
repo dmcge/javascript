@@ -4,6 +4,10 @@ module Javascript
       true
     end
 
+    def type
+      raise NotImplementedError
+    end
+
     def to_string
       String.new(to_s)
     end

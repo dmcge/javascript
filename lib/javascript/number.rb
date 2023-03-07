@@ -58,6 +58,10 @@ module Javascript
       !zero?
     end
 
+    def type
+      "number"
+    end
+
     def to_number
       self
     end

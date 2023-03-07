@@ -16,12 +16,16 @@ module Javascript
       value <=> other.to_s
     end
 
+    def empty?
+      value.empty?
+    end
+
     def truthy?
       !empty?
     end
 
-    def empty?
-      value.empty?
+    def type
+      "string"
     end
 
     def to_number

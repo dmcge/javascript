@@ -2,7 +2,7 @@ module Javascript
   class Interpreter::Environment::Binding
     attr_accessor :read_only
 
-    public def initialize(value = nil)
+    public def initialize(value = Undefined.new)
       if initialized?
         raise
       else

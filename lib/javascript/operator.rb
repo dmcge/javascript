@@ -2,34 +2,35 @@ module Javascript
   class Operator
     def self.for(symbol, interpreter:)
       case symbol
-      when "++"   then Increment
-      when "--"   then Decrement
-      when "**"   then Exponentiation
-      when "/"    then Division
-      when "*"    then Multiplication
-      when "%"    then Modulo
-      when "+"    then Plus
-      when "-"    then Minus
-      when ">"    then GreaterThan
-      when ">="   then GreaterThanOrEqual
-      when "<"    then LessThan
-      when "<="   then LessThanOrEqual
-      when "<<"   then ShiftLeft
-      when ">>"   then ShiftRight
-      when ">>>"  then ShiftRightUnsigned
-      when "=="   then Equality
-      when "!="   then Inequality
-      when "==="  then StrictEquality
-      when "!=="  then StrictInequality
-      when "!"    then Not
-      when "~"    then BitwiseNot
-      when "&"    then BitwiseAnd
-      when "^"    then BitwiseXor
-      when "|"    then BitwiseOr
-      when "&&"   then And
-      when "||"   then Or
-      when ","    then Comma
-      when "void" then Void
+      when "++"     then Increment
+      when "--"     then Decrement
+      when "**"     then Exponentiation
+      when "/"      then Division
+      when "*"      then Multiplication
+      when "%"      then Modulo
+      when "+"      then Plus
+      when "-"      then Minus
+      when ">"      then GreaterThan
+      when ">="     then GreaterThanOrEqual
+      when "<"      then LessThan
+      when "<="     then LessThanOrEqual
+      when "<<"     then ShiftLeft
+      when ">>"     then ShiftRight
+      when ">>>"    then ShiftRightUnsigned
+      when "=="     then Equality
+      when "!="     then Inequality
+      when "==="    then StrictEquality
+      when "!=="    then StrictInequality
+      when "!"      then Not
+      when "~"      then BitwiseNot
+      when "&"      then BitwiseAnd
+      when "^"      then BitwiseXor
+      when "|"      then BitwiseOr
+      when "&&"     then And
+      when "||"     then Or
+      when ","      then Comma
+      when "typeof" then TypeOf
+      when "void"   then Void
       end.new(interpreter)
     end
 
@@ -335,10 +336,30 @@ module Javascript
       end
     end
 
+    class TypeOf < Operator
+      def unary(operation)
+        String.new(extract_type(operation.operand))
+      end
+
+      private
+        def extract_type(operand)
+          result = interpreter.evaluate_expression(operand)
+
+          case result
+          when Interpreter::Environment::Binding
+            result.value.type
+          when Interpreter::UnresolvedReference
+            "undefined"
+          else
+            result.type
+          end
+        end
+    end
+
     class Void < Operator
       private
 
-      def perform_unary(operator, position:)
+      def perform_unary(operand, position:)
         nil
       end
     end

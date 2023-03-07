@@ -8,7 +8,7 @@ module Javascript
     end
 
     def [](name)
-      bindings[name] or parent&.[](name) or raise("Couldn’t find #{name}")
+      bindings[name] or parent&.[](name)
     end
 
     def []=(name, value)
