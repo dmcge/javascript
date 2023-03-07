@@ -2,33 +2,34 @@ module Javascript
   class Operator
     def self.for(symbol, interpreter:)
       case symbol
-      when "++"  then Increment
-      when "--"  then Decrement
-      when "**"  then Exponentiation
-      when "/"   then Division
-      when "*"   then Multiplication
-      when "%"   then Modulo
-      when "+"   then Plus
-      when "-"   then Minus
-      when ">"   then GreaterThan
-      when ">="  then GreaterThanOrEqual
-      when "<"   then LessThan
-      when "<="  then LessThanOrEqual
-      when "<<"  then ShiftLeft
-      when ">>"  then ShiftRight
-      when ">>>" then ShiftRightUnsigned
-      when "=="  then Equality
-      when "!="  then Inequality
-      when "===" then StrictEquality
-      when "!==" then StrictInequality
-      when "!"   then Not
-      when "~"   then BitwiseNot
-      when "&"   then BitwiseAnd
-      when "^"   then BitwiseXor
-      when "|"   then BitwiseOr
-      when "&&"  then And
-      when "||"  then Or
-      when ","   then Comma
+      when "++"   then Increment
+      when "--"   then Decrement
+      when "**"   then Exponentiation
+      when "/"    then Division
+      when "*"    then Multiplication
+      when "%"    then Modulo
+      when "+"    then Plus
+      when "-"    then Minus
+      when ">"    then GreaterThan
+      when ">="   then GreaterThanOrEqual
+      when "<"    then LessThan
+      when "<="   then LessThanOrEqual
+      when "<<"   then ShiftLeft
+      when ">>"   then ShiftRight
+      when ">>>"  then ShiftRightUnsigned
+      when "=="   then Equality
+      when "!="   then Inequality
+      when "==="  then StrictEquality
+      when "!=="  then StrictInequality
+      when "!"    then Not
+      when "~"    then BitwiseNot
+      when "&"    then BitwiseAnd
+      when "^"    then BitwiseXor
+      when "|"    then BitwiseOr
+      when "&&"   then And
+      when "||"   then Or
+      when ","    then Comma
+      when "void" then Void
       end.new(interpreter)
     end
 
@@ -331,6 +332,14 @@ module Javascript
 
       def perform_binary(left_hand_side, right_hand_side)
         right_hand_side
+      end
+    end
+
+    class Void < Operator
+      private
+
+      def perform_unary(operator, position:)
+        nil
       end
     end
   end
