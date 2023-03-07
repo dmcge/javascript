@@ -13,6 +13,13 @@ class UnaryNotTest < Javascript::Test
     assert evaluate("!(1 - 1 ** 1)").true?
   end
 
+  def test_negating_a_property
+    assert evaluate(<<~JS).true?
+      var object = { a: 0 }
+      !object.a
+    JS
+  end
+
   def test_coercing_to_boolean
     assert evaluate("!!1").true?
     refute evaluate("!!0").true?

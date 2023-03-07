@@ -12,4 +12,11 @@ class VoidTest < Javascript::Test
     refute evaluate(%(void 2 === "2")).truthy?
     assert_nil evaluate(%(void (2 === "2")))
   end
+
+  def test_property
+    assert_nil evaluate(<<~JS)
+      var object = { a: 3 }
+      void object.a
+    JS
+  end
 end

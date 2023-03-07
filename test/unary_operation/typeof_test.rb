@@ -50,4 +50,11 @@ class TypeOfTest < Javascript::Test
   def test_undeclared_variable
     assert_equal "undefined", evaluate(%(typeof a))
   end
+
+  def test_property
+    assert_equal "number", evaluate(<<~JS)
+      var object = { a: 3 }
+      typeof object.a
+    JS
+  end
 end

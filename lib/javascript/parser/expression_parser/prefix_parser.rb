@@ -37,12 +37,13 @@ module Javascript
       def tokenizer = parser.tokenizer
 
       def parse_unary_operation
-        UnaryOperation.new operator: tokenizer.current_token.value, operand: parse_prefix, position: :prefix
+        UnaryOperation.new \
+          operator: tokenizer.current_token.value, operand: parser.parse_expression(precedence: 14), position: :prefix
       end
 
       def parse_update_operation
         operator = tokenizer.current_token.value
-        operand  = parse_prefix
+        operand  = parser.parse_expression(precedence: 14)
 
         if operand.is_a?(Identifier) || operand.is_a?(PropertyAccess)
           UnaryOperation.new operator: operator, operand: operand, position: :prefix

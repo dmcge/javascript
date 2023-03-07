@@ -22,4 +22,16 @@ class UnaryDecrementTest < Javascript::Test
     assert_malformed "2--"
     assert_malformed %("bar"--)
   end
+
+  def test_decrementing_a_property
+    assert_equal 1, evaluate(<<~JS)
+      var object = { number: 2 }
+      --object.number
+    JS
+
+    assert_equal 2, evaluate(<<~JS)
+      var object = { number: 2 }
+      object.number--
+    JS
+  end
 end

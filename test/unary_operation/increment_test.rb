@@ -22,4 +22,16 @@ class UnaryIncrementTest < Javascript::Test
     assert_malformed "2++"
     assert_malformed %("bar"++)
   end
+
+  def test_incrementing_a_property
+    assert_equal 2, evaluate(<<~JS)
+      var object = { number: 1 }
+      ++object.number
+    JS
+
+    assert_equal 1, evaluate(<<~JS)
+      var object = { number: 1 }
+      object.number++
+    JS
+  end
 end

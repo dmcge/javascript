@@ -346,7 +346,7 @@ module Javascript
           result = interpreter.evaluate_expression(operand)
 
           case result
-          when Interpreter::Environment::Binding
+          when Interpreter::Environment::Binding, Object::Property
             result.value.type
           when Interpreter::UnresolvedReference
             "undefined"

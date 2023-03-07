@@ -29,6 +29,13 @@ class UnaryBitwiseNotTest < Javascript::Test
     assert_equal -1, evaluate(%(~-"Infinity"))
   end
 
+  def test_negating_a_property
+    assert_equal -4, evaluate(<<~JS)
+      var object = { a: 3 }
+      ~object.a
+    JS
+  end
+
   def test_postfix
     assert_malformed "3~"
   end
