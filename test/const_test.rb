@@ -24,7 +24,7 @@ class ConstTest < Javascript::Test
   end
 
   def test_referencing_a_variable_called_const
-    assert_equal 3, evaluate(<<~JS)
+    assert_malformed <<~JS
       var const = 1
       const + 2
     JS

@@ -79,8 +79,6 @@ module Javascript
         parse_line do
           parse_variable_declarations(ConstStatement.new(declarations: [])) do |declaration|
             case
-            when declaration.name == "const"
-              raise SyntaxError
             when declaration.value.nil?
               raise SyntaxError
             when parser.scope.include?(declaration.name)
