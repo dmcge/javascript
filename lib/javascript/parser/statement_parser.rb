@@ -8,7 +8,7 @@ module Javascript
       case
       when tokenizer.consume("var")      then parse_var_statement
       when tokenizer.consume("let")      then parse_let_statement_or_expression
-      when tokenizer.consume("const")    then parse_const_statement_or_expression
+      when tokenizer.consume("const")    then parse_const_statement
       when tokenizer.consume("if")       then parse_if_statement
       when tokenizer.consume("while")    then parse_while_loop
       when tokenizer.consume("break")    then parse_break_statement
@@ -63,15 +63,6 @@ module Javascript
               parser.scope.lets << declaration.name
             end
           end
-        end
-      end
-
-      def parse_const_statement_or_expression
-        if tokenizer.peek(:identifier)
-          parse_const_statement
-        else
-          tokenizer.rewind
-          parse_expression_statement
         end
       end
 
