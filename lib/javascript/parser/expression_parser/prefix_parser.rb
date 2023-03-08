@@ -87,22 +87,13 @@ module Javascript
           loop do
             if tokenizer.consume(:identifier) || tokenizer.consume(:string) || tokenizer.consume(:number)
               object.properties << parse_property_definition
-
-              unless tokenizer.consume(:comma)
-                if tokenizer.consume(:closing_brace)
-                  break
-                else
-                  raise SyntaxError
-                end
-              end
+              break unless tokenizer.consume(:comma)
             else
-              if tokenizer.consume(:closing_brace)
-                break
-              else
-                raise SyntaxError
-              end
+              break
             end
           end
+
+          raise SyntaxError unless tokenizer.consume(:closing_brace)
         end
       end
 
