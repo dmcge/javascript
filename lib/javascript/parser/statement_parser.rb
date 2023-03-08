@@ -112,12 +112,9 @@ module Javascript
       end
 
       def parse_condition
-        if tokenizer.consume("(")
-          parser.parse_expression.tap do
-            raise SyntaxError unless tokenizer.consume(")")
-          end
-        else
-          raise SyntaxError
+        tokenizer.consume!("(")
+        parser.parse_expression.tap do
+          tokenizer.consume!(")")
         end
       end
 
