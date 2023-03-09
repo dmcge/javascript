@@ -64,6 +64,7 @@ module Javascript
         when ConstStatement      then execute_let_or_const_statement(statement)
         when If                  then execute_if_statement(statement)
         when While               then execute_while_loop(statement)
+        when DoWhile             then execute_do_while_loop(statement)
         when FunctionDeclaration then execute_function_declaration(statement)
         when Block               then execute_block(statement)
         when Return              then execute_return_statement(statement)
@@ -94,10 +95,13 @@ module Javascript
         end
       end
 
-      def execute_while_loop(while_loop)
-        while evaluate_value(while_loop.condition).truthy?
-          execute_statement(while_loop.body)
-        end
+      def execute_while_loop(loop)
+        execute_statement(loop.body) while evaluate_value(loop.condition).truthy?
+      end
+
+      def execute_do_while_loop(loop)
+        execute_statement(loop.body)
+        execute_statement(loop.body) while evaluate_value(loop.condition).truthy?
       end
 
       def execute_function_declaration(declaration)
