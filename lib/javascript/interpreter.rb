@@ -37,6 +37,7 @@ module Javascript
       when ObjectLiteral      then evaluate_object_literal(expression)
       when ArrayLiteral       then evaluate_array_literal(expression)
       when PropertyAccess     then evaluate_property_access(expression)
+      when OptionalChain      then evaluate_optional_chain(expression)
       when UnaryOperation     then evaluate_unary_operation(expression)
       when BinaryOperation    then evaluate_binary_operation(expression)
       when Ternary            then evaluate_ternary(expression)
@@ -208,8 +209,17 @@ module Javascript
         receiver = evaluate_value(property_access.receiver)
         accessor = property_access.computed ? property_access.accessor : evaluate_value(property_access.accessor)
 
-        receiver[accessor] ||= nil
+        receiver[accessor] ||= Undefined.new
         receiver[accessor]
+      end
+      
+      def evaluate_optional_chain(optional_chain)
+        case evaluate_value(optional_chain.receiver)
+        when Null, Undefined
+          Undefined.new
+        else
+          evaluate_value(optional_chain.expression)
+        end
       end
 
       def evaluate_unary_operation(operation)

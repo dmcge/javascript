@@ -20,6 +20,7 @@ module Javascript
   NumberLiteral       = Struct.new(:value)
   NullLiteral         = Struct.new(nil)
   ObjectLiteral       = Struct.new(:properties)
+  OptionalChain       = Struct.new(:receiver, :expression)
   Parameter           = Struct.new(:name, :default)
   PropertyAccess      = Struct.new(:receiver, :accessor, :computed)
   PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)

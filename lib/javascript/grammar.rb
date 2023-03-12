@@ -26,6 +26,7 @@ module Javascript
       when scanner.scan(">")                 then tokenize_right_caret
       when scanner.scan("^")                 then tokenize_up_caret
       when scanner.scan("%")                 then tokenize_percent
+      when scanner.scan("?")                 then tokenize_question_mark
       when scanner.scan(",")                 then :comma
       when scanner.scan("~")                 then :tilde
       when scanner.scan("(")                 then :opening_bracket
@@ -34,7 +35,6 @@ module Javascript
       when scanner.scan("}")                 then :closing_brace
       when scanner.scan("[")                 then :opening_square_bracket
       when scanner.scan("]")                 then :closing_square_bracket
-      when scanner.scan("?")                 then :question_mark
       when scanner.scan(":")                 then :colon
       when scanner.scan(";")                 then :semicolon
       when scanner.scan($/)                  then :line_break
@@ -263,6 +263,24 @@ module Javascript
 
       def tokenize_percent
         tokenize_optional_equals(:percent)
+      end
+      
+      def tokenize_question_mark
+        if scanner.scan(".")
+          tokenize_question_mark_dot
+        else
+          :question_mark
+        end
+      end
+      
+      def tokenize_question_mark_dot
+        case scanner.peek(1)
+        when "(", "[", START_OF_IDENTIFIER
+          :question_mark_dot
+        else
+          scanner.unscan
+          :question_mark
+        end
       end
 
 

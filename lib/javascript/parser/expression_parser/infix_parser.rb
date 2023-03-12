@@ -50,6 +50,7 @@ module Javascript
       when tokenizer.consume("^=")      then parse_assignment
       when tokenizer.consume("&&=")     then parse_assignment
       when tokenizer.consume("||=")     then parse_assignment
+      when tokenizer.consume("?.")      then parse_optional_chaining
       when tokenizer.consume(".")       then parse_property_access_with_dot
       when tokenizer.consume("[")       then parse_property_access_with_square_brackets
       when tokenizer.consume("(")       then parse_function_call
@@ -108,6 +109,17 @@ module Javascript
             right_hand_side: parser.parse_expression(precedence: precedence - 1)
         else
           raise SyntaxError
+        end
+      end
+      
+      def parse_optional_chaining
+        case
+        when tokenizer.consume("(")
+          OptionalChain.new receiver: prefix, expression: parse_function_call
+        when tokenizer.consume("[")
+          OptionalChain.new receiver: prefix, expression: parse_property_access_with_square_brackets
+        else
+          OptionalChain.new receiver: prefix, expression: parse_property_access_with_dot
         end
       end
 

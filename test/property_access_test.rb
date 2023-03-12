@@ -38,10 +38,13 @@ class PropertyAccessTest < Javascript::Test
   end
 
   def test_accessing_accessing_nonexistent_property
-    assert_equal [nil, nil, nil], evaluate(<<~JS.chomp)
+    array = evaluate(<<~JS.chomp)
       var object = {};
       var key = "a";
       [ object.a, object["a"], object[key] ]
     JS
+    
+    assert_equal 3, array.length
+    assert array.elements.all? { |property| property.value.is_a?(Javascript::Undefined) }
   end
 end
