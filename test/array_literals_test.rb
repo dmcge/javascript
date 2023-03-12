@@ -27,6 +27,19 @@ class ArrayLiteralsTest < Javascript::Test
       ]
     JS
   end
+  
+  def test_spreading_an_array
+    skip
+    assert_equal [1, 2, 3, 4], evaluate("[1, ...[2, 3, 4]]")
+    assert_equal [1], evaluate("[1, ...[]]")
+    assert_equal [2], evaluate("[...[2]]")
+    assert_equal [3, 4], evaluate("[...[3], ...[4]]")
+  end
+  
+  def test_speading_an_object
+    skip
+    assert_raises { evaluate("[1, ...{ a: 2, b: 3, c: 4]]") }
+  end
 
   def test_nothing_but_commas
     assert_equal [nil], evaluate("[,]")

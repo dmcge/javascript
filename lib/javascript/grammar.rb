@@ -165,8 +165,11 @@ module Javascript
       end
 
       def tokenize_dot
-        if scanner.peek(1).match?(/\d/)
+        case
+       when scanner.peek(1).match?(/\d/)
           tokenize_numeric
+       when scanner.scan("..")
+          :dot_dot_dot
         else
           :dot
         end

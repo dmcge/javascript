@@ -28,6 +28,7 @@ module Javascript
   PropertySetter      = Struct.new(:name, :function)
   Return              = Struct.new(:expression)
   Script              = Struct.new(:body, :scope)
+  Spread              = Struct.new(:expression)
   StatementList       = Struct.new(:statements)
   StringLiteral       = Struct.new(:value)
   Ternary             = Struct.new(:condition, :consequent, :alternative)

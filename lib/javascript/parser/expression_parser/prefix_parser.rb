@@ -85,15 +85,19 @@ module Javascript
       def parse_object_literal
         ObjectLiteral.new(properties: []).tap do |object|
           loop do
-            if tokenizer.consume(:identifier) || tokenizer.consume(:string) || tokenizer.consume(:number)
+            case
+            when tokenizer.consume(:identifier) || tokenizer.consume(:string) || tokenizer.consume(:number)
               object.properties << parse_property_definition
-              break unless tokenizer.consume(:comma)
+              break unless tokenizer.consume(",")
+            when tokenizer.consume("...")
+              object.properties << parse_spread
+              break unless tokenizer.consume(",")
             else
               break
             end
           end
 
-          raise SyntaxError unless tokenizer.consume(:closing_brace)
+          raise SyntaxError unless tokenizer.consume("}")
         end
       end
 
@@ -148,14 +152,22 @@ module Javascript
         PropertyDefinition.new name: name, value: parse_identifier
       end
 
+      def parse_spread
+        Spread.new parser.parse_expression(precedence: 2)
+      end
+      
       def parse_array_literal
         ArrayLiteral.new(elements: []).tap do |array|
           tokenizer.until(:closing_square_bracket) do
-            if tokenizer.consume(:comma)
+            case
+            when tokenizer.consume(",")
               array.elements << nil
+            when tokenizer.consume("...")
+              array.elements << parse_spread
+              tokenizer.consume(",")
             else
               array.elements << parser.parse_expression(precedence: 2)
-              tokenizer.consume(:comma)
+              tokenizer.consume(",")
             end
           end
         end

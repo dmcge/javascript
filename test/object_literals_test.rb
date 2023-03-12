@@ -113,18 +113,31 @@ class ObjectLiteralsTest < Javascript::Test
     JS
   end
   
-  def test_parse_get_property
+  def test_get_property
     assert_equal "Hello", evaluate(<<~JS)
       var object = { get: "Hello" }
       object.get
     JS
   end
   
-  def test_parse_set_property
+  def test_set_property
     assert_equal "Hello", evaluate(<<~JS)
       var object = { set: "Hello" }
       object.set
     JS
+  end
+  
+  def test_spreading_an_object
+    skip
+    assert_equal({ "a" => 1, "b" => 2, "c" => 3 }, evaluate("var alphabet = { a: 1, ...{ b: 2, c: 3 } }"))
+    assert_equal({ "a" => 1 }, evaluate("var alphabet = { a: 1, ...{} }"))
+    assert_equal({ "b" => 2 }, evaluate("var alphabet = {...{ b: 2 }}"))
+    assert_equal({ "c" => 3, "d" => 4 }, evaluate("var alphabet = {...{ c: 3 }, ...{ d: 4 }}"))
+  end
+  
+  def test_spreading_an_array
+    skip
+    assert_raises { evaluate("var alphabet = { a: 1, ...[2, 3, 4] }") }
   end
 
   def test_trailing_commas
