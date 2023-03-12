@@ -98,15 +98,28 @@ module Javascript
       end
 
       def parse_property_definition
-        PropertyDefinition.new.tap do |property|
-          property.name = tokenizer.current_token.literal || tokenizer.current_token.value
-
-          if tokenizer.consume(:colon)
-            property.value = parser.parse_expression(precedence: 2)
-          else
-            property.value = parse_identifier
-          end
+        name = tokenizer.current_token.literal || tokenizer.current_token.value
+        
+        case
+        when tokenizer.consume(":") then parse_property_assignment(name: name)
+        when tokenizer.consume("(") then parse_method_definition(name: name)
+        else                             parse_shorthand_property(name: name)
         end
+      end
+      
+      def parse_property_assignment(name:)
+        PropertyDefinition.new name: name, value: parser.parse_expression(precedence: 2)
+      end
+      
+      def parse_method_definition(name:)
+        tokenizer.rewind # rewind (
+        tokenizer.rewind # rewind name
+        
+        PropertyDefinition.new name: name, value: parse_function_definition
+      end
+      
+      def parse_shorthand_property(name:)
+        PropertyDefinition.new name: name, value: parse_identifier
       end
 
       def parse_array_literal

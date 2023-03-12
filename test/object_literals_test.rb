@@ -71,6 +71,18 @@ class ObjectLiteralsTest < Javascript::Test
       person.name + ", " + person.age + ", is from " + person.location
     JS
   end
+  
+  def test_method_definitions
+    assert_equal "Hello from method", evaluate(<<~JS)
+      var object = {
+        toString() {
+          return "Hello from method"
+        }
+      }
+      
+      object.toString()
+    JS
+  end
 
   def test_trailing_commas
     assert_valid   "var alphabet = { a: 1, b: 2, c: 3, }"
