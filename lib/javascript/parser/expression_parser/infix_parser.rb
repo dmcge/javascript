@@ -13,7 +13,6 @@ module Javascript
       when tokenizer.consume("/")       then parse_leftward_binary_operation
       when tokenizer.consume("*")       then parse_leftward_binary_operation
       when tokenizer.consume("+")       then parse_leftward_binary_operation
-      when tokenizer.consume("+")       then parse_leftward_binary_operation
       when tokenizer.consume("-")       then parse_leftward_binary_operation
       when tokenizer.consume(",")       then parse_leftward_binary_operation
       when tokenizer.consume("%")       then parse_leftward_binary_operation
