@@ -100,6 +100,32 @@ module Javascript
       def parse_property_definition
         name = tokenizer.current_token.literal || tokenizer.current_token.value
         
+        case name
+        when "get", "set"
+          parse_property_definition_with_getter_or_setter(prefix: name)
+        else
+          parse_property_definition_without_getter_or_setter(name: name)
+        end
+      end
+      
+      def parse_property_definition_with_getter_or_setter(prefix:)
+        if tokenizer.peek(:identifier) || tokenizer.peek(:string) || tokenizer.peek(:number)
+          parse_getter_or_setter(prefix: prefix)
+        else
+          parse_property_definition_without_getter_or_setter(name: prefix)
+        end
+      end
+      
+      def parse_getter_or_setter(prefix:)
+        function = parse_function_definition
+        
+        case prefix
+        when "get" then PropertyGetter.new(name: function.name, function: function)
+        when "set" then PropertySetter.new(name: function.name, function: function)
+        end
+      end
+
+      def parse_property_definition_without_getter_or_setter(name:)
         case
         when tokenizer.consume(":") then parse_property_assignment(name: name)
         when tokenizer.consume("(") then parse_method_definition(name: name)

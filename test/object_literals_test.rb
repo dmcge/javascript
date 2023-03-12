@@ -83,6 +83,49 @@ class ObjectLiteralsTest < Javascript::Test
       object.toString()
     JS
   end
+  
+  def test_getter_method_definitions
+    skip
+    assert_equal "Hello from method", evaluate(<<~JS)
+      var object = {
+        get greeting() {
+          return "Hello from method"
+        }
+      }
+      
+      object.greeting
+    JS
+  end
+  
+  def test_setter_method_definitions
+    skip
+    assert_equal "Hello", evaluate(<<~JS)
+      var object = {}
+    
+      var mirror = {
+        set greeting(value) {
+          object.greeting = value
+        }
+      }
+      
+      mirror.greeting = "Hello"
+      object.greeting
+    JS
+  end
+  
+  def test_parse_get_property
+    assert_equal "Hello", evaluate(<<~JS)
+      var object = { get: "Hello" }
+      object.get
+    JS
+  end
+  
+  def test_parse_set_property
+    assert_equal "Hello", evaluate(<<~JS)
+      var object = { set: "Hello" }
+      object.set
+    JS
+  end
 
   def test_trailing_commas
     assert_valid   "var alphabet = { a: 1, b: 2, c: 3, }"

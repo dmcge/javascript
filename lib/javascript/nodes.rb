@@ -23,6 +23,8 @@ module Javascript
   Parameter           = Struct.new(:name, :default)
   PropertyAccess      = Struct.new(:receiver, :accessor, :computed)
   PropertyDefinition  = Struct.new(:name, :value, keyword_init: true)
+  PropertyGetter      = Struct.new(:name, :function)
+  PropertySetter      = Struct.new(:name, :function)
   Return              = Struct.new(:expression)
   Script              = Struct.new(:body, :scope)
   StatementList       = Struct.new(:statements)
