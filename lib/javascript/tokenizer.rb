@@ -19,10 +19,10 @@ module Javascript
       current_token
     end
 
-    def consume(type)
-      advance(keep_line_breaks: type == :line_break)
+    def consume(types)
+      advance(keep_line_breaks: Array(types).include?(:line_break))
 
-      if type === current_token.type || type == current_token.value
+      if Array(types).detect { |type| type === current_token.type || type == current_token.value }
         current_token
       else
         rewind

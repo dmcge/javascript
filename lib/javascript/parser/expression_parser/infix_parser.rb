@@ -1,60 +1,27 @@
 module Javascript
   class Parser::ExpressionParser::InfixParser
+    RIGHT_ASSOCIATIVE_OPERATORS = %w( ** )
+    LEFT_ASSOCIATIVE_OPERATORS  = %w( / * + - , % == === != !== < <= > >= << >> >>> && || & | ^ )
+    UNARY_OPERATORS             = %w( ++ -- )
+    ASSIGNMENT_OPERATORS        = %w( = += -= *= /= **= *= %= <<= >>= >>>= &= |= ^= &&= ||= )
+    
     attr_reader :prefix, :precedence
 
     def initialize(parser:, prefix:, precedence:)
       @parser, @prefix, @precedence = parser, prefix, precedence
     end
 
-    # FIXME
     def parse_infix
       case
-      when tokenizer.consume("**")      then parse_rightward_binary_operation
-      when tokenizer.consume("/")       then parse_leftward_binary_operation
-      when tokenizer.consume("*")       then parse_leftward_binary_operation
-      when tokenizer.consume("+")       then parse_leftward_binary_operation
-      when tokenizer.consume("-")       then parse_leftward_binary_operation
-      when tokenizer.consume(",")       then parse_leftward_binary_operation
-      when tokenizer.consume("%")       then parse_leftward_binary_operation
-      when tokenizer.consume("==")      then parse_leftward_binary_operation
-      when tokenizer.consume("===")     then parse_leftward_binary_operation
-      when tokenizer.consume("!=")      then parse_leftward_binary_operation
-      when tokenizer.consume("!==")     then parse_leftward_binary_operation
-      when tokenizer.consume("<")       then parse_leftward_binary_operation
-      when tokenizer.consume("<=")      then parse_leftward_binary_operation
-      when tokenizer.consume(">")       then parse_leftward_binary_operation
-      when tokenizer.consume(">=")      then parse_leftward_binary_operation
-      when tokenizer.consume("<<")      then parse_leftward_binary_operation
-      when tokenizer.consume(">>")      then parse_leftward_binary_operation
-      when tokenizer.consume(">>>")     then parse_leftward_binary_operation
-      when tokenizer.consume("&&")      then parse_leftward_binary_operation
-      when tokenizer.consume("||")      then parse_leftward_binary_operation
-      when tokenizer.consume("&")       then parse_leftward_binary_operation
-      when tokenizer.consume("|")       then parse_leftward_binary_operation
-      when tokenizer.consume("^")       then parse_leftward_binary_operation
-      when tokenizer.consume("++")      then parse_unary_operation
-      when tokenizer.consume("--")      then parse_unary_operation
-      when tokenizer.consume("=")       then parse_assignment
-      when tokenizer.consume("+=")      then parse_assignment
-      when tokenizer.consume("-=")      then parse_assignment
-      when tokenizer.consume("*=")      then parse_assignment
-      when tokenizer.consume("/=")      then parse_assignment
-      when tokenizer.consume("**=")     then parse_assignment
-      when tokenizer.consume("*=")      then parse_assignment
-      when tokenizer.consume("%=")      then parse_assignment
-      when tokenizer.consume("<<=")     then parse_assignment
-      when tokenizer.consume(">>=")     then parse_assignment
-      when tokenizer.consume(">>>=")    then parse_assignment
-      when tokenizer.consume("&=")      then parse_assignment
-      when tokenizer.consume("|=")      then parse_assignment
-      when tokenizer.consume("^=")      then parse_assignment
-      when tokenizer.consume("&&=")     then parse_assignment
-      when tokenizer.consume("||=")     then parse_assignment
-      when tokenizer.consume("?.")      then parse_optional_chaining
-      when tokenizer.consume(".")       then parse_property_access_with_dot
-      when tokenizer.consume("[")       then parse_property_access_with_square_brackets
-      when tokenizer.consume("(")       then parse_function_call
-      when tokenizer.consume("?")       then parse_ternary
+      when tokenizer.consume(RIGHT_ASSOCIATIVE_OPERATORS) then parse_rightward_binary_operation
+      when tokenizer.consume(LEFT_ASSOCIATIVE_OPERATORS)  then parse_leftward_binary_operation
+      when tokenizer.consume(UNARY_OPERATORS)             then parse_unary_operation
+      when tokenizer.consume(ASSIGNMENT_OPERATORS)        then parse_assignment
+      when tokenizer.consume("?.")                        then parse_optional_chaining
+      when tokenizer.consume(".")                         then parse_property_access_with_dot
+      when tokenizer.consume("[")                         then parse_property_access_with_square_brackets
+      when tokenizer.consume("(")                         then parse_function_call
+      when tokenizer.consume("?")                         then parse_ternary
       end
     end
 

@@ -1,31 +1,27 @@
 module Javascript
   class Parser::ExpressionParser::PrefixParser
+    UNARY_OPERATORS  = %w( ! ~ + - void typeof )
+    UPDATE_OPERATORS = %w( ++ -- )
+    
     def initialize(parser:)
       @parser = parser
     end
 
-    # FIXME
     def parse_prefix
       case
-      when tokenizer.consume("!")         then parse_unary_operation
-      when tokenizer.consume("~")         then parse_unary_operation
-      when tokenizer.consume("+")         then parse_unary_operation
-      when tokenizer.consume("-")         then parse_unary_operation
-      when tokenizer.consume("void")      then parse_unary_operation
-      when tokenizer.consume("typeof")    then parse_unary_operation
-      when tokenizer.consume("++")        then parse_update_operation
-      when tokenizer.consume("--")        then parse_update_operation
-      when tokenizer.consume("function")  then parse_function_definition
-      when tokenizer.consume("new")       then parse_new
-      when tokenizer.consume(:identifier) then parse_identifier
-      when tokenizer.consume(:string)     then parse_string_literal
-      when tokenizer.consume(:number)     then parse_number_literal
-      when tokenizer.consume("{")         then parse_object_literal
-      when tokenizer.consume("[")         then parse_array_literal
-      when tokenizer.consume("(")         then parse_parenthetical
-      when tokenizer.consume("true")      then parse_true
-      when tokenizer.consume("false")     then parse_false
-      when tokenizer.consume("null")      then parse_null
+      when tokenizer.consume(UNARY_OPERATORS)  then parse_unary_operation
+      when tokenizer.consume(UPDATE_OPERATORS) then parse_update_operation
+      when tokenizer.consume("function")       then parse_function_definition
+      when tokenizer.consume("new")            then parse_new
+      when tokenizer.consume(:identifier)      then parse_identifier
+      when tokenizer.consume(:string)          then parse_string_literal
+      when tokenizer.consume(:number)          then parse_number_literal
+      when tokenizer.consume("{")              then parse_object_literal
+      when tokenizer.consume("[")              then parse_array_literal
+      when tokenizer.consume("(")              then parse_parenthetical
+      when tokenizer.consume("true")           then parse_true
+      when tokenizer.consume("false")          then parse_false
+      when tokenizer.consume("null")           then parse_null
       else
         raise SyntaxError
       end
