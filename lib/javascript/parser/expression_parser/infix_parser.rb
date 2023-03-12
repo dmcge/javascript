@@ -140,9 +140,17 @@ module Javascript
       def parse_arguments
         [].tap do |arguments|
           tokenizer.until(:closing_bracket) do
-            arguments << parser.parse_expression(precedence: 2)
+            arguments << parse_argument
             tokenizer.consume(:comma)
           end
+        end
+      end
+      
+      def parse_argument
+        if tokenizer.consume("...")
+          Spread.new parser.parse_expression(precedence: 2)
+        else
+          parser.parse_expression(precedence: 2)
         end
       end
 

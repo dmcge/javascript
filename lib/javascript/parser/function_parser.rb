@@ -25,21 +25,30 @@ module Javascript
 
       def parse_parameters
         [].tap do |parameters|
-          if tokenizer.consume(:opening_bracket)
-            tokenizer.until(:closing_bracket) do
-              parameters << parse_parameter
-              tokenizer.consume(:comma)
+          if tokenizer.consume("(")
+            tokenizer.until(")") do
+              if tokenizer.consume("...")
+                parameters << parse_spread_parameter
+                break
+              else
+                parameters << parse_parameter
+                tokenizer.consume(",")
+              end
             end
           else
             raise SyntaxError
           end
         end
       end
+      
+      def parse_spread_parameter
+        Spread.new parser.parse_expression(precedence: 2)
+      end
 
       def parse_parameter
         Parameter.new.tap do |parameter|
           parameter.name    = tokenizer.consume!(:identifier).value
-          parameter.default = parser.parse_expression(precedence: 2) if tokenizer.consume(:equals)
+          parameter.default = parser.parse_expression(precedence: 2) if tokenizer.consume("=")
         end
       end
 
