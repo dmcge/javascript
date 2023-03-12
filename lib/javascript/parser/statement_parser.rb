@@ -32,13 +32,11 @@ module Javascript
       def tokenizer = parser.tokenizer
 
       def parse_var_statement
-        parse_line do
-          parse_variable_declarations(VarStatement.new(declarations: [])) do |declaration|
-            if parser.scope.var?(declaration.name) || !parser.scope.include?(declaration.name)
-              parser.scope.vars << declaration.name
-            else
-              raise SyntaxError
-            end
+        parse_variable_declarations(VarStatement.new(declarations: [])) do |declaration|
+          if parser.scope.var?(declaration.name) || !parser.scope.include?(declaration.name)
+            parser.scope.vars << declaration.name
+          else
+            raise SyntaxError
           end
         end
       end
@@ -53,31 +51,27 @@ module Javascript
       end
 
       def parse_let_statement
-        parse_line do
-          parse_variable_declarations(LetStatement.new(declarations: [])) do |declaration|
-            case
-            when declaration.name == "let"
-              raise SyntaxError
-            when parser.scope.include?(declaration.name)
-              raise SyntaxError
-            else
-              parser.scope.lets << declaration.name
-            end
+        parse_variable_declarations(LetStatement.new(declarations: [])) do |declaration|
+          case
+          when declaration.name == "let"
+            raise SyntaxError
+          when parser.scope.include?(declaration.name)
+            raise SyntaxError
+          else
+            parser.scope.lets << declaration.name
           end
         end
       end
 
       def parse_const_statement
-        parse_line do
-          parse_variable_declarations(ConstStatement.new(declarations: [])) do |declaration|
-            case
-            when declaration.value.nil?
-              raise SyntaxError
-            when parser.scope.include?(declaration.name)
-              raise SyntaxError
-            else
-              parser.scope.consts << declaration.name
-            end
+        parse_variable_declarations(ConstStatement.new(declarations: [])) do |declaration|
+          case
+          when declaration.value.nil?
+            raise SyntaxError
+          when parser.scope.include?(declaration.name)
+            raise SyntaxError
+          else
+            parser.scope.consts << declaration.name
           end
         end
       end
@@ -113,11 +107,9 @@ module Javascript
       end
 
       def parse_do_while_loop
-        parse_line do
-          DoWhile.new.tap do |loop|
-            loop.body      = parse_statement
-            loop.condition = parse_condition if tokenizer.consume!("while")
-          end
+        DoWhile.new.tap do |loop|
+          loop.body      = parse_statement
+          loop.condition = parse_condition if tokenizer.consume!("while")
         end
       end
 
@@ -129,18 +121,18 @@ module Javascript
       end
 
       def parse_break_statement
-        parse_line { Break.new }
+        Break.new
       end
 
       def parse_continue_statement
-        parse_line { Continue.new }
+        Continue.new
       end
 
       def parse_throw_statement
         if tokenizer.consume(:line_break)
           raise SyntaxError
         else
-          parse_line { Throw.new(parser.parse_expression) }
+          Throw.new(parser.parse_expression)
         end
       end
 
@@ -166,10 +158,10 @@ module Javascript
       end
 
       def parse_return_statement
-        if tokenizer.consume(";") || tokenizer.consume(:line_break) || tokenizer.consume(:end_of_file)
+        if tokenizer.consume(";") || tokenizer.consume(:line_break)
           Return.new
         else
-          parse_line { Return.new(parser.parse_expression) }
+          Return.new(parser.parse_expression)
         end
       end
 
@@ -178,7 +170,7 @@ module Javascript
       end
 
       def parse_debugger_statement
-        parse_line { DebuggerStatement.new }
+        DebuggerStatement.new
       end
 
       def parse_empty_statement
@@ -186,11 +178,7 @@ module Javascript
       end
 
       def parse_expression_statement
-        parse_line { ExpressionStatement.new(parser.parse_expression) }
-      end
-
-      def parse_line
-        yield.tap do
+        ExpressionStatement.new(parser.parse_expression).tap do
           raise SyntaxError.new("Unexpected #{tokenizer.next_token.value}") unless tokenizer.consume(:semicolon) || tokenizer.consume(:end_of_file) || tokenizer.consume(:line_break)
         end
       end
