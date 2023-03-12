@@ -10,6 +10,22 @@ module Javascript
       @advances = []
     end
 
+    def grammar
+      @grammar.class
+    end
+
+    def grammar=(grammar)
+      @grammar = grammar.new(scanner)
+    end
+
+    def with_grammar(grammar)
+      previous_grammar = self.grammar
+      self.grammar = grammar
+      yield
+    ensure
+      self.grammar = previous_grammar
+    end
+
     def current_token
       advances.last.tokens.last
     end
