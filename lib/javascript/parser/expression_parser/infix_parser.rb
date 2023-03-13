@@ -41,18 +41,6 @@ module Javascript
       end
 
       def parse_unary_operation
-        tokenizer.rewind
-
-        if tokenizer.consume(:line_break)
-          tokenizer.insert_semicolon
-          prefix
-        else
-          tokenizer.next_token
-          parse_update_operation
-        end
-      end
-
-      def parse_update_operation
         if prefix.is_a?(Identifier) || prefix.is_a?(PropertyAccess)
           UnaryOperation.new operator: tokenizer.current_token.value, operand: prefix, position: :postfix
         else
