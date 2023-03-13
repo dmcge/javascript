@@ -7,10 +7,17 @@ module Javascript
     end
 
     def parse_expression
-      expression = parse_prefix
+      expression = nil
 
-      while precedence < (current_precedence = precedence_of(parser.tokenizer.look_ahead))
-        expression = parse_infix(expression, precedence: current_precedence)
+      parser.tokenizer.with_grammar(Grammar::Expression::PrefixGrammar) do
+        expression = parse_prefix
+      end
+
+
+      parser.tokenizer.with_grammar(Grammar::Expression::InfixGrammar) do
+        while precedence < (current_precedence = precedence_of(parser.tokenizer.look_ahead))
+          expression = parse_infix(expression, precedence: current_precedence)
+        end
       end
 
       expression

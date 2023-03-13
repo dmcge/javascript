@@ -5,24 +5,26 @@ module Javascript
     end
 
     def parse_statement
-      case
-      when tokenizer.consume("var")      then parse_var_statement
-      when tokenizer.consume("let")      then parse_let_statement_or_expression
-      when tokenizer.consume("const")    then parse_const_statement
-      when tokenizer.consume("if")       then parse_if_statement
-      when tokenizer.consume("while")    then parse_while_loop
-      when tokenizer.consume("do")       then parse_do_while_loop
-      when tokenizer.consume("break")    then parse_break_statement
-      when tokenizer.consume("continue") then parse_continue_statement
-      when tokenizer.consume("throw")    then parse_throw_statement
-      when tokenizer.consume("function") then parse_function_declaration
-      when tokenizer.consume("{")        then parse_block
-      when tokenizer.consume("return")   then parse_return_statement
-      when tokenizer.consume("with")     then parse_with_statement
-      when tokenizer.consume("debugger") then parse_debugger_statement
-      when tokenizer.consume(";")        then parse_empty_statement
-      else
-        parse_expression_statement
+      tokenizer.with_grammar(Grammar::StatementGrammar) do
+        case
+        when tokenizer.consume("var")      then parse_var_statement
+        when tokenizer.consume("let")      then parse_let_statement_or_expression
+        when tokenizer.consume("const")    then parse_const_statement
+        when tokenizer.consume("if")       then parse_if_statement
+        when tokenizer.consume("while")    then parse_while_loop
+        when tokenizer.consume("do")       then parse_do_while_loop
+        when tokenizer.consume("break")    then parse_break_statement
+        when tokenizer.consume("continue") then parse_continue_statement
+        when tokenizer.consume("throw")    then parse_throw_statement
+        when tokenizer.consume("function") then parse_function_declaration
+        when tokenizer.consume("{")        then parse_block
+        when tokenizer.consume("return")   then parse_return_statement
+        when tokenizer.consume("with")     then parse_with_statement
+        when tokenizer.consume("debugger") then parse_debugger_statement
+        when tokenizer.consume(";")        then parse_empty_statement
+        else
+          parse_expression_statement
+        end
       end
     end
 
@@ -91,7 +93,7 @@ module Javascript
       def parse_variable_declaration
         VariableDeclaration.new.tap do |declaration|
           declaration.name  = tokenizer.consume!(:identifier).value
-          declaration.value = parser.parse_expression(precedence: 2) if tokenizer.consume(:equals)
+          declaration.value = parser.parse_expression(precedence: 2) if tokenizer.consume("=")
         end
       end
 
@@ -129,10 +131,12 @@ module Javascript
       end
 
       def parse_throw_statement
-        if tokenizer.consume(:line_break)
-          raise SyntaxError
-        else
-          Throw.new(parser.parse_expression)
+        tokenizer.grammar.with_line_breaks do
+          if tokenizer.consume(:line_break)
+            raise SyntaxError
+          else
+            Throw.new(parser.parse_expression)
+          end
         end
       end
 
@@ -158,10 +162,12 @@ module Javascript
       end
 
       def parse_return_statement
-        if tokenizer.consume(";") || tokenizer.consume(:line_break)
-          Return.new
-        else
-          Return.new(parser.parse_expression)
+        tokenizer.grammar.with_line_breaks do
+          if tokenizer.consume(";") || tokenizer.consume(:line_break)
+            Return.new
+          else
+            Return.new(parser.parse_expression)
+          end
         end
       end
 
@@ -179,7 +185,9 @@ module Javascript
 
       def parse_expression_statement
         ExpressionStatement.new(parser.parse_expression).tap do
-          raise SyntaxError.new("Unexpected #{tokenizer.next_token.value}") unless tokenizer.consume(:semicolon) || tokenizer.consume(:end_of_file) || tokenizer.consume(:line_break)
+          tokenizer.grammar.with_line_breaks do
+            raise SyntaxError.new("Unexpected #{tokenizer.next_token.value.inspect}") unless tokenizer.consume(:semicolon) || tokenizer.consume(:end_of_file) || tokenizer.consume(:line_break)
+          end
         end
       end
   end

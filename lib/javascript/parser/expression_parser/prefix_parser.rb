@@ -1,16 +1,13 @@
 module Javascript
   class Parser::ExpressionParser::PrefixParser
-    UNARY_OPERATORS  = %w( ! ~ + - void typeof )
-    UPDATE_OPERATORS = %w( ++ -- )
-    
     def initialize(parser:)
       @parser = parser
     end
 
     def parse_prefix
       case
-      when tokenizer.consume(UNARY_OPERATORS)  then parse_unary_operation
-      when tokenizer.consume(UPDATE_OPERATORS) then parse_update_operation
+      when tokenizer.consume(:unary_operator)  then parse_unary_operation
+      when tokenizer.consume(:update_operator) then parse_update_operation
       when tokenizer.consume("function")       then parse_function_definition
       when tokenizer.consume("new")            then parse_new
       when tokenizer.consume(:identifier)      then parse_identifier
@@ -99,7 +96,7 @@ module Javascript
 
       def parse_property_definition
         name = tokenizer.current_token.literal || tokenizer.current_token.value
-        
+
         case name
         when "get", "set"
           parse_property_definition_with_getter_or_setter(prefix: name)
@@ -107,7 +104,7 @@ module Javascript
           parse_property_definition_without_getter_or_setter(name: name)
         end
       end
-      
+
       def parse_property_definition_with_getter_or_setter(prefix:)
         if tokenizer.peek(:identifier) || tokenizer.peek(:string) || tokenizer.peek(:number)
           parse_getter_or_setter(prefix: prefix)
@@ -115,10 +112,10 @@ module Javascript
           parse_property_definition_without_getter_or_setter(name: prefix)
         end
       end
-      
+
       def parse_getter_or_setter(prefix:)
         function = parse_function_definition
-        
+
         case prefix
         when "get" then PropertyGetter.new(name: function.name, function: function)
         when "set" then PropertySetter.new(name: function.name, function: function)
@@ -132,18 +129,18 @@ module Javascript
         else                             parse_shorthand_property(name: name)
         end
       end
-      
+
       def parse_property_assignment(name:)
         PropertyDefinition.new name: name, value: parser.parse_expression(precedence: 2)
       end
-      
+
       def parse_method_definition(name:)
         tokenizer.rewind # rewind (
         tokenizer.rewind # rewind name
-        
+
         PropertyDefinition.new name: name, value: parse_function_definition
       end
-      
+
       def parse_shorthand_property(name:)
         PropertyDefinition.new name: name, value: parse_identifier
       end
@@ -151,7 +148,7 @@ module Javascript
       def parse_spread
         Spread.new parser.parse_expression(precedence: 2)
       end
-      
+
       def parse_array_literal
         ArrayLiteral.new(elements: []).tap do |array|
           tokenizer.until(:closing_square_bracket) do
