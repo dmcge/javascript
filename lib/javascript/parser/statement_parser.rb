@@ -79,15 +79,17 @@ module Javascript
       end
 
       def parse_variable_declarations(statement)
-        tokenizer.until(:semicolon) do
-          declaration = parse_variable_declaration
-          yield declaration
-          statement.declarations << declaration
+        terminal do
+          loop do
+            declaration = parse_variable_declaration
+            yield declaration
+            statement.declarations << declaration
 
-          break unless tokenizer.consume(:comma)
+            break unless tokenizer.consume(:comma)
+          end
+
+          statement
         end
-
-        statement
       end
 
       def parse_variable_declaration
@@ -123,19 +125,21 @@ module Javascript
       end
 
       def parse_break_statement
-        Break.new
+        terminal { Break.new }
       end
 
       def parse_continue_statement
-        Continue.new
+        terminal { Continue.new }
       end
 
       def parse_throw_statement
-        tokenizer.grammar.with_line_breaks do
-          if tokenizer.consume(:line_break)
-            raise SyntaxError
-          else
-            Throw.new(parser.parse_expression)
+        terminal do
+          tokenizer.grammar.with_line_breaks do
+            if tokenizer.consume(:line_break)
+              raise SyntaxError
+            else
+              Throw.new(parser.parse_expression)
+            end
           end
         end
       end
@@ -166,7 +170,7 @@ module Javascript
           if tokenizer.consume(";") || tokenizer.consume(:line_break)
             Return.new
           else
-            Return.new(parser.parse_expression)
+            terminal { Return.new(parser.parse_expression) }
           end
         end
       end
@@ -176,7 +180,7 @@ module Javascript
       end
 
       def parse_debugger_statement
-        DebuggerStatement.new
+        terminal { DebuggerStatement.new }
       end
 
       def parse_empty_statement
@@ -184,10 +188,13 @@ module Javascript
       end
 
       def parse_expression_statement
-        ExpressionStatement.new(parser.parse_expression).tap do
-          tokenizer.grammar.with_line_breaks do
-            raise SyntaxError.new("Unexpected #{tokenizer.next_token.value.inspect}") unless tokenizer.consume(:semicolon) || tokenizer.consume(:end_of_file) || tokenizer.consume(:line_break)
-          end
+        terminal { ExpressionStatement.new(parser.parse_expression) }
+      end
+
+
+      def terminal
+        yield.tap do
+          tokenizer.with_grammar(Grammar::TerminalGrammar) { tokenizer.consume!(:semicolon) }
         end
       end
   end
