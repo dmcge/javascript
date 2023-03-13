@@ -4,10 +4,10 @@ module Javascript
       skip_whitespace preserve_line_breaks: true
 
       case
-      when scanner.scan(";")     then :semicolon
-      when scanner.scan(/\R/)    then :semicolon
-      when scanner.match?("}")   then :semicolon
-      when scanner.scan(/\s*\z/) then :semicolon
+      when scanner.scan(";")         then :semicolon
+      when scanner.match?("}")       then :semicolon
+      when scanner.scan(LINE_BREAK)  then :semicolon
+      when scanner.scan(END_OF_FILE) then :semicolon
       end
     end
   end

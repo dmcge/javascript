@@ -3,6 +3,8 @@ module Javascript
     START_OF_IDENTIFIER = /\p{L}|_|\$/
     IDENTIFIER_CHARACTER = /#{START_OF_IDENTIFIER}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|\u200c|\u200d/
     KEYWORDS = %w( break const continue debugger do else false function if new null return throw true typeof var void while with )
+    LINE_BREAK = /\R/
+    END_OF_FILE = /\s*\z/
 
     def initialize(scanner)
       @scanner = scanner
@@ -11,8 +13,8 @@ module Javascript
     def next_token
       case
       when scanner.scan(START_OF_IDENTIFIER) then tokenize_identifier
-      when scanner.scan(/\s*\z/)             then :end_of_file
-      when scanner.scan($/)                  then :line_break
+      when scanner.scan(END_OF_FILE)         then :end_of_file
+      when scanner.scan(LINE_BREAK)          then :line_break
       else
         :unknown
       end
