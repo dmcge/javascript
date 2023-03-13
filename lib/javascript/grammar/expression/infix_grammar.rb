@@ -12,8 +12,6 @@ module Javascript
       skip_whitespace(preserve_line_breaks: scanner.match?(/\s*#{UNARY_OPERATOR}/))
 
       case
-      when scanner.scan("//")                then tokenize_inline_comment
-      when scanner.scan("/*")                then tokenize_block_comment
       when scanner.scan("=")                 then tokenize_equals
       when scanner.scan("?")                 then tokenize_question_mark
       when scanner.scan(ASSIGNMENT_OPERATOR) then :assignment_operator

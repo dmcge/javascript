@@ -10,8 +10,6 @@ module Javascript
 
     def next_token
       case
-      when scanner.scan("//")                then tokenize_inline_comment
-      when scanner.scan("/*")                then tokenize_block_comment
       when scanner.scan(START_OF_IDENTIFIER) then tokenize_identifier
       when scanner.scan($/)                  then :line_break
       when scanner.eos?                      then :end_of_file
@@ -28,27 +26,15 @@ module Javascript
       end
     end
 
+    def skip_comments
+      case
+      when scanner.scan(/\s*\/\//) then skip_inline_comment
+      when scanner.scan(/\s*\/\*/) then skip_block_comment
+      end
+    end
+
     private
       attr_reader :scanner
-
-      def tokenize_inline_comment
-        scanner.scan_until(/(?=\R)|\Z/)
-        :comment
-      end
-
-      def tokenize_block_comment
-        if comment = scanner.scan_until(/\*\//)
-          insert_line_break if comment.match?(/\R/)
-          :comment
-        else
-          raise SyntaxError
-        end
-      end
-
-      def insert_line_break
-        scanner.string[scanner.pos] = "\n" + scanner.string[scanner.pos] unless scanner.eos?
-      end
-
 
       def tokenize_identifier
         scanner.unscan
@@ -60,6 +46,23 @@ module Javascript
         else
           :identifier
         end
+      end
+
+
+      def skip_inline_comment
+        scanner.skip_until(/(?=\R)|\Z/)
+      end
+
+      def skip_block_comment
+        if comment = scanner.scan_until(/\*\//)
+          insert_line_break if comment.match?(/\R/)
+        else
+          raise SyntaxError
+        end
+      end
+
+      def insert_line_break
+        scanner.string[scanner.pos] = "\n" + scanner.string[scanner.pos] unless scanner.eos?
       end
   end
 end

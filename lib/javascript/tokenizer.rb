@@ -100,12 +100,14 @@ module Javascript
       def advance(keep_line_breaks: false)
         tokens = []
         tokens << advance_to_next_token
-        tokens << advance_to_next_token while [(:line_break unless keep_line_breaks), :comment].include?(tokens.last.type)
+        tokens << advance_to_next_token while [(:line_break unless keep_line_breaks)].include?(tokens.last.type)
 
         advances << Advance.new(tokens)
       end
 
       def advance_to_next_token
+        @grammar.skip_comments
+
         Token.new.tap do |token|
           token.starting_position   = scanner.pos
           token.type, token.literal = @grammar.next_token
