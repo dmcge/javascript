@@ -20,6 +20,10 @@ module Javascript
       Number.new(0)
     end
 
+    def to_s
+      elements.map { |element| element.value.to_s }.join(",")
+    end
+
     def to_a
       elements.map(&:value)
     end

@@ -12,6 +12,7 @@ module Javascript
       when tokenizer.consume("new")            then parse_new
       when tokenizer.consume(:identifier)      then parse_identifier
       when tokenizer.consume(:string)          then parse_string_literal
+      when tokenizer.consume(:backtick)        then parse_template_literal
       when tokenizer.consume(:number)          then parse_number_literal
       when tokenizer.consume("{")              then parse_object_literal
       when tokenizer.consume("[")              then parse_array_literal
@@ -69,6 +70,26 @@ module Javascript
 
       def parse_string_literal
         StringLiteral.new(tokenizer.current_token.literal)
+      end
+
+      def parse_template_literal
+        tokenizer.with_grammar(Grammar::Expression::TemplateLiteralGrammar) do
+          TemplateLiteral.new(content: "", embeds: {}).tap do |literal|
+            loop do
+              case
+              when tokenizer.consume(:content)
+                literal.content << tokenizer.current_token.literal
+              when tokenizer.consume("${")
+                literal.embeds[literal.content.length] = parser.parse_expression
+                tokenizer.consume!("}")
+              when tokenizer.consume("`")
+                break
+              when tokenizer.consume(:end_of_file)
+                raise SyntaxError
+              end
+            end
+          end
+        end
       end
 
       def parse_number_literal

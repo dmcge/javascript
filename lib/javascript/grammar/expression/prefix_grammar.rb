@@ -19,6 +19,7 @@ module Javascript
       when scanner.scan("[")             then :opening_square_bracket
       when scanner.scan("]")             then :closing_square_bracket
       when scanner.scan(":")             then :colon
+      when scanner.scan("`")             then :backtick
       else
         super
       end

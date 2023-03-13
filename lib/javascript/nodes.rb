@@ -31,6 +31,7 @@ module Javascript
   Spread              = Struct.new(:expression)
   StatementList       = Struct.new(:statements)
   StringLiteral       = Struct.new(:value)
+  TemplateLiteral     = Struct.new(:content, :embeds)
   Ternary             = Struct.new(:condition, :consequent, :alternative)
   Throw               = Struct.new(:expression)
   UnaryOperation      = Struct.new(:operator, :operand, :position)
