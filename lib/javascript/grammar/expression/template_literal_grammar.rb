@@ -16,11 +16,19 @@ module Javascript
       end
 
       def consume_content
-        if content = scanner.scan_until(/(?=`|\${)/)
-          content.gsub!(/\\#{LINE_BREAK}/, "")
-          content
-        else
-          raise SyntaxError
+        ::String.new.tap do |content|
+          loop do
+            case
+            when scanner.match?(/`|\${/)
+              break
+            when scanner.eos?
+              raise SyntaxError
+            when scanner.scan(/\\#{LINE_BREAK}/)
+              next
+            else
+              content << scanner.getch
+            end
+          end
         end
       end
   end
