@@ -9,6 +9,8 @@ module Javascript
     ASSIGNMENT_OPERATOR = Regexp.union(ASSIGNMENT_OPERATORS.sort_by(&:length).reverse)
 
     def next_token
+      skip_whitespace(preserve_line_breaks: scanner.match?(/\s*#{UNARY_OPERATOR}/))
+
       case
       when scanner.scan("//")                then tokenize_inline_comment
       when scanner.scan("/*")                then tokenize_block_comment

@@ -4,19 +4,21 @@ module Javascript
     UNARY_OPERATOR  = Regexp.union(%w( ! ~ + - void typeof ).sort_by(&:length).reverse)
 
     def next_token
+      skip_whitespace
+
       case
-      when scanner.scan(/\.?\d/)             then tokenize_numeric
-      when scanner.scan(/"|'/)               then tokenize_string
-      when scanner.scan(UPDATE_OPERATOR)     then :update_operator
-      when scanner.scan(UNARY_OPERATOR)      then :unary_operator
-      when scanner.scan(",")                 then :comma
-      when scanner.scan("(")                 then :opening_bracket
-      when scanner.scan(")")                 then :closing_bracket
-      when scanner.scan("{")                 then :opening_brace
-      when scanner.scan("}")                 then :closing_brace
-      when scanner.scan("[")                 then :opening_square_bracket
-      when scanner.scan("]")                 then :closing_square_bracket
-      when scanner.scan(":")                 then :colon
+      when scanner.scan(/\.?\d/)         then tokenize_numeric
+      when scanner.scan(/"|'/)           then tokenize_string
+      when scanner.scan(UPDATE_OPERATOR) then :update_operator
+      when scanner.scan(UNARY_OPERATOR)  then :unary_operator
+      when scanner.scan(",")             then :comma
+      when scanner.scan("(")             then :opening_bracket
+      when scanner.scan(")")             then :closing_bracket
+      when scanner.scan("{")             then :opening_brace
+      when scanner.scan("}")             then :closing_brace
+      when scanner.scan("[")             then :opening_square_bracket
+      when scanner.scan("]")             then :closing_square_bracket
+      when scanner.scan(":")             then :colon
       else
         super
       end

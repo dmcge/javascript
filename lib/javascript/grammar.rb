@@ -4,7 +4,6 @@ module Javascript
     IDENTIFIER_CHARACTER = /#{START_OF_IDENTIFIER}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|\u200c|\u200d/
     KEYWORDS = %w( break const continue debugger do else false function if new null return throw true typeof var void while with )
 
-
     def initialize(scanner)
       @scanner = scanner
     end
@@ -15,10 +14,17 @@ module Javascript
       when scanner.scan("/*")                then tokenize_block_comment
       when scanner.scan(START_OF_IDENTIFIER) then tokenize_identifier
       when scanner.scan($/)                  then :line_break
-      when scanner.scan(/\s+/)               then :whitespace
       when scanner.eos?                      then :end_of_file
       else
         :unknown
+      end
+    end
+
+    def skip_whitespace(preserve_line_breaks: false)
+      if preserve_line_breaks
+        scanner.skip(/[^\S\r\n]+/)
+      else
+        scanner.skip(/\s+/)
       end
     end
 

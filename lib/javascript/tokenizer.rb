@@ -2,7 +2,11 @@ require "strscan"
 
 module Javascript
   class Tokenizer
-    Token = Struct.new(:type, :value, :literal, :starting_position, :ending_position, keyword_init: true)
+    Token = Struct.new(:type, :raw, :literal, :starting_position, :ending_position, keyword_init: true) do
+      def value
+        raw&.strip
+      end
+    end
 
     def initialize(javascript)
       @scanner  = StringScanner.new(javascript)
@@ -96,7 +100,7 @@ module Javascript
       def advance(keep_line_breaks: false)
         tokens = []
         tokens << advance_to_next_token
-        tokens << advance_to_next_token while [:whitespace, (:line_break unless keep_line_breaks), :comment].include?(tokens.last.type)
+        tokens << advance_to_next_token while [(:line_break unless keep_line_breaks), :comment].include?(tokens.last.type)
 
         advances << Advance.new(tokens)
       end
@@ -106,7 +110,7 @@ module Javascript
           token.starting_position   = scanner.pos
           token.type, token.literal = @grammar.next_token
           token.ending_position     = scanner.pos
-          token.value               = scanner.string.byteslice(token.starting_position...token.ending_position)
+          token.raw                 = scanner.string.byteslice(token.starting_position...token.ending_position)
         end
       end
   end
