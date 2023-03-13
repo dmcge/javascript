@@ -11,8 +11,8 @@ module Javascript
     def next_token
       case
       when scanner.scan(START_OF_IDENTIFIER) then tokenize_identifier
+      when scanner.scan(/\s*\z/)             then :end_of_file
       when scanner.scan($/)                  then :line_break
-      when scanner.eos?                      then :end_of_file
       else
         :unknown
       end

@@ -131,10 +131,12 @@ module Javascript
       end
 
       def parse_throw_statement
-        if tokenizer.consume(:line_break)
-          raise SyntaxError
-        else
-          Throw.new(parser.parse_expression)
+        tokenizer.grammar.with_line_breaks do
+          if tokenizer.consume(:line_break)
+            raise SyntaxError
+          else
+            Throw.new(parser.parse_expression)
+          end
         end
       end
 
@@ -160,10 +162,12 @@ module Javascript
       end
 
       def parse_return_statement
-        if tokenizer.consume(";") || tokenizer.consume(:line_break)
-          Return.new
-        else
-          Return.new(parser.parse_expression)
+        tokenizer.grammar.with_line_breaks do
+          if tokenizer.consume(";") || tokenizer.consume(:line_break)
+            Return.new
+          else
+            Return.new(parser.parse_expression)
+          end
         end
       end
 
@@ -181,7 +185,9 @@ module Javascript
 
       def parse_expression_statement
         ExpressionStatement.new(parser.parse_expression).tap do
-          raise SyntaxError.new("Unexpected #{tokenizer.next_token.value.inspect}") unless tokenizer.consume(:semicolon) || tokenizer.consume(:end_of_file) || tokenizer.consume(:line_break)
+          tokenizer.grammar.with_line_breaks do
+            raise SyntaxError.new("Unexpected #{tokenizer.next_token.value.inspect}") unless tokenizer.consume(:semicolon) || tokenizer.consume(:end_of_file) || tokenizer.consume(:line_break)
+          end
         end
       end
   end

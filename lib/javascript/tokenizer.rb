@@ -8,14 +8,12 @@ module Javascript
       end
     end
 
-    def initialize(javascript)
-      @scanner  = StringScanner.new(javascript)
-      @grammar  = Grammar.new(scanner)
-      @advances = []
-    end
+    attr_reader :grammar
 
-    def grammar
-      @grammar.class
+    def initialize(javascript)
+      @scanner = StringScanner.new(javascript)
+      @grammar = Grammar.new(scanner)
+      @tokens  = []
     end
 
     def grammar=(grammar)
@@ -23,7 +21,7 @@ module Javascript
     end
 
     def with_grammar(grammar)
-      previous_grammar = self.grammar
+      previous_grammar = self.grammar.class
       self.grammar = grammar
       yield
     ensure
@@ -31,7 +29,7 @@ module Javascript
     end
 
     def current_token
-      advances.last.tokens.last
+      tokens.last
     end
 
     def next_token
@@ -40,7 +38,7 @@ module Javascript
     end
 
     def consume(types)
-      advance(keep_line_breaks: Array(types).include?(:line_break))
+      advance
 
       if Array(types).detect { |type| type === current_token.type || type == current_token.value }
         current_token
@@ -85,7 +83,7 @@ module Javascript
     end
 
     def rewind
-      scanner.pos = advances.pop.tokens.first.starting_position
+      scanner.pos = tokens.pop.starting_position
     end
 
     def finished?
@@ -93,24 +91,18 @@ module Javascript
     end
 
     private
-      attr_reader :scanner, :advances
+      attr_reader :scanner, :tokens
 
-      Advance = Struct.new(:tokens)
-
-      def advance(keep_line_breaks: false)
-        tokens = []
+      def advance
         tokens << advance_to_next_token
-        tokens << advance_to_next_token while [(:line_break unless keep_line_breaks)].include?(tokens.last.type)
-
-        advances << Advance.new(tokens)
       end
 
       def advance_to_next_token
-        @grammar.skip_comments
+        grammar.skip_comments
 
         Token.new.tap do |token|
           token.starting_position   = scanner.pos
-          token.type, token.literal = @grammar.next_token
+          token.type, token.literal = grammar.next_token
           token.ending_position     = scanner.pos
           token.raw                 = scanner.string.byteslice(token.starting_position...token.ending_position)
         end

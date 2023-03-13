@@ -1,7 +1,7 @@
 module Javascript
   class Grammar::StatementGrammar < Grammar
     def next_token
-      skip_whitespace(preserve_line_breaks: true)
+      skip_whitespace(preserve_line_breaks: @preserve_line_breaks)
 
       case
       when scanner.scan("=") then :equals
@@ -15,6 +15,14 @@ module Javascript
       else
         super
       end
+    end
+
+    def with_line_breaks
+      had_line_breaks = @preserve_line_breaks
+      @preserve_line_breaks = true
+      yield
+    ensure
+      @preserve_line_breaks = had_line_breaks
     end
   end
 end
