@@ -152,7 +152,7 @@ module Javascript
       end
 
       def parse_property_assignment(name:)
-        PropertyDefinition.new name: name, value: parser.parse_expression(precedence: 2)
+        PropertyDefinition.new name: name, value: parser.parse_expression(precedence: 1)
       end
 
       def parse_method_definition(name:)
@@ -167,7 +167,7 @@ module Javascript
       end
 
       def parse_spread
-        Spread.new parser.parse_expression(precedence: 2)
+        Spread.new parser.parse_expression(precedence: 1)
       end
 
       def parse_array_literal
@@ -180,7 +180,7 @@ module Javascript
               array.elements << parse_spread
               tokenizer.consume(",")
             else
-              array.elements << parser.parse_expression(precedence: 2)
+              array.elements << parser.parse_expression(precedence: 1)
               tokenizer.consume(",")
             end
           end

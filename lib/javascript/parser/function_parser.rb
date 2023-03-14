@@ -40,15 +40,15 @@ module Javascript
           end
         end
       end
-      
+
       def parse_spread_parameter
-        Spread.new parser.parse_expression(precedence: 2)
+        Spread.new parser.parse_expression(precedence: 1)
       end
 
       def parse_parameter
         Parameter.new.tap do |parameter|
           parameter.name    = tokenizer.consume!(:identifier).value
-          parameter.default = parser.parse_expression(precedence: 2) if tokenizer.consume("=")
+          parameter.default = parser.parse_expression(precedence: 1) if tokenizer.consume("=")
         end
       end
 

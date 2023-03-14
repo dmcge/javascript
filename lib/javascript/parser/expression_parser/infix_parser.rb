@@ -98,17 +98,17 @@ module Javascript
 
       def parse_argument
         if tokenizer.consume("...")
-          Spread.new parser.parse_expression(precedence: 2)
+          Spread.new parser.parse_expression(precedence: 1)
         else
-          parser.parse_expression(precedence: 2)
+          parser.parse_expression(precedence: 1)
         end
       end
 
       def parse_ternary
         Ternary.new.tap do |ternary|
           ternary.condition   = prefix
-          ternary.consequent  = parser.parse_expression(precedence: 2)
-          ternary.alternative = parser.parse_expression(precedence: 2) if tokenizer.consume!(":")
+          ternary.consequent  = parser.parse_expression(precedence: 1)
+          ternary.alternative = parser.parse_expression(precedence: 1) if tokenizer.consume!(":")
         end
       end
   end
