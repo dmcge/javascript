@@ -19,5 +19,10 @@ module Javascript
     def type
       "object"
     end
+
+    # FIXME
+    def to_s
+      "[object Object]"
+    end
   end
 end

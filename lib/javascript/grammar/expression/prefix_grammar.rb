@@ -19,6 +19,7 @@ module Javascript
       when scanner.scan("[")             then :opening_square_bracket
       when scanner.scan("]")             then :closing_square_bracket
       when scanner.scan(":")             then :colon
+      when scanner.scan("`")             then :backtick
       else
         super
       end
@@ -51,10 +52,10 @@ module Javascript
             break
           when scanner.eos?
             raise SyntaxError
-          when scanner.scan(/\R/)
+          when scanner.scan(LINE_BREAK)
             raise SyntaxError
           when scanner.scan("\\")
-            string << consume_escape_sequence unless scanner.scan(/\R/)
+            string << consume_escape_sequence unless scanner.scan(LINE_BREAK)
           else
             string << scanner.getch
           end
@@ -64,47 +65,7 @@ module Javascript
       end
 
       def consume_escape_sequence
-        case
-        when scanner.scan(/n|r|t|b|f|v/) then consume_escaped_character
-        when scanner.scan("u")           then consume_unicode_escape
-        when scanner.scan("x")           then consume_hex_escape
-        when scanner.scan(/[0-7]/)       then consume_octal_escape
-        else
-          scanner.getch
-        end
-      end
-
-      def consume_escaped_character
-        %("\\#{scanner.matched}").undump
-      end
-
-      def consume_unicode_escape
-        if scanner.scan(/(\h{4})/) || scanner.scan(/{(\h{1,6})}/)
-          scanner.captures[0].to_i(16).chr("UTF-8")
-        else
-          raise SyntaxError
-        end
-      end
-
-      def consume_hex_escape
-        if scanner.scan(/\h{2}/)
-          scanner.matched.to_i(16).chr("UTF-8")
-        else
-          raise SyntaxError
-        end
-      end
-
-      def consume_octal_escape
-        ::String.new.tap do |octal|
-          octal << scanner.matched
-
-          case scanner.matched.to_i
-          when 0..3
-            octal << scanner.scan(/[0-7]{1,2}/).to_s
-          when 4..7
-            octal << scanner.scan(/[0-7]{1}/).to_s
-          end
-        end.to_i(8).chr("UTF-8")
+        Grammar::Unescaper.new(scanner, unescape_legacy_octals: true).consume_escape_sequence
       end
   end
 end

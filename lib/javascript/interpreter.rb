@@ -32,6 +32,7 @@ module Javascript
       when Identifier         then evaluate_identifier(expression)
       when Assignment         then evaluate_assignment(expression)
       when StringLiteral      then evaluate_string_literal(expression)
+      when TemplateLiteral    then evaluate_template_literal(expression)
       when NumberLiteral      then evaluate_number_literal(expression)
       when BooleanLiteral     then evaluate_boolean_literal(expression)
       when ObjectLiteral      then evaluate_object_literal(expression)
@@ -183,6 +184,14 @@ module Javascript
         String.new(literal.value)
       end
 
+      def evaluate_template_literal(literal)
+        String.new(literal.content).tap do |string|
+          literal.embeds.each do |position, value|
+            string.value[position] = evaluate_value(value).to_s + string.value[position].to_s
+          end
+        end
+      end
+
       def evaluate_number_literal(literal)
         Number.new(literal.value)
       end
@@ -212,7 +221,7 @@ module Javascript
         receiver[accessor] ||= Undefined.new
         receiver[accessor]
       end
-      
+
       def evaluate_optional_chain(optional_chain)
         case evaluate_value(optional_chain.receiver)
         when Null, Undefined

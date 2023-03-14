@@ -63,6 +63,7 @@ class StringLiteralsTest < Javascript::Test
     assert_equal "\b", evaluate(%("\\b"))
     assert_equal "\f", evaluate(%('\\f'))
     assert_equal "\v", evaluate(%("\\v"))
+    assert_equal "\0", evaluate(%("\\0"))
   end
 
   def test_4hex_unicode_escapes
@@ -123,7 +124,6 @@ class StringLiteralsTest < Javascript::Test
 
   def test_arbitrary_escapes
     assert_equal "a", evaluate(%("\\a"))
-    assert_equal "\0", evaluate(%("\\0"))
     assert_equal "⌘", evaluate(%('\\⌘'))
     assert_equal "👨‍👩‍👧", evaluate(%('\\👨‍👩‍👧'))
   end
