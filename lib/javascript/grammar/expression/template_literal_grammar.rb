@@ -23,13 +23,17 @@ module Javascript
               break
             when scanner.eos?
               raise SyntaxError
-            when scanner.scan(/\\#{LINE_BREAK}/)
-              next
+            when scanner.scan("\\")
+              content << consume_escape_sequence unless scanner.scan(LINE_BREAK)
             else
               content << scanner.getch
             end
           end
         end
+      end
+
+      def consume_escape_sequence
+        Grammar::Unescaper.new(scanner).consume_escape_sequence
       end
   end
 end
