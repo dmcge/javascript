@@ -31,7 +31,7 @@ module Javascript
 
         number = consume_number
 
-        if scanner.scan(START_OF_IDENTIFIER) || scanner.scan(/\d/) || scanner.scan(".")
+        if scanner.scan(START_OF_IDENTIFIER) || scanner.scan(/\d/)
           raise SyntaxError
         else
           [ :number, number ]
