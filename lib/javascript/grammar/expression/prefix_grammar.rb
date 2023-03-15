@@ -28,14 +28,7 @@ module Javascript
     private
       def tokenize_numeric
         scanner.unscan
-
-        number = consume_number
-
-        if scanner.scan(START_OF_IDENTIFIER) || scanner.scan(/\d/)
-          raise SyntaxError
-        else
-          [ :number, number ]
-        end
+        [ :number, consume_number ]
       end
 
       def consume_number

@@ -209,4 +209,11 @@ class NumberLiteralsTest < Javascript::Test
     assert_malformed "+0o6١"
     assert_malformed "-0o6١"
   end
+
+
+  def test_immediately_followed_by_identifier
+    assert_malformed "3in"
+    assert_malformed ".4$a"
+    assert_malformed "0xb4dd00dh"
+  end
 end
