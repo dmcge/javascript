@@ -36,25 +36,26 @@ module Javascript
       end
 
       def tokenize_string
-        quotation_mark = scanner.matched
-        string = ::String.new
+        [ :string, consume_string(quotation_mark: scanner.matched) ]
+      end
 
-        loop do
-          case
-          when scanner.scan(quotation_mark)
-            break
-          when scanner.eos?
-            raise SyntaxError
-          when scanner.scan(LINE_BREAK)
-            raise SyntaxError
-          when scanner.scan("\\")
-            string << consume_escape_sequence unless scanner.scan(LINE_BREAK)
-          else
-            string << scanner.getch
+      def consume_string(quotation_mark:)
+        ::String.new.tap do |string|
+          loop do
+            case
+            when scanner.scan(quotation_mark)
+              break
+            when scanner.eos?
+              raise SyntaxError
+            when scanner.scan(LINE_BREAK)
+              raise SyntaxError
+            when scanner.scan("\\")
+              string << consume_escape_sequence unless scanner.scan(LINE_BREAK)
+            else
+              string << scanner.getch
+            end
           end
         end
-
-        [ :string, string ]
       end
 
       def consume_escape_sequence
